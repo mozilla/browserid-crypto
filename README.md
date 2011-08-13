@@ -1,0 +1,1 @@
+JavaScript implementation of the Verified Email Protocol
