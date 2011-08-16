@@ -11,15 +11,12 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla BrowserID.
- *
- * The Initial Developer of the Original Code is Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2011
- * the Initial Developer. All Rights Reserved.
+ * The Original Code is trusted.js; substantial portions derived
+ * from XAuth code originally produced by Meebo, Inc., and provided
+ * under the Apache License, Version 2.0; see http://github.com/xauth/xauth
  *
  * Contributor(s):
  *     Ben Adida <benadida@mozilla.com>
- *     Mike Hanson <mhanson@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,21 +32,46 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var vows = require("vows"),
-  assert = require("assert"),
-  jwt = require("../jwt"),
-  libs = require("../libs/all");
+//
+// basic crypto abstractions: KeyPair, PublicKey, SecretKey, Signature
+// because we may switch in the future
+//
 
-vows.describe('jwt').addBatch({
-    "generate jwt" : {
-      topic: function() {
-        var key = new libs.RSAKey();
-        key.generate(512,"10001");
-        var tok = new jwt.WebToken("RS256",{foo:"bar"});
-        return tok.serialize(key.serializePrivateASN1());
-      },
-      "token is good": function(topic) {
-        assert.equal(topic.toString(), "foo");
-        }
-    }
-  }).export(module);
+var KeyPair = function() {
+  this.keysize = null;
+  this.publicKey = null;
+  this.secretKey = null;
+};
+
+KeyPair.prototype = {
+  // no methods on keypair
+};
+
+KeyPair.generate = function(keysize) {
+  var k = new KeyPair();
+  k.keysize= keysize;
+  return k;
+};
+
+var PublicKey = function() {
+  
+};
+
+PublicKey.prototype = {
+  //
+};
+
+var SecretKey = function() {
+  
+};
+
+SecretKey.prototype = {
+  //
+};
+
+var Signature = function() {
+  
+};
+
+
+exports.KeyPair = KeyPair;

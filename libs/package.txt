@@ -1,3 +1,4 @@
+preliminaries.js
 external/sjcl.js
 external/base64.js
 external/jsbn.js
@@ -11,3 +12,4 @@ external/rsa-sign.js
 external/x509.js
 external/prng4.js
 external/rng.js
+exports.js

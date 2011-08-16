@@ -25,4 +25,144 @@ function _rsapem_readPublicKeyFromPEMString(keyPEM) {
   this.setPublic(n, e);
 }
 
+// Returns an ASN1-encoded RSAPrivateKey (PKCS1) data structure
+function RSAPrivateKeySerializeASN1() {
+  function concatBigInteger(bytes, bigInt) {
+    var bigIntBytes = bigInt.toByteArray();
+    bytes.push(0x02); // INTEGER
+    bytes.push(bigIntBytes.length); // #BYTES
+    //  bytes.push(00); // this appears in some encodings, and I don't understand why.  leading zeros?
+    return bytes.concat(bigIntBytes);
+  }
+  var bytes=[];
+  // sequence
+  bytes.push(0x30);
+  bytes.push(0x82);//XX breaks on 1024 bit keys?
+  bytes.push(0x01);
+  bytes.push(0x00);// replace with actual length (-256)...
+  // version (integer 0)
+  bytes.push(0x02); // INTEGER
+  bytes.push(0x01); // #BYTES
+  bytes.push(0x00); // value
+  // modulus (n)
+  bytes = concatBigInteger(bytes, this.n);
+  
+  // publicExponent (e)
+  bytes = concatBigInteger(bytes, new BigInteger(""+this.e, 10));
+  
+  // privateExponent (d)
+  bytes = concatBigInteger(bytes, this.d);
+
+  // prime1 (p)
+  bytes = concatBigInteger(bytes, this.p);
+
+  // prime2 (q)
+  bytes = concatBigInteger(bytes, this.q);
+
+  // exponent1 (d mod p-1 -> dmp1)
+  bytes = concatBigInteger(bytes, this.dmp1);
+
+  // exponent2 (q mod p-1 -> dmq1)
+  bytes = concatBigInteger(bytes, this.dmq1);
+
+  // coefficient ((inverse of q) mod p -> coeff)
+  bytes = concatBigInteger(bytes, this.coeff);
+
+  var actualLength = bytes.length - 4;
+  var lenBytes = new BigInteger("" + actualLength, 10).toByteArray();
+  bytes[2] = lenBytes[0];
+  bytes[3] = lenBytes[1];
+    
+  var buffer = "";
+  for (var i=0;i<bytes.length;i++) { 
+    buffer += int2char((bytes[i] & 0xf0) >> 4);
+    buffer += int2char(bytes[i] & 0x0f);
+  }
+  buffer = hex2b64(buffer);
+  var newlineBuffer = "";
+  for (var i=0;i<buffer.length;i++) { 
+    if (i>0 && (i % 64) == 0) newlineBuffer += "\n";
+    newlineBuffer += buffer[i];
+  }
+  return "-----BEGIN RSA PRIVATE KEY-----\n" + newlineBuffer + "\n-----END RSA PRIVATE KEY-----\n";
+}
+
+
+// Returns an ASN1-encoded X509 Public Key data structure
+function RSAPublicKeySerializeASN1() {
+  
+  function encodeSequence(contentObjects) {
+    var len = 0;
+    for (var i=0;i<contentObjects.length;i++) {
+      len += contentObjects[i].length;
+    }
+    var out = [];
+    out.push(0x30); // SEQUENCE, constructed
+    if (len < 128) {
+      out.push(len);
+    } else {
+      var lenBytes = new BigInteger("" + len, 10).toByteArray();
+      out.push(0x80 | lenBytes.length);
+      for (var i=0;i<lenBytes.length;i++) out.push(lenBytes[i]);
+    }
+    for (var i=0;i<contentObjects.length;i++) {
+      out = out.concat(contentObjects[i]);
+    }
+    return out;
+  }
+
+  function encodeBigInteger(bigInt) {
+    var bigIntBytes = bigInt.toByteArray();
+    var bytes= [];
+    bytes.push(0x02); // INTEGER
+    bytes.push(bigIntBytes.length); // #BYTES
+    return bytes.concat(bigIntBytes);
+  }
+
+  function encodeBitString(bits) {
+    var bytes=[];
+    bytes.push(0x03); // BIT STRING
+    bytes.push(bits.length+1);  // #Bytes
+    bytes.push(0);// remainder
+    return bytes.concat(bits);
+  }
+
+  // construct exponent-modulus sequence:
+  var neSequence = encodeSequence(
+    [
+      encodeBigInteger(this.n),
+      encodeBigInteger(new BigInteger("" + this.e, 10))
+    ]
+  );
+  var neBitString = encodeBitString(neSequence);
+
+  // construct :rsaEncryption sequence:
+  var rsaEncSequence = encodeSequence(
+    [
+      [0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01],
+      [0x05, 0x00]// NULL
+    ]
+  );
+
+  // construct outer sequence
+  var bytes = encodeSequence([rsaEncSequence, neBitString]);
+  
+  var buffer = "";
+  for (var i=0;i<bytes.length;i++) { 
+    buffer += int2char((bytes[i] & 0xf0) >> 4);
+    buffer += int2char(bytes[i] & 0x0f);
+  }
+  buffer = hex2b64(buffer);
+  var newlineBuffer = "";
+  for (var i=0;i<buffer.length;i++) { 
+    if (i>0 && (i % 64) == 0) newlineBuffer += "\n";
+    newlineBuffer += buffer[i];
+  }
+  return "-----BEGIN PUBLIC KEY-----\n" + newlineBuffer + "\n-----END PUBLIC KEY-----\n";
+}
+
 RSAKey.prototype.readPublicKeyFromPEMString = _rsapem_readPublicKeyFromPEMString;
+
+RSAKey.prototype.serializePrivateASN1 = RSAPrivateKeySerializeASN1;
+RSAKey.prototype.serializePublicASN1 = RSAPublicKeySerializeASN1;
+
