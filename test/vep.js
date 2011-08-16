@@ -36,24 +36,25 @@
  * ***** END LICENSE BLOCK ***** */
 
 var vows = require("vows"),
-  assert = require("assert"),
-  vep = require("../vep");
+assert = require("assert"),
+vep = require("../vep");
 
 var KEYSIZE = 512;
 
-vows.describe('vep').addBatch({
+vows.describe('vep').addBatch(
+  {
     "generate keypair" : {
       topic: function() {
         return vep.Keypair.generate(KEYSIZE);
       },
-        "is a keypair": function(topic) {
-          assert.instanceOf(topic, vep.Keypair);
-        },          
-          "should have right number of bits": function(topic) {
-            assert.equal(topic.keysize, KEYSIZE);
-          },
-            "should have sign method": function(topic) {
-              assert.notEqual(topic.sign, null);
-            }
+      "is a keypair": function(topic) {
+        assert.instanceOf(topic, vep.Keypair);
+      },          
+      "should have right number of bits": function(topic) {
+        assert.equal(topic.keysize, KEYSIZE);
+      },
+      "should have sign method": function(topic) {
+        assert.notEqual(topic.sign, null);
+      }
     }
   }).export(module);

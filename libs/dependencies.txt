@@ -1,0 +1,12 @@
+https://raw.github.com/bitwiseshiftleft/sjcl/57a3d41335d6f668da8a1db1196acca390acbb1f/sjcl.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/base64.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/jsbn.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/jsbn2.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/rsa.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/rsa2.js
+http://www9.atwiki.jp/kurushima/pub/jsrsa/asn1hex.js
+http://www9.atwiki.jp/kurushima/pub/jsrsa/rsa-pem.js
+http://www9.atwiki.jp/kurushima/pub/jsrsa/rsa-sign.js
+http://www9.atwiki.jp/kurushima/pub/jsrsa/x509.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/prng4.js
+http://www-cs-students.stanford.edu/~tjw/jsbn/rng.js
