@@ -288,4 +288,5 @@ var JWT = (function() {
   };
   })();
 
-exports.JWT = JWT;
+if (typeof(exports) != "undefined")
+  exports.JWT = JWT;

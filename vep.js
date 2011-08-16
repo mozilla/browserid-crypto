@@ -33,19 +33,3 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var Keypair = function() {
-  this.keysize= null;
-};
-
-Keypair.prototype = {
-  sign: function(json_object) {
-  },
-};
-
-Keypair.generate = function(keysize) {
-  var k = new Keypair();
-  k.keysize= keysize;
-  return k;
-};
-
-exports.Keypair = Keypair;
