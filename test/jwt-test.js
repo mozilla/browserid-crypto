@@ -36,25 +36,28 @@
  * ***** END LICENSE BLOCK ***** */
 
 var vows = require("vows"),
-assert = require("assert"),
-vep = require("../vep");
+    assert = require("assert"),
+    jwt = require("../jwt"),
+    libs = require("../libs/all"),
+    sign = require("../sign");
 
-var KEYSIZE = 512;
-
-vows.describe('vep').addBatch(
-  {
-    "generate keypair" : {
-      topic: function() {
-        return vep.Keypair.generate(KEYSIZE);
-      },
-      "is a keypair": function(topic) {
-        assert.instanceOf(topic, vep.Keypair);
-      },          
-      "should have right number of bits": function(topic) {
-        assert.equal(topic.keysize, KEYSIZE);
-      },
-      "should have sign method": function(topic) {
-        assert.notEqual(topic.sign, null);
-      }
+vows.describe('jwt').addBatch({
+  "generate jwt" : {
+    topic: function() {
+      // generate a key
+      var key = sign.KeyPair.generate(512);
+      var tok = new jwt.WebToken("RS256",{foo:"bar"});
+      return {
+        key: key,
+        token: tok.sign(key.secretKey)
+      };
+    },
+    "token is approximately proper JWT format": function(topic) {
+      assert.length(topic.token.split('.'), 3);
+    },
+    "token is properly signed": function(topic) {
+      var wt = jwt.WebToken.parse(topic.token);
+      assert.isTrue(wt.verify(topic.key.publicKey));
     }
-  }).export(module);
+  }
+}).export(module);

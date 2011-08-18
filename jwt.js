@@ -35,6 +35,12 @@
 
 var libs = require("./libs/all");
 
+// patch the window object;
+if (typeof(window) === "undefined")
+  var window = libs.window;
+
+var int2char = libs.int2char;
+
 // convert a base64url string to hex
 var b64urlmap="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 function b64urltohex(s) {
@@ -79,7 +85,7 @@ function hex2b64urlencode(arg) {
 }
 
 function base64urlencode(arg) {
-  var s = new Buffer(arg).toString('base64');
+  var s = window.btoa(arg);
   s = s.split('=')[0]; // Remove any trailing '='s
   s = s.replace(/\+/g, '-'); // 62nd char of encoding
   s = s.replace(/\//g, '_'); // 63rd char of encoding
@@ -118,70 +124,37 @@ function InputException(message) {
   this.toString = function() { return "Malformed input: "+this.message; };
 }
 
-function HMACAlgorithm(hash, key)
-{
-  if (hash == "sha256") {
-    this.hash = sjcl.hash.sha256;
-  } else {
-    throw new NoSuchAlgorithmException("HMAC does not support hash " + hash);
-  }
-  this.key = sjcl.codec.utf8String.toBits(key);
-}
+// function HMACAlgorithm(hash, key)
+// {
+//   if (hash == "sha256") {
+//     this.hash = sjcl.hash.sha256;
+//   } else {
+//     throw new NoSuchAlgorithmException("HMAC does not support hash " + hash);
+//   }
+//   this.key = sjcl.codec.utf8String.toBits(key);
+// }
 
-HMACAlgorithm.prototype = {
-  update: function _update(data) {
-    this.data = data;
-  },
+// HMACAlgorithm.prototype = {
+//   update: function _update(data) {
+//     this.data = data;
+//   },
   
-  finalize: function _finalize() {
-  },
+//   finalize: function _finalize() {
+//   },
   
-  sign: function _sign() {
-    var hmac = new sjcl.misc.hmac(this.key, this.hash);
-    var result = hmac.encrypt(this.data);
-    return base64urlencode(window.atob(sjcl.codec.base64.fromBits(result)));
-  },
+//   sign: function _sign() {
+//     var hmac = new sjcl.misc.hmac(this.key, this.hash);
+//     var result = hmac.encrypt(this.data);
+//     return base64urlencode(window.atob(sjcl.codec.base64.fromBits(result)));
+//   },
   
-  verify: function _verify(sig) {
-    var hmac = new sjcl.misc.hmac(this.key, this.hash);
-    var result = hmac.encrypt(this.data);
+//   verify: function _verify(sig) {
+//     var hmac = new sjcl.misc.hmac(this.key, this.hash);
+//     var result = hmac.encrypt(this.data);
     
-    return base64urlencode(window.atob(sjcl.codec.base64.fromBits(result))) == sig; 
-  }
-}
-
-function RSASHAAlgorithm(hash, keyPEM) {
-  if (hash == "sha1") {
-    this.hash = "sha1";
-  } else if (hash == "sha256") {
-    this.hash = "sha256";
-  } else {
-    throw new NoSuchAlgorithmException("JWT algorithm: " + hash);  
-  }
-
-  this.keyPEM = keyPEM;
-}
-
-RSASHAAlgorithm.prototype = {
-  update: function _update(data) {
-    this.data = data;
-  },
-
-  finalize: function _finalize() {
-  },
-  
-  sign: function _sign() {
-    var rsa = new libs.RSAKey();
-    rsa.readPrivateKeyFromPEMString(this.keyPEM);
-    var hSig = rsa.signString(this.data, this.hash);
-    return hex2b64urlencode(hSig);
-  },
-
-  verify: function _verify(sig) {
-    var result = this.keyPEM.verifyString(this.data, b64urltohex(sig));
-    return result;
-  }
-};
+//     return base64urlencode(window.atob(sjcl.codec.base64.fromBits(result))) == sig; 
+//   }
+// }
 
 function jsonObj(strOrObject) {
   if (typeof strOrObject == "string") {
@@ -236,7 +209,7 @@ WebToken.parse = function _parse(input) {
 };
 
 WebToken.prototype = {
-  serialize: function _serialize(key) {
+  sign: function _sign(key) {
     var header = {"alg": this.algorithm};
     var algBytes = base64urlencode(JSON.stringify(header));
     var jsonBytes = base64urlencode(JSON.stringify(this.assertion));
@@ -244,10 +217,11 @@ WebToken.prototype = {
     var stringToSign = algBytes + "." + jsonBytes;
 
     // sign
-    var algorithm = constructAlgorithm(this.algorithm, key);
-    algorithm.update(stringToSign);
-    var digestValue = algorithm.finalize();
-    var signatureValue = algorithm.sign();
+    // var algorithm = constructAlgorithm(this.algorithm, key);
+    // algorithm.update(stringToSign);
+    // var digestValue = algorithm.finalize();
+    // var signatureValue = algorithm.sign();
+    var signatureValue = key.sign(stringToSign);
 
     return algBytes + "." + jsonBytes + "." + signatureValue;
   },

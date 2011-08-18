@@ -37,10 +37,16 @@
 // because we may switch in the future
 //
 
+var libs = require("./libs/all");
+var rsasha = require("./rsasha");
+
 var KeyPair = function() {
   this.keysize = null;
   this.publicKey = null;
   this.secretKey = null;
+
+  // FIXME might need to be more dynamic
+  this.algorithm = "RS256";
 };
 
 KeyPair.prototype = {
@@ -50,28 +56,35 @@ KeyPair.prototype = {
 KeyPair.generate = function(keysize) {
   var k = new KeyPair();
   k.keysize= keysize;
+
+  // do the RSA stuff (for now)
+  var rsa = new libs.RSAKey();
+  rsa.generate(keysize, "10001");
+
+  k.publicKey = new PublicKey(rsa);
+  k.secretKey = new SecretKey(rsa);
+  
   return k;
 };
 
-var PublicKey = function() {
-  
+var PublicKey = function(rsa) {
+  this.rsa = rsa;
 };
 
 PublicKey.prototype = {
-  //
+  verify: function(message, signature) {
+    return false;
+  }
 };
 
-var SecretKey = function() {
-  
+var SecretKey = function(rsa) {
+  this.rsa = rsa;
 };
 
 SecretKey.prototype = {
-  //
+  sign: function(message) {
+    return "signature on - " + message;
+    }
 };
-
-var Signature = function() {
-  
-};
-
 
 exports.KeyPair = KeyPair;

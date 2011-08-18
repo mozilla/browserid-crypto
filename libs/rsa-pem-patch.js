@@ -1,5 +1,16 @@
 // patches to rsa-pem.js to do public key operations
 
+function _rsapubpem_pemToBase64(sPEMPublicKey) {
+  if (sPEMPublicKey.indexOf("-----BEGIN PUBLIC KEY-----") != 0) {
+    throw "Malformed input to readPublicKeyFromPEMString: input does not start with '-----BEGIN PUBLIC KEY-----'";
+  }
+  var s = sPEMPublicKey;
+  s = s.replace("-----BEGIN PUBLIC KEY-----", "");
+  s = s.replace("-----END PUBLIC KEY-----", "");
+  s = s.replace(/[ \n]+/g, "");
+  return s;
+}
+
 function _rsapem_readPublicKeyFromPEMString(keyPEM) {
   var keyB64 = _rsapubpem_pemToBase64(keyPEM);
   var keyHex = b64tohex(keyB64) // depends base64.js
