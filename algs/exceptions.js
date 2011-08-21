@@ -32,69 +32,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var libs = require("../libs/all"),
-    exceptions = require("./exceptions");
+function KeySizeNotSupportedException(message) {
+  this.message = message;
+  this.toString = function() { return "Keysize not supported exception: "+this.message; };
+}
 
-// supported keysizes
-var KEYSIZES = {
-  256: {
-    //rsaKeySize: 2048,
-    rsaKeySize: 512,
-    hashAlg: "sha256"
-  }
-};
-
-var KeyPair = function() {
-  this.algorithm = "RS";  
-  this.keysize = null;
-  this.publicKey = null;
-  this.secretKey = null;
-};
-
-KeyPair.prototype = {
-  getJWTAlgorithm: function() {
-    return this.algorithm + this.keysize.toString();
-  }
-};
-
-// FIXME: keysize should be the keysize that determines the
-// whole JWT setup, e.g. 256 means RSA2048 with SHA256.
-KeyPair.generate = function(keysize) {
-  var k = new KeyPair();
-
-  if (!(keysize in KEYSIZES))
-    throw new exceptions.KeySizeNotSupportedException(keysize.toString());
-  
-  k.keysize= keysize;
-
-  // do the RSA stuff (for now)
-  var rsa = new libs.RSAKey();
-  rsa.generate(KEYSIZES[keysize].rsaKeySize, "10001");
-
-  k.publicKey = new PublicKey(rsa);
-  k.secretKey = new SecretKey(rsa);
-
-  return k;
-};
-
-var PublicKey = function(rsa) {
-  this.rsa = rsa;
-};
-
-PublicKey.prototype = {
-  verify: function(message, signature) {
-    return false;
-  }
-};
-
-var SecretKey = function(rsa) {
-  this.rsa = rsa;
-};
-
-SecretKey.prototype = {
-  sign: function(message) {
-    return "FAKESIGNATURE";
-  }
-};
-
-exports.KeyPair = KeyPair;
+exports.KeySizeNotSupportedException = KeySizeNotSupportedException;
