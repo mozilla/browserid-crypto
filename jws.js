@@ -47,9 +47,9 @@ function NotImplementedException(message) {
   this.message = message;
   this.toString = function() { return "Not implemented: "+this.message; };
 }
-function MalformedWebTokenException(message) {
+function MalformedJWSException(message) {
   this.message = message;
-  this.toString = function() { return "Malformed JSON web token: "+this.message; };
+  this.toString = function() { return "Malformed JSON web signature: "+this.message; };
 }
 function InputException(message) {
   this.message = message;
@@ -57,7 +57,7 @@ function InputException(message) {
 }
 
 //
-// signature functionality, specific to JWT
+// signature functionality, specific to JWS
 //
 
 var algs = {
@@ -86,31 +86,30 @@ exports.getByAlg = getByAlg;
 // JWT tokens
 //
 
-function WebToken(algorithm, assertion) {
+function JWS(algorithm, payload) {
   // algorithm is something like "RS256"
-  // assertion is a structured clone of the fields that are asserted
-  // FIXME: validate that assertion is one-layer deep only
+  // payload is a string
   this.algorithm = algorithm;
-  this.assertion = assertion;
+  this.payload = payload;
 };
 
-WebToken.parse = function _parse(input) {
+JWS.parse = function _parse(input) {
   var parts = input.split(".");
   if (parts.length != 3) {
-    throw new MalformedWebTokenException("Must have three parts");
+    throw new MalformedJWSException("Must have three parts");
   }
-  var token = new WebToken();
-  token.headerSegment = parts[0];
-  token.payloadSegment = parts[1];
-  token.cryptoSegment = parts[2];  
-  return token;
+  var jws = new JWS();
+  jws.headerSegment = parts[0];
+  jws.payloadSegment = parts[1];
+  jws.cryptoSegment = parts[2];  
+  return jws;
 };
 
-WebToken.prototype = {
+JWS.prototype = {
   sign: function _sign(key) {
     var header = {"alg": this.algorithm};
     var algBytes = utils.base64urlencode(JSON.stringify(header));
-    var jsonBytes = utils.base64urlencode(JSON.stringify(this.assertion));
+    var jsonBytes = utils.base64urlencode(this.payload);
     
     var stringToSign = algBytes + "." + jsonBytes;
 
@@ -126,11 +125,22 @@ WebToken.prototype = {
     // FIXME: we should validate that the header contains only proper fields
     var header = JSON.parse(utils.base64urldecode(this.headerSegment));
 
+    // check that algorithm matches
+    if (key.getJWSAlgorithm() != header.alg) {
+      return false;
+    }
+    
     // decode the signature, and verify it
-    return key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
+    var result = key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
+
+    // if result is true, then set some stuff up
+    this.payload = utils.base64urldecode(this.payloadSegment);
+    this.algorithm = header.alg;
+    
+    return result;
   }
 };
   
-exports.WebToken = WebToken;
+exports.JWS = JWS;
 exports.base64urlencode = utils.base64urlencode;
 exports.base64urldecode = utils.base64urldecode;

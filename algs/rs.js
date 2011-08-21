@@ -59,6 +59,10 @@ function _getKeySizeFromRSAKeySize(bits) {
   return null;
 }
 
+function _getJWSAlgorithm() {
+  return this.algorithm + this.keysize.toString();  
+}
+
 var KeyPair = function() {
   this.algorithm = "RS";  
   this.keysize = null;
@@ -67,13 +71,11 @@ var KeyPair = function() {
 };
 
 KeyPair.prototype = {
-  getJWTAlgorithm: function() {
-    return this.algorithm + this.keysize.toString();
-  }
+  getJWSAlgorithm: _getJWSAlgorithm
 };
 
 // FIXME: keysize should be the keysize that determines the
-// whole JWT setup, e.g. 256 means RSA2048 with SHA256.
+// whole JWS setup, e.g. 256 means RSA2048 with SHA256.
 KeyPair.generate = function(keysize) {
   var k = new KeyPair();
 
@@ -96,9 +98,12 @@ KeyPair.generate = function(keysize) {
 var PublicKey = function(rsa, keysize) {
   this.rsa = rsa;
   this.keysize = keysize;
+  this.algorithm = "RS";
 };
 
 PublicKey.prototype = {
+  getJWSAlgorithm: _getJWSAlgorithm,
+  
   verify: function(message, signature) {
     return this.rsa.verifyString(message, signature);
   },
@@ -119,9 +124,11 @@ PublicKey.deserialize = function(str) {
 var SecretKey = function(rsa, keysize) {
   this.rsa = rsa;
   this.keysize = keysize;
+  this.algorithm = "RS";
 };
 
 SecretKey.prototype = {
+  getJWSAlgorithm: _getJWSAlgorithm,
   sign: function(message) {
     return this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
   },

@@ -37,7 +37,7 @@
 
 var vows = require("vows"),
     assert = require("assert"),
-    jwt = require("../jwt");
+    jws = require("../jws");
 
 // signing
 var ALG = "RS";
@@ -47,10 +47,10 @@ vows.describe('sign').addBatch(
   {
     "generate keypair" : {
       topic: function() {
-        return jwt.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+        return jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
       },
       "is a keypair": function(keypair) {
-        assert.instanceOf(keypair, jwt.getByAlg(ALG).KeyPair);
+        assert.instanceOf(keypair, jws.getByAlg(ALG).KeyPair);
       },
       "should have right algorithm": function(keypair) {
         assert.equal(keypair.algorithm, ALG);
@@ -85,7 +85,7 @@ vows.describe('sign').addBatch(
         "to sign with serialization": {
           topic: function(message, keypair) {
             var serialized_sk = keypair.secretKey.serialize();
-            var reserialized_sk = jwt.getByAlg(ALG).SecretKey.deserialize(serialized_sk);
+            var reserialized_sk = jws.getByAlg(ALG).SecretKey.deserialize(serialized_sk);
             return reserialized_sk.sign(message);
           },
           "signature looks okay": function(signature) {
@@ -94,7 +94,7 @@ vows.describe('sign').addBatch(
           "signature": {
             topic: function(signature, message, keypair) {
               var serialized_pk = keypair.publicKey.serialize();
-              var reserialized_pk = jwt.getByAlg(ALG).PublicKey.deserialize(serialized_pk);
+              var reserialized_pk = jws.getByAlg(ALG).PublicKey.deserialize(serialized_pk);
               return reserialized_pk.verify(message, signature);
             },
             "validates": function(result) {
@@ -106,23 +106,23 @@ vows.describe('sign').addBatch(
     }
   }).export(module);
 
-// JWT
-vows.describe('jwt').addBatch({
-  "generate jwt" : {
+// JWS
+vows.describe('jws').addBatch({
+  "generate jws" : {
     topic: function() {
       // generate a key
-      var key = jwt.getByAlg(ALG).KeyPair.generate(KEYSIZE);
-      var tok = new jwt.WebToken(key.getJWTAlgorithm(),{foo:"bar"});
+      var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+      var tok = new jws.JWS(key.getJWSAlgorithm(),"stringtosign");
       return {
         key: key,
         token: tok.sign(key.secretKey)
       };
     },
-    "token is approximately proper JWT format": function(topic) {
+    "token is approximately proper JWS format": function(topic) {
       assert.length(topic.token.split('.'), 3);
     },
     "token is properly signed": function(topic) {
-      var wt = jwt.WebToken.parse(topic.token);
+      var wt = jws.JWS.parse(topic.token);
       assert.isTrue(wt.verify(topic.key.publicKey));        
     }
   }
