@@ -115,7 +115,8 @@ WebToken.prototype = {
     var stringToSign = algBytes + "." + jsonBytes;
 
     // sign and encode
-    var signatureValue = utils.hex2b64urlencode(key.sign(stringToSign));
+    var rawSignature = key.sign(stringToSign);
+    var signatureValue = utils.hex2b64urlencode(rawSignature);
 
     return algBytes + "." + jsonBytes + "." + signatureValue;
   },

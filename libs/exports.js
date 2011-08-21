@@ -7,6 +7,7 @@
 exports.RSAKey = RSAKey;
 exports.sjcl = sjcl;
 exports.hex2b64 = hex2b64;
+exports.b64tohex = b64tohex;
 exports.int2char = int2char;
 
 // this is so we can export the faked window and navigator

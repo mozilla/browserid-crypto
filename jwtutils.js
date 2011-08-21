@@ -75,10 +75,20 @@ function b64urltohex(s) {
   }
   if(k == 1)
     ret += int2char(slop << 2);
-  return ret;
+
+  // initial 0? only one for now
+  if (ret[0] == '0')
+    return ret.substring(1);
+  else
+    return ret;
 }
 
 function hex2b64urlencode(arg) {
+  // consider the case where the hex is not a
+  // proper number of octets.
+  if ((arg.length % 2) != 0)
+    arg = "0" + arg;
+  
   return libs.hex2b64(arg).split('=')[0]
     .replace(/\+/g, '-')  // 62nd char of encoding
     .replace(/\//g, '_'); // 63rd char of encoding

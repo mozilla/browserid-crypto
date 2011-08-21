@@ -123,7 +123,6 @@ vows.describe('jwt').addBatch({
     },
     "token is properly signed": function(topic) {
       var wt = jwt.WebToken.parse(topic.token);
-      console.log("\n"+topic.token+"\n");
       assert.isTrue(wt.verify(topic.key.publicKey));        
     }
   }
