@@ -142,5 +142,3 @@ JWS.prototype = {
 };
   
 exports.JWS = JWS;
-exports.base64urlencode = utils.base64urlencode;
-exports.base64urldecode = utils.base64urldecode;
