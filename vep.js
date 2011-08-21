@@ -35,8 +35,8 @@ var libs = require("./libs/all"),
     sign = require("./sign");
 
 params = {
-  jwtalg: "RS256",
-  keysize: 512,
+  algorithm: "RS",
+  keysize: 256,
 };
 
 exports.params = params;

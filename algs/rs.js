@@ -11,15 +11,12 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mozilla BrowserID.
- *
- * The Initial Developer of the Original Code is Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2011
- * the Initial Developer. All Rights Reserved.
+ * The Original Code is trusted.js; substantial portions derived
+ * from XAuth code originally produced by Meebo, Inc., and provided
+ * under the Apache License, Version 2.0; see http://github.com/xauth/xauth
  *
  * Contributor(s):
  *     Ben Adida <benadida@mozilla.com>
- *     Mike Hanson <mhanson@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,29 +32,55 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var vows = require("vows"),
-    assert = require("assert"),
-    vep = require("../vep"),
-    jwt = require("../jwt"),
-    sign = require("../sign");
+var libs = require("../libs/all");
 
-vows.describe('jwt').addBatch({
-  "generate jwt" : {
-    topic: function() {
-      // generate a key
-      var key = sign.getByAlg(vep.params.algorithm).KeyPair.generate(vep.params.keysize);
-      var tok = new jwt.WebToken(key.getJWTAlgorithm(),{foo:"bar"});
-      return {
-        key: key,
-        token: tok.sign(key.secretKey)
-      };
-    },
-    "token is approximately proper JWT format": function(topic) {
-      assert.length(topic.token.split('.'), 3);
-    },
-    "token is properly signed": function(topic) {
-      var wt = jwt.WebToken.parse(topic.token);
-      assert.isTrue(wt.verify(topic.key.publicKey));
-    }
+var KeyPair = function() {
+  this.algorithm = "RS";  
+  this.keysize = null;
+  this.publicKey = null;
+  this.secretKey = null;
+};
+
+KeyPair.prototype = {
+  getJWTAlgorithm: function() {
+    return this.algorithm + this.keysize.toString();
   }
-}).export(module);
+};
+
+// FIXME: keysize should be the keysize that determines the
+// whole JWT setup, e.g. 256 means RSA2048 with SHA256.
+KeyPair.generate = function(keysize) {
+  var k = new KeyPair();
+  k.keysize= keysize;
+
+  // do the RSA stuff (for now)
+  var rsa = new libs.RSAKey();
+  rsa.generate(keysize, "10001");
+
+  k.publicKey = new PublicKey(rsa);
+  k.secretKey = new SecretKey(rsa);
+
+  return k;
+};
+
+var PublicKey = function(rsa) {
+  this.rsa = rsa;
+};
+
+PublicKey.prototype = {
+  verify: function(message, signature) {
+    return false;
+  }
+};
+
+var SecretKey = function(rsa) {
+  this.rsa = rsa;
+};
+
+SecretKey.prototype = {
+  sign: function(message) {
+    return "FAKESIGNATURE";
+  }
+};
+
+exports.KeyPair = KeyPair;

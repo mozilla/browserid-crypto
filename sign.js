@@ -32,59 +32,29 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-//
-// basic crypto abstractions: KeyPair, PublicKey, SecretKey, Signature
-// because we may switch in the future
-//
+// signature functionality, pulls in the right algorithms
 
-var libs = require("./libs/all");
-var rsasha = require("./rsasha");
+var libs = require("./libs/all"),
+    rs = require("./algs/rs");
 
-var KeyPair = function() {
-  this.keysize = null;
-  this.publicKey = null;
-  this.secretKey = null;
-
-  // FIXME might need to be more dynamic
-  this.algorithm = "RS256";
+var algs = {
+  "RS" : rs
 };
 
-KeyPair.prototype = {
-  // no methods on keypair
-};
+function NotImplementedException(message) {
+  this.message = message;
+  this.toString = function() { return "Not implemented: "+this.message; };
+}
 
-KeyPair.generate = function(keysize) {
-  var k = new KeyPair();
-  k.keysize= keysize;
-
-  // do the RSA stuff (for now)
-  var rsa = new libs.RSAKey();
-  rsa.generate(keysize, "10001");
-
-  k.publicKey = new PublicKey(rsa);
-  k.secretKey = new SecretKey(rsa);
+function getByAlg(alg) {
+  if (!alg)
+    throw new NotImplementedException("no alg provided");
   
-  return k;
-};
+  var module = algs[alg];
+  if (!module)
+    throw new NotImplementedException(alg);
 
-var PublicKey = function(rsa) {
-  this.rsa = rsa;
-};
+  return module;
+}
 
-PublicKey.prototype = {
-  verify: function(message, signature) {
-    return false;
-  }
-};
-
-var SecretKey = function(rsa) {
-  this.rsa = rsa;
-};
-
-SecretKey.prototype = {
-  sign: function(message) {
-    return "FAKESIGNATURE";
-  }
-};
-
-exports.KeyPair = KeyPair;
+exports.getByAlg = getByAlg;

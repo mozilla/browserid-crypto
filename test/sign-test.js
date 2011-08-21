@@ -39,17 +39,21 @@ var vows = require("vows"),
     assert = require("assert"),
     sign = require("../sign");
 
-var KEYSIZE = 512;
+var ALG = "RS";
+var KEYSIZE = 256;
 
 vows.describe('sign').addBatch(
   {
     "generate keypair" : {
       topic: function() {
-        return sign.KeyPair.generate(KEYSIZE);
+        return sign.getByAlg(ALG).KeyPair.generate(KEYSIZE);
       },
       "is a keypair": function(keypair) {
-        assert.instanceOf(keypair, sign.KeyPair);
-      },          
+        assert.instanceOf(keypair, sign.getByAlg(ALG).KeyPair);
+      },
+      "should have right algorithm": function(keypair) {
+        assert.equal(keypair.algorithm, ALG);
+      },
       "should have right number of bits": function(keypair) {
         assert.equal(keypair.keysize, KEYSIZE);
       },
