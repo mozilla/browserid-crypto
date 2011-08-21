@@ -37,15 +37,61 @@
 
 var vows = require("vows"),
     assert = require("assert"),
-    vep = require("../vep"),
-    jwt = require("../jwt"),
-    sign = require("../sign");
+    jwt = require("../jwt");
 
+// signing
+var ALG = "RS";
+var KEYSIZE = 256;
+
+vows.describe('sign').addBatch(
+  {
+    "generate keypair" : {
+      topic: function() {
+        return jwt.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+      },
+      "is a keypair": function(keypair) {
+        assert.instanceOf(keypair, jwt.getByAlg(ALG).KeyPair);
+      },
+      "should have right algorithm": function(keypair) {
+        assert.equal(keypair.algorithm, ALG);
+      },
+      "should have right number of bits": function(keypair) {
+        assert.equal(keypair.keysize, KEYSIZE);
+      },
+      "should have secret key": function(keypair) {
+        assert.notEqual(keypair.secretKey, null);
+      },
+      "with a message": {
+        topic: function(keypair) {
+          var message_to_sign= "testing!";
+          return message_to_sign;
+        },
+        "to sign": {
+          topic: function(message, keypair) {
+            return keypair.secretKey.sign(message);
+          },
+          "signature looks okay": function(signature) {
+            assert.notEqual(signature, null);
+          },
+          "signature": {
+            topic: function(signature, message, keypair) {
+              return keypair.publicKey.verify(message, signature);
+            },
+            "validates": function(result) {
+              assert.isTrue(result);
+            }
+          }
+        }
+      }
+    }
+  }).export(module);
+
+// JWT
 vows.describe('jwt').addBatch({
   "generate jwt" : {
     topic: function() {
       // generate a key
-      var key = sign.getByAlg(vep.params.algorithm).KeyPair.generate(vep.params.keysize);
+      var key = jwt.getByAlg(ALG).KeyPair.generate(KEYSIZE);
       var tok = new jwt.WebToken(key.getJWTAlgorithm(),{foo:"bar"});
       return {
         key: key,
