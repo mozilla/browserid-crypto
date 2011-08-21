@@ -37,9 +37,13 @@ var libs = require("../libs/all"),
 
 // supported keysizes
 var KEYSIZES = {
-  256: {
-    //rsaKeySize: 2048,
+  // for testing only
+  64: {
     rsaKeySize: 512,
+    hashAlg: "sha256"
+  },
+  256: {
+    rsaKeySize: 2048,
     hashAlg: "sha256"
   }
 };
@@ -67,33 +71,36 @@ KeyPair.generate = function(keysize) {
   
   k.keysize= keysize;
 
-  // do the RSA stuff (for now)
+  // generate RSA keypair
   var rsa = new libs.RSAKey();
   rsa.generate(KEYSIZES[keysize].rsaKeySize, "10001");
 
-  k.publicKey = new PublicKey(rsa);
-  k.secretKey = new SecretKey(rsa);
+  // FIXME: should extract only public info for the public key
+  k.publicKey = new PublicKey(rsa, keysize);
+  k.secretKey = new SecretKey(rsa, keysize);
 
   return k;
 };
 
-var PublicKey = function(rsa) {
+var PublicKey = function(rsa, keysize) {
   this.rsa = rsa;
+  this.keysize = keysize;
 };
 
 PublicKey.prototype = {
   verify: function(message, signature) {
-    return false;
+    return this.rsa.verifyString(message, signature);
   }
 };
 
-var SecretKey = function(rsa) {
+var SecretKey = function(rsa, keysize) {
   this.rsa = rsa;
+  this.keysize = keysize;
 };
 
 SecretKey.prototype = {
   sign: function(message) {
-    return "FAKESIGNATURE";
+    return this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
   }
 };
 

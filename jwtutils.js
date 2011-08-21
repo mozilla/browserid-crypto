@@ -107,6 +107,7 @@ function base64urldecode(arg) {
   return window.atob(s); // Standard base64 decoder
 }
 
+exports.b64urltohex = b64urltohex;
 exports.hex2b64urlencode = hex2b64urlencode;
 exports.base64urldecode = base64urldecode;
 exports.base64urlencode = base64urlencode;

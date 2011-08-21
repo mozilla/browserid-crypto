@@ -114,12 +114,8 @@ WebToken.prototype = {
     
     var stringToSign = algBytes + "." + jsonBytes;
 
-    // sign
-    // var algorithm = constructAlgorithm(this.algorithm, key);
-    // algorithm.update(stringToSign);
-    // var digestValue = algorithm.finalize();
-    // var signatureValue = algorithm.sign();
-    var signatureValue = key.sign(stringToSign);
+    // sign and encode
+    var signatureValue = utils.hex2b64urlencode(key.sign(stringToSign));
 
     return algBytes + "." + jsonBytes + "." + signatureValue;
   },
@@ -129,12 +125,8 @@ WebToken.prototype = {
     // FIXME: we should validate that the header contains only proper fields
     var header = JSON.parse(utils.base64urldecode(this.headerSegment));
 
-    // this.algorithm = header.alg;
-    // var algorithm = constructAlgorithm(this.algorithm, key);
-    // algorithm.update(this.headerSegment + "." + this.payloadSegment);
-    // algorithm.finalize();
-    
-    return key.verify(this.headerSegment + "." + this.payloadSegment, this.cryptoSegment);
+    // decode the signature, and verify it
+    return key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
   }
 };
   
