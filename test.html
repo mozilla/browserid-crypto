@@ -1,0 +1,11 @@
+<head>
+  <title>test VEP from Browser</title>
+  <script type="text/javascript" src="vepbundle.js"></script>
+  <script type="text/javascript">
+    var jwt = require("./jwt");
+    var keypair = jwt.getByAlg("RS").KeyPair.generate(64);
+    alert(keypair.publicKey.serialize());
+  </script>
+</head>
+<body>
+</body>

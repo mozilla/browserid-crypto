@@ -31,8 +31,7 @@
 
 // VEP parameters
 
-var libs = require("./libs/all"),
-    sign = require("./sign");
+var jwt = require("./jwt");
 
 params = {
   algorithm: "RS",
