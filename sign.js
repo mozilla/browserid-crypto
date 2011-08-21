@@ -83,8 +83,8 @@ var SecretKey = function(rsa) {
 
 SecretKey.prototype = {
   sign: function(message) {
-    return "signature on - " + message;
-    }
+    return "FAKESIGNATURE";
+  }
 };
 
 exports.KeyPair = KeyPair;

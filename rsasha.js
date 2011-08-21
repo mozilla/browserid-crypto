@@ -33,6 +33,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var RSASHA = (function() {
+  return {
+    sign: function _sign(rsakey, message) {
+      // FIXME
+      var hash = null;
+      var hSig = rsakey.signString(message, hash);
+      return hSig;
+    },
+    verify: function _verify(rsakey, message, signature) {
+      // FIXME
+      var hash = null;
+      return rsakey.verifyString(hash, signature);
+      return result;
+    }
+  };
+})();
+
 function RSASHAAlgorithm(hash, keyPEM) {
   if (hash == "sha1") {
     this.hash = "sha1";

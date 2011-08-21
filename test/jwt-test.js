@@ -37,16 +37,16 @@
 
 var vows = require("vows"),
     assert = require("assert"),
+    vep = require("../vep"),
     jwt = require("../jwt"),
-    libs = require("../libs/all"),
     sign = require("../sign");
 
 vows.describe('jwt').addBatch({
   "generate jwt" : {
     topic: function() {
       // generate a key
-      var key = sign.KeyPair.generate(512);
-      var tok = new jwt.WebToken("RS256",{foo:"bar"});
+      var key = sign.KeyPair.generate(vep.params.keysize);
+      var tok = new jwt.WebToken(vep.params.jwtalg,{foo:"bar"});
       return {
         key: key,
         token: tok.sign(key.secretKey)

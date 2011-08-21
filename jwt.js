@@ -230,11 +230,13 @@ WebToken.prototype = {
     // we verify based on the actual string
     // FIXME: we should validate that the header contains only proper fields
     var header = JSON.parse(base64urldecode(this.headerSegment));
-    this.algorithm = header.alg;
-    var algorithm = constructAlgorithm(this.algorithm, key);
-    algorithm.update(this.headerSegment + "." + this.payloadSegment);
-    algorithm.finalize();
-    return algorithm.verify(this.cryptoSegment);
+
+    // this.algorithm = header.alg;
+    // var algorithm = constructAlgorithm(this.algorithm, key);
+    // algorithm.update(this.headerSegment + "." + this.payloadSegment);
+    // algorithm.finalize();
+    
+    return key.verify(this.headerSegment + "." + this.payloadSegment, this.cryptoSegment);
   }
 };
   

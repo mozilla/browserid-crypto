@@ -11,10 +11,6 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is trusted.js; substantial portions derived
- * from XAuth code originally produced by Meebo, Inc., and provided
- * under the Apache License, Version 2.0; see http://github.com/xauth/xauth
- *
  * Contributor(s):
  *     Ben Adida <benadida@mozilla.com>
  *     Michael Hanson <mhanson@mozilla.com>
@@ -33,3 +29,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// VEP parameters
+
+var libs = require("./libs/all"),
+    sign = require("./sign");
+
+params = {
+  jwtalg: "RS256",
+  keysize: 512,
+};
+
+exports.params = params;
