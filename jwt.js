@@ -34,7 +34,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var libs = require("./libs/all"),
-    utils = require("./jwtutils");
+    utils = require("./utils");
 
 // algorithms
 var rs = require("./algs/rs");

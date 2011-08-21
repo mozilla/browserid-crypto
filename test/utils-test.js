@@ -36,7 +36,7 @@
  * ***** END LICENSE BLOCK ***** */
 var vows = require("vows"),
     assert = require("assert"),
-    utils = require("../jwtutils");
+    utils = require("../utils");
 
 var VALUES_TO_TEST = [
   "ea63db6501ecd889e999ce1b8bcd7102b3ed741be91cb036423066f99ab0063fd42e7c242717674d931320f9a4bd5e98a969d44c0e3bd2f6aad005e88108ce5"
