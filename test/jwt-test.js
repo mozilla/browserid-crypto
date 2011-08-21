@@ -81,6 +81,26 @@ vows.describe('sign').addBatch(
               assert.isTrue(result);
             }
           }
+        },
+        "to sign with serialization": {
+          topic: function(message, keypair) {
+            var serialized_sk = keypair.secretKey.serialize();
+            var reserialized_sk = jwt.getByAlg(ALG).SecretKey.deserialize(serialized_sk);
+            return reserialized_sk.sign(message);
+          },
+          "signature looks okay": function(signature) {
+            assert.notEqual(signature, null);
+          },
+          "signature": {
+            topic: function(signature, message, keypair) {
+              var serialized_pk = keypair.publicKey.serialize();
+              var reserialized_pk = jwt.getByAlg(ALG).PublicKey.deserialize(serialized_pk);
+              return reserialized_pk.verify(message, signature);
+            },
+            "validates": function(result) {
+              assert.isTrue(result);
+            }
+          }
         }
       }
     }

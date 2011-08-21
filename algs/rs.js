@@ -48,6 +48,17 @@ var KEYSIZES = {
   }
 };
 
+function _getKeySizeFromRSAKeySize(bits) {
+  for (keysize in KEYSIZES) {
+    // we tolerate one bit off from the keysize
+    if (Math.abs(KEYSIZES[keysize].rsaKeySize-bits) <= 1)
+      return keysize;
+  }
+
+  console.log("whoops keysize of " + bits);
+  return null;
+}
+
 var KeyPair = function() {
   this.algorithm = "RS";  
   this.keysize = null;
@@ -90,7 +101,19 @@ var PublicKey = function(rsa, keysize) {
 PublicKey.prototype = {
   verify: function(message, signature) {
     return this.rsa.verifyString(message, signature);
+  },
+
+  serialize: function() {
+    return this.rsa.serializePublicASN1();
   }
+};
+
+PublicKey.deserialize = function(str) {
+  var rsa = new libs.RSAKey();
+  rsa.readPublicKeyFromPEMString(str);
+
+  var keysize = _getKeySizeFromRSAKeySize(rsa.n.bitLength());
+  return new PublicKey(rsa, keysize);
 };
 
 var SecretKey = function(rsa, keysize) {
@@ -101,7 +124,20 @@ var SecretKey = function(rsa, keysize) {
 SecretKey.prototype = {
   sign: function(message) {
     return this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
+  },
+  serialize: function() {
+    return this.rsa.serializePrivateASN1();
   }
 };
 
+SecretKey.deserialize = function(str) {
+  var rsa = new libs.RSAKey();
+  rsa.readPrivateKeyFromPEMString(str);
+
+  var keysize = _getKeySizeFromRSAKeySize(rsa.n.bitLength());
+  return new SecretKey(rsa, keysize);  
+};
+
 exports.KeyPair = KeyPair;
+exports.PublicKey = PublicKey;
+exports.SecretKey = SecretKey;
