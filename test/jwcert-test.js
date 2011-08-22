@@ -38,36 +38,33 @@
 var vows = require("vows"),
     assert = require("assert"),
     jws = require("../jws"),
-    jwt = require("../jwt");
+    jwcert = require("../jwcert");
 
 // signing
 var ALG = "RS";
 var KEYSIZE = 64;
 
-// JWT
-vows.describe('jwt').addBatch({
-  "generate jwt" : {
+// JWcert
+vows.describe('jwcert').addBatch({
+  "generate jwcert" : {
     topic: function() {
       // generate a key
       var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
-      var tok = new jwt.JWT(key.getJWSAlgorithm(), new jwt.Assertion("issuer.com", new Date(), "rp.com"));
+      var tok = new jwcert.JWCert("issuer.com", new Date(), key.publicKey, {email:"john@issuer.com"});
       return {
         key: key,
-        token: tok.sign(key.secretKey)
+        cert: tok.sign(key.secretKey)
       };
     },
-    "token is approximately proper JWS format": function(topic) {
-      assert.length(topic.token.split('.'), 3);
+    "cert is approximately proper JWS format": function(topic) {
+      assert.length(topic.cert.split('.'), 3);
     },
-    "token is properly signed": function(topic) {
-      var json_ws = jws.JWS.parse(topic.token);
-      assert.isTrue(json_ws.verify(topic.key.publicKey));
+    "cert is properly signed": function(topic) {
+      var json_cert = jws.JWS.parse(topic.cert);
+      assert.isTrue(json_cert.verify(topic.key.publicKey));
     },
-    "token has proper assertion": function(topic) {
-      var json_wt = jwt.JWT.parse(topic.token);
-      json_wt.verify(topic.key.publicKey);
-      assert.equal(json_wt.getAssertion().issuer, "issuer.com");
-      console.log(json_wt.getAssertion().expires);
+    "cert is awesome": function(topic) {
+      // FIXME
     }
   }
 }).export(module);

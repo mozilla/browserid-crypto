@@ -17,7 +17,6 @@
  *
  * Contributor(s):
  *     Ben Adida <benadida@mozilla.com>
- *     Michael Hanson <mhanson@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,68 +32,56 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+//
+// certs based on JWS
+//
+
+// a sample JWCert:
+//
+// {
+//   iss: "example.com",
+//   exp: "1313971280961",
+//   public-key: {
+//     alg: "RS256",
+//     value: "-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIn8oZeKoif0us1CTj12zGveebf1FfEmlBW2Gh38kejVP2fSgjSWtMuHzzCcQuWwxCe3M5L5My9BgOtcsyQCzpECAwEAAQ==-----END PUBLIC KEY-----"
+//   },
+//   principal: {
+//     email: "john@example.com"
+//   }
+// }
+//
+//
+// for intermediate certificates, fake subdomains of the issuer can be used,
+// with a different type of principal
+//
+// {
+//   iss: "example.com",
+//   exp: "1313971280961",
+//   public-key: {
+//     alg: "RS256",
+//     value: "-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIn8oZeKoif0us1CTj12zGveebf1FfEmlBW2Gh38kejVP2fSgjSWtMuHzzCcQuWwxCe3M5L5My9BgOtcsyQCzpECAwEAAQ==-----END PUBLIC KEY-----"
+//   },
+//   principal: {
+//     host: "intermediate1.example.com"
+//   }
+// }
+
 var libs = require("./libs/all"),
     utils = require("./utils"),
     jws = require("./jws");
 
-// Assertion expires is a proper JS date object
-
-function Assertion(issuer, expires, audience) {
-  this.issuer = issuer;
-  this.expires = expires;
-  this.audience = audience;
+function JWCert(issuer, expires, pk, principal) {
+  this.setJWS(new jws.JWS(pk.algorithm, "foobar"));
 }
 
-Assertion.prototype = {
-  serialize : function() {
-    return JSON.stringify({
-      iss: this.issuer,
-      exp: this.expires.valueOf(),
-      aud: this.audience
-    });
-  }
-};
-
-Assertion.deserialize = function(str) {
-  var obj = JSON.parse(str);
-  var d = new Date();
-  d.setTime(obj.exp);
-  return new Assertion(obj.iss, d, obj.aud);
-};
-
-function JWT(algorithm, assertion) {
-  if (assertion) {
-    this.assertion = assertion;
-    this.setJWS(new jws.JWS(algorithm, assertion.serialize()));
-  }
-}
-
-JWT.prototype = {
-  getAssertion: function() {
-    if (!this.assertion) {
-      if (!this.payload)
-        return null;
-
-      this.assertion = Assertion.deserialize(this.payload);
-    }
-    
-    return this.assertion;
-  },
-
+JWCert.prototype = {
   setJWS: function(jws) {
     this.jws = jws;
 
     // after JWT's own functions, delegate to the JWS;
     this.__proto__.__proto__ = this.jws;
-  }    
-}
+  }  
+};
 
-JWT.parse = function(str) {
-  var new_jws = jws.JWS.parse(str);
-  var jwt = new JWT();
-  jwt.setJWS(new_jws);
-  return jwt;  
-}
+exports.JWCert = JWCert;
 
-exports.JWT = JWT;
-exports.Assertion = Assertion;
