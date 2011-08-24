@@ -112,7 +112,7 @@ vows.describe('jws').addBatch({
     topic: function() {
       // generate a key
       var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
-      var tok = new jws.JWS(key.getJWSAlgorithm(),"stringtosign");
+      var tok = new jws.JWS("stringtosign");
       return {
         key: key,
         token: tok.sign(key.secretKey)
@@ -122,8 +122,10 @@ vows.describe('jws').addBatch({
       assert.length(topic.token.split('.'), 3);
     },
     "token is properly signed": function(topic) {
-      var wt = jws.JWS.parse(topic.token);
-      assert.isTrue(wt.verify(topic.key.publicKey));        
+      var wt = new jws.JWS();
+      wt.parse(topic.token);
+      assert.isTrue(wt.verify(topic.key.publicKey));
+      assert.equal(wt.payload, "stringtosign");
     }
   }
 }).export(module);

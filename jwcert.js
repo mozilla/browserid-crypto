@@ -71,16 +71,45 @@ var libs = require("./libs/all"),
     jws = require("./jws");
 
 function JWCert(issuer, expires, pk, principal) {
-  this.setJWS(new jws.JWS(pk.algorithm, "foobar"));
-}
+  this.init(issuer, expires, pk, principal);
+
+  // fallback to JWS
+  this.__proto__.__proto__ = new jws.JWS();
+};
 
 JWCert.prototype = {
-  setJWS: function(jws) {
-    this.jws = jws;
+  init: function(issuer, expires, pk, principal) {
+    this.issuer = issuer;
+    this.expires = expires;
+    this.pk = pk;
+    this.principal = principal;
+  },
+  
+  serializePayload: function() {
+    return JSON.stringify({
+      iss: this.issuer,
+      exp: this.expires.valueOf(),
+      "public-key": {
+        alg: this.pk.getJWSAlgorithm(),
+        value: this.pk.serialize()
+      },
+      principal: this.principal
+    });
+  },
 
-    // after JWT's own functions, delegate to the JWS;
-    this.__proto__.__proto__ = this.jws;
+  // this is called automatically by JWS
+  // after verification
+  deserializePayload: function(payload) {
+    var obj = JSON.parse(payload);
+    var d = new Date();
+    d.setTime(obj.exp);
+
+    // FIXME: deserialize the public-key
+    var pk = null;
+    
+    this.init(obj.iss, d, pk, obj.principal);
   }  
+
 };
 
 exports.JWCert = JWCert;

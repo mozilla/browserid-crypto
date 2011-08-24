@@ -62,39 +62,37 @@ Assertion.deserialize = function(str) {
   return new Assertion(obj.iss, d, obj.aud);
 };
 
-function JWT(algorithm, assertion) {
-  if (assertion) {
-    this.assertion = assertion;
-    this.setJWS(new jws.JWS(algorithm, assertion.serialize()));
-  }
+function JWT(issuer, expires, audience) {
+  this.init(issuer, expires, audience);
+
+  // fallback to JWS
+  this.__proto__.__proto__ = new jws.JWS();
 }
 
 JWT.prototype = {
-  getAssertion: function() {
-    if (!this.assertion) {
-      if (!this.payload)
-        return null;
-
-      this.assertion = Assertion.deserialize(this.payload);
-    }
-    
-    return this.assertion;
+  init: function(issuer, expires, audience) {
+    this.issuer = issuer;
+    this.expires = expires;
+    this.audience = audience;
+  },
+  
+  serializePayload: function() {
+    return JSON.stringify({
+      iss: this.issuer,
+      exp: this.expires.valueOf(),
+      aud: this.audience
+    });
   },
 
-  setJWS: function(jws) {
-    this.jws = jws;
-
-    // after JWT's own functions, delegate to the JWS;
-    this.__proto__.__proto__ = this.jws;
-  }    
-}
-
-JWT.parse = function(str) {
-  var new_jws = jws.JWS.parse(str);
-  var jwt = new JWT();
-  jwt.setJWS(new_jws);
-  return jwt;  
-}
+  // this is called automatically by JWS
+  // after verification
+  deserializePayload: function(payload) {
+    var obj = JSON.parse(payload);
+    var d = new Date();
+    d.setTime(obj.exp);
+    this.init(obj.iss, d, obj.aud);
+  }  
+};
 
 exports.JWT = JWT;
 exports.Assertion = Assertion;

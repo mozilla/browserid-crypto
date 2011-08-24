@@ -50,7 +50,7 @@ vows.describe('jwt').addBatch({
     topic: function() {
       // generate a key
       var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
-      var tok = new jwt.JWT(key.getJWSAlgorithm(), new jwt.Assertion("issuer.com", new Date(), "rp.com"));
+      var tok = new jwt.JWT("issuer.com", new Date(), "rp.com");
       return {
         key: key,
         token: tok.sign(key.secretKey)
@@ -60,14 +60,16 @@ vows.describe('jwt').addBatch({
       assert.length(topic.token.split('.'), 3);
     },
     "token is properly signed": function(topic) {
-      var json_ws = jws.JWS.parse(topic.token);
+      var json_ws = new jws.JWS();
+      json_ws.parse(topic.token);
       assert.isTrue(json_ws.verify(topic.key.publicKey));
     },
     "token has proper assertion": function(topic) {
-      var json_wt = jwt.JWT.parse(topic.token);
+      var json_wt = new jwt.JWT();
+      json_wt.parse(topic.token);
       json_wt.verify(topic.key.publicKey);
-      assert.equal(json_wt.getAssertion().issuer, "issuer.com");
-      console.log(json_wt.getAssertion().expires);
+      assert.equal(json_wt.issuer, "issuer.com");
+      console.log(json_wt.expires);
     }
   }
 }).export(module);

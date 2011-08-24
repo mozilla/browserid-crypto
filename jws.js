@@ -86,30 +86,38 @@ exports.getByAlg = getByAlg;
 // JWT tokens
 //
 
-function JWS(algorithm, payload) {
-  // algorithm is something like "RS256"
+function JWS(payload) {
   // payload is a string
-  this.algorithm = algorithm;
   this.payload = payload;
 };
 
-JWS.parse = function _parse(input) {
-  var parts = input.split(".");
-  if (parts.length != 3) {
-    throw new MalformedJWSException("Must have three parts");
-  }
-  var jws = new JWS();
-  jws.headerSegment = parts[0];
-  jws.payloadSegment = parts[1];
-  jws.cryptoSegment = parts[2];  
-  return jws;
-};
-
 JWS.prototype = {
+  parse: function(input) {
+    var parts = input.split(".");
+    if (parts.length != 3) {
+      throw new MalformedJWSException("Must have three parts");
+    }
+
+    this.headerSegment = parts[0];
+    this.payloadSegment = parts[1];
+    this.cryptoSegment = parts[2];  
+  },
+  
+  // these noop serialization and deserialization functions
+  // exist so JWS can call them generically even when other
+  // libs build on top of JWS
+  serializePayload: function() {
+    return this.payload;
+  },
+
+  deserializePayload: function(payload) {
+    this.payload = payload;
+  },
+  
   sign: function _sign(key) {
-    var header = {"alg": this.algorithm};
+    var header = {"alg": key.getJWSAlgorithm()};
     var algBytes = utils.base64urlencode(JSON.stringify(header));
-    var jsonBytes = utils.base64urlencode(this.payload);
+    var jsonBytes = utils.base64urlencode(this.serializePayload());
     
     var stringToSign = algBytes + "." + jsonBytes;
 
@@ -126,7 +134,8 @@ JWS.prototype = {
     var header = JSON.parse(utils.base64urldecode(this.headerSegment));
 
     // check that algorithm matches
-    if (key.getJWSAlgorithm() != header.alg) {
+    if (key.getJWSAlgorithm() != header.alg) { 
+      console.log("Bad alg: " + key.getJWSAlgorithm() + " / " + header.alg);
       return false;
     }
     
@@ -134,8 +143,7 @@ JWS.prototype = {
     var result = key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
 
     // if result is true, then set some stuff up
-    this.payload = utils.base64urldecode(this.payloadSegment);
-    this.algorithm = header.alg;
+    this.deserializePayload(utils.base64urldecode(this.payloadSegment));
     
     return result;
   }

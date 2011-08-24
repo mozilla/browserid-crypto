@@ -60,11 +60,15 @@ vows.describe('jwcert').addBatch({
       assert.length(topic.cert.split('.'), 3);
     },
     "cert is properly signed": function(topic) {
-      var json_cert = jws.JWS.parse(topic.cert);
+      var json_cert = new jws.JWS();
+      json_cert.parse(topic.cert);
       assert.isTrue(json_cert.verify(topic.key.publicKey));
     },
     "cert is awesome": function(topic) {
-      // FIXME
+      var json_cert = new jwcert.JWCert();
+      json_cert.parse(topic.cert);
+      assert.isTrue(json_cert.verify(topic.key.publicKey));
+      assert.equal(json_cert.issuer, "issuer.com");
     }
   }
 }).export(module);
