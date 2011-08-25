@@ -69,6 +69,7 @@ vows.describe('jwcert').addBatch({
       json_cert.parse(topic.cert);
       assert.isTrue(json_cert.verify(topic.key.publicKey));
       assert.equal(json_cert.issuer, "issuer.com");
+      assert.equal(json_cert.principal.email, "john@issuer.com");
     }
   }
 }).export(module);
