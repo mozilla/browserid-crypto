@@ -12,6 +12,10 @@ if (typeof(navigator) == "undefined") {
       return new Buffer(str).toString('base64');
     }
   };
+
+  var alert = function(msg) {
+    console.log(msg);
+  }
 }
 
 
