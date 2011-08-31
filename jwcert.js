@@ -58,7 +58,7 @@
 //   iss: "example.com",
 //   exp: "1313971280961",
 //   public-key: {
-//     alg: "RS256",
+//     alg: "RS",
 //     value: "-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIn8oZeKoif0us1CTj12zGveebf1FfEmlBW2Gh38kejVP2fSgjSWtMuHzzCcQuWwxCe3M5L5My9BgOtcsyQCzpECAwEAAQ==-----END PUBLIC KEY-----"
 //   },
 //   principal: {
@@ -90,7 +90,7 @@ JWCert.prototype = {
       iss: this.issuer,
       exp: this.expires.valueOf(),
       "public-key": {
-        alg: this.pk.getJWSAlgorithm(),
+        alg: this.pk.algorithm,
         value: this.pk.serialize()
       },
       principal: this.principal
@@ -104,8 +104,7 @@ JWCert.prototype = {
     var d = new Date();
     d.setTime(obj.exp);
 
-    // FIXME: deserialize the public-key
-    var pk = null;
+    var pk = jws.getByAlg(obj['public-key'].alg).PublicKey.deserialize(obj['public-key'].value);
     
     this.init(obj.iss, d, pk, obj.principal);
   }  
