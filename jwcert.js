@@ -105,7 +105,7 @@ JWCert.prototype = {
     d.setTime(obj.exp);
 
     var pk = jws.getByAlg(obj['public-key'].alg).PublicKey.deserialize(obj['public-key'].value);
-    
+
     this.init(obj.iss, d, pk, obj.principal);
   }  
 

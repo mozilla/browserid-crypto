@@ -101,6 +101,9 @@ JWS.prototype = {
     this.headerSegment = parts[0];
     this.payloadSegment = parts[1];
     this.cryptoSegment = parts[2];  
+
+    // set up the individual pieces of this JWS (and subclasses, potentially)
+    this.deserializePayload(utils.base64urldecode(this.payloadSegment));
   },
   
   // these noop serialization and deserialization functions
@@ -142,9 +145,6 @@ JWS.prototype = {
     // decode the signature, and verify it
     var result = key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
 
-    // if result is true, then set some stuff up
-    this.deserializePayload(utils.base64urldecode(this.payloadSegment));
-    
     return result;
   }
 };
