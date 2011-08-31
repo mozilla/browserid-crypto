@@ -56,7 +56,7 @@ function _getKeySizeFromRSAKeySize(bits) {
   }
 
   console.log("whoops keysize of " + bits);
-  throw new Exception("bad key");
+  throw new exceptions.KeySizeNotSupportedException("bad key");
 }
 
 function _getJWSAlgorithm() {
