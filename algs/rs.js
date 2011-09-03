@@ -110,6 +110,14 @@ PublicKey.prototype = {
 
   serialize: function() {
     return this.rsa.serializePublicASN1();
+  },
+
+  equals: function(other) {
+    if (other == null)
+      return false;
+
+    // FIXME: this is loser-ville if e is not an integer
+    return ((this.rsa.n.equals(other.rsa.n)) && (this.rsa.e == other.rsa.e) && (this.algorithm == other.algorithm));
   }
 };
 

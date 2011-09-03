@@ -108,6 +108,24 @@ vows.describe('sign').addBatch(
 
 // JWS
 vows.describe('jws').addBatch({
+  "generate keypair" : {
+    topic: function() {
+      var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+
+      // serialize it and parse it twice
+      var pk_str = key.publicKey.serialize();
+      var pk1 = jws.getByAlg(ALG).PublicKey.deserialize(pk_str);
+      var pk2 = jws.getByAlg(ALG).PublicKey.deserialize(pk_str);
+      return {
+        pk1: pk1,
+        pk2: pk2
+      };
+    },
+    "keys are equal" : function(topic) {
+      assert.isTrue(topic.pk1.equals(topic.pk2));
+    }
+  },
+
   "generate jws" : {
     topic: function() {
       // generate a key
