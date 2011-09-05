@@ -33,7 +33,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 var libs = require("../libs/all"),
-    exceptions = require("./exceptions");
+    exceptions = require("./exceptions"),
+    jwk = require("../jwk");
 
 // supported keysizes
 var KEYSIZES = {
@@ -59,100 +60,89 @@ function _getKeySizeFromRSAKeySize(bits) {
   throw new exceptions.KeySizeNotSupportedException("bad key");
 }
 
-function _getJWSAlgorithm() {
-  return this.algorithm + this.keysize.toString();  
-}
-
 var KeyPair = function() {
-  this.algorithm = "RS";  
-  this.keysize = null;
-  this.publicKey = null;
-  this.secretKey = null;
+  this.algorithm = "RS";
 };
 
-KeyPair.prototype = {
-  getJWSAlgorithm: _getJWSAlgorithm
-};
+KeyPair.prototype = new jwk.KeyPair();
 
-// FIXME: keysize should be the keysize that determines the
-// whole JWS setup, e.g. 256 means RSA2048 with SHA256.
-KeyPair.generate = function(keysize) {
-  var k = new KeyPair();
-
+KeyPair.prototype.generate = function(keysize) {
   if (!(keysize in KEYSIZES))
     throw new exceptions.KeySizeNotSupportedException(keysize.toString());
   
-  k.keysize= keysize;
+  this.keysize= keysize;
 
   // generate RSA keypair
-  var rsa = new libs.RSAKey();
-  rsa.generate(KEYSIZES[keysize].rsaKeySize, "10001");
+  this.rsa = new libs.RSAKey();
+  this.rsa.generate(KEYSIZES[keysize].rsaKeySize, "10001");
 
   // FIXME: should extract only public info for the public key
-  k.publicKey = new PublicKey(rsa, keysize);
-  k.secretKey = new SecretKey(rsa, keysize);
+  this.publicKey = new PublicKey(this.rsa, keysize);
+  this.secretKey = new SecretKey(this.rsa, keysize);
 
-  return k;
+  this.publicKey.algorithm = this.secretKey.algorithm = this.algorithm;
+
+  return this;
 };
 
 var PublicKey = function(rsa, keysize) {
   this.rsa = rsa;
   this.keysize = keysize;
-  this.algorithm = "RS";
 };
 
-PublicKey.prototype = {
-  getJWSAlgorithm: _getJWSAlgorithm,
+PublicKey.prototype = new jwk.PublicKey();
+
+PublicKey.prototype.verify = function(message, signature) {
+  return this.rsa.verifyString(message, signature);
+};
+
+PublicKey.prototype.serializeToObject = function(obj) {
+  // FIXME no more asn.1
+  obj.value = this.rsa.serializePublicASN1();
+};
+
+PublicKey.prototype.equals = function(other) {
+  if (other == null)
+    return false;
   
-  verify: function(message, signature) {
-    return this.rsa.verifyString(message, signature);
-  },
-
-  serialize: function() {
-    return this.rsa.serializePublicASN1();
-  },
-
-  equals: function(other) {
-    if (other == null)
-      return false;
-
-    // FIXME: this is loser-ville if e is not an integer
-    return ((this.rsa.n.equals(other.rsa.n)) && (this.rsa.e == other.rsa.e) && (this.algorithm == other.algorithm));
-  }
+  // FIXME: this is loser-ville if e is not an integer
+  return ((this.rsa.n.equals(other.rsa.n)) && (this.rsa.e == other.rsa.e) && (this.algorithm == other.algorithm));
 };
 
-PublicKey.deserialize = function(str) {
-  var rsa = new libs.RSAKey();
-  rsa.readPublicKeyFromPEMString(str);
+PublicKey.prototype.deserializeFromObject = function(obj) {
+  this.rsa = new libs.RSAKey();
+  this.rsa.readPublicKeyFromPEMString(obj.value);
 
-  var keysize = _getKeySizeFromRSAKeySize(rsa.n.bitLength());
-  return new PublicKey(rsa, keysize);
+  this.keysize = _getKeySizeFromRSAKeySize(this.rsa.n.bitLength());
+  return this;
 };
 
-var SecretKey = function(rsa, keysize) {
+function SecretKey(rsa, keysize) {
   this.rsa = rsa;
   this.keysize = keysize;
-  this.algorithm = "RS";
 };
 
-SecretKey.prototype = {
-  getJWSAlgorithm: _getJWSAlgorithm,
-  sign: function(message) {
-    return this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
-  },
-  serialize: function() {
-    return this.rsa.serializePrivateASN1();
-  }
+SecretKey.prototype = new jwk.SecretKey();
+
+SecretKey.prototype.sign = function(message) {
+  return this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
 };
 
-SecretKey.deserialize = function(str) {
-  var rsa = new libs.RSAKey();
-  rsa.readPrivateKeyFromPEMString(str);
-
-  var keysize = _getKeySizeFromRSAKeySize(rsa.n.bitLength());
-  return new SecretKey(rsa, keysize);  
+SecretKey.prototype.serializeToObject = function(obj) {
+  obj.value = this.rsa.serializePrivateASN1();
 };
 
-exports.KeyPair = KeyPair;
-exports.PublicKey = PublicKey;
-exports.SecretKey = SecretKey;
+SecretKey.prototype.deserializeFromObject = function(obj) {
+  this.rsa = new libs.RSAKey();
+  this.rsa.readPrivateKeyFromPEMString(obj.value);
+
+  this.keysize = _getKeySizeFromRSAKeySize(this.rsa.n.bitLength());
+  return this;
+};
+
+// register this stuff 
+jwk.KeyPair._register("RS", {
+  KeyPair: KeyPair,
+  PublicKey: PublicKey,
+  SecretKey: SecretKey});
+

@@ -118,7 +118,7 @@ JWS.prototype = {
   },
   
   sign: function _sign(key) {
-    var header = {"alg": key.getJWSAlgorithm()};
+    var header = {"alg": key.getAlgorithm()};
     var algBytes = utils.base64urlencode(JSON.stringify(header));
     var jsonBytes = utils.base64urlencode(this.serializePayload());
     
@@ -137,8 +137,8 @@ JWS.prototype = {
     var header = JSON.parse(utils.base64urldecode(this.headerSegment));
 
     // check that algorithm matches
-    if (key.getJWSAlgorithm() != header.alg) { 
-      console.log("Bad alg: " + key.getJWSAlgorithm() + " / " + header.alg);
+    if (key.getAlgorithm() != header.alg) { 
+      console.log("Bad alg: " + key.getAlgorithm() + " / " + header.alg);
       return false;
     }
     

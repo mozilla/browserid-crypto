@@ -37,85 +37,23 @@
 
 var vows = require("vows"),
     assert = require("assert"),
+    jwk = require("../jwk");
     jws = require("../jws");
 
 // signing
 var ALG = "RS";
 var KEYSIZE = 64;
 
-vows.describe('sign').addBatch(
-  {
-    "generate keypair" : {
-      topic: function() {
-        return jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
-      },
-      "is a keypair": function(keypair) {
-        assert.instanceOf(keypair, jws.getByAlg(ALG).KeyPair);
-      },
-      "should have right algorithm": function(keypair) {
-        assert.equal(keypair.algorithm, ALG);
-      },
-      "should have right number of bits": function(keypair) {
-        assert.equal(keypair.keysize, KEYSIZE);
-      },
-      "should have secret key": function(keypair) {
-        assert.notEqual(keypair.secretKey, null);
-      },
-      "with a message": {
-        topic: function(keypair) {
-          var message_to_sign= "testing!";
-          return message_to_sign;
-        },
-        "to sign": {
-          topic: function(message, keypair) {
-            return keypair.secretKey.sign(message);
-          },
-          "signature looks okay": function(signature) {
-            assert.notEqual(signature, null);
-          },
-          "signature": {
-            topic: function(signature, message, keypair) {
-              return keypair.publicKey.verify(message, signature);
-            },
-            "validates": function(result) {
-              assert.isTrue(result);
-            }
-          }
-        },
-        "to sign with serialization": {
-          topic: function(message, keypair) {
-            var serialized_sk = keypair.secretKey.serialize();
-            var reserialized_sk = jws.getByAlg(ALG).SecretKey.deserialize(serialized_sk);
-            return reserialized_sk.sign(message);
-          },
-          "signature looks okay": function(signature) {
-            assert.notEqual(signature, null);
-          },
-          "signature": {
-            topic: function(signature, message, keypair) {
-              var serialized_pk = keypair.publicKey.serialize();
-              var reserialized_pk = jws.getByAlg(ALG).PublicKey.deserialize(serialized_pk);
-              return reserialized_pk.verify(message, signature);
-            },
-            "validates": function(result) {
-              assert.isTrue(result);
-            }
-          }
-        }
-      }
-    }
-  }).export(module);
-
 // JWS
 vows.describe('jws').addBatch({
   "generate keypair" : {
     topic: function() {
-      var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
 
       // serialize it and parse it twice
       var pk_str = key.publicKey.serialize();
-      var pk1 = jws.getByAlg(ALG).PublicKey.deserialize(pk_str);
-      var pk2 = jws.getByAlg(ALG).PublicKey.deserialize(pk_str);
+      var pk1 = jwk.PublicKey.deserialize(pk_str);
+      var pk2 = jwk.PublicKey.deserialize(pk_str);
       return {
         pk1: pk1,
         pk2: pk2
@@ -129,7 +67,7 @@ vows.describe('jws').addBatch({
   "generate jws" : {
     topic: function() {
       // generate a key
-      var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
       var tok = new jws.JWS("stringtosign");
       return {
         key: key,

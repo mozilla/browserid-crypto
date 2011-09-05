@@ -68,6 +68,7 @@
 
 var libs = require("./libs/all"),
     utils = require("./utils"),
+    jwk = require("./jwk"),
     jws = require("./jws");
 
 function JWCert(issuer, expires, pk, principal) {
@@ -89,10 +90,7 @@ JWCert.prototype.serializePayload = function() {
   return JSON.stringify({
     iss: this.issuer,
     exp: this.expires.valueOf(),
-    "public-key": {
-      alg: this.pk.algorithm,
-      value: this.pk.serialize()
-    },
+    "public-key": JSON.parse(this.pk.serialize()),
     principal: this.principal
   });
 };
@@ -104,7 +102,7 @@ JWCert.prototype.deserializePayload = function(payload) {
   var d = new Date();
   d.setTime(obj.exp);
 
-  var pk = jws.getByAlg(obj['public-key'].alg).PublicKey.deserialize(obj['public-key'].value);
+  var pk = jwk.PublicKey.deserialize(JSON.stringify(obj['public-key']));
   
   this.init(obj.iss, d, pk, obj.principal);
 };

@@ -37,6 +37,7 @@
 
 var vows = require("vows"),
     assert = require("assert"),
+    jwk = require("../jwk"),
     jws = require("../jws"),
     jwcert = require("../jwcert");
 
@@ -49,7 +50,7 @@ vows.describe('jwcert').addBatch({
   "generate jwcert" : {
     topic: function() {
       // generate a key
-      var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
       var tok = new jwcert.JWCert("issuer.com", new Date(), key.publicKey, {email:"john@issuer.com"});
       return {
         key: key,

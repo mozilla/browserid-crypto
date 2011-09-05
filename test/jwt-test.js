@@ -37,6 +37,7 @@
 
 var vows = require("vows"),
     assert = require("assert"),
+    jwk = require("../jwk"),
     jws = require("../jws"),
     jwt = require("../jwt");
 
@@ -49,7 +50,7 @@ vows.describe('jwt').addBatch({
   "generate jwt" : {
     topic: function() {
       // generate a key
-      var key = jws.getByAlg(ALG).KeyPair.generate(KEYSIZE);
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
       var tok = new jwt.JWT("issuer.com", new Date(), "rp.com");
       return {
         key: key,
