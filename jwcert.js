@@ -72,43 +72,41 @@ var libs = require("./libs/all"),
 
 function JWCert(issuer, expires, pk, principal) {
   this.init(issuer, expires, pk, principal);
-
-  // fallback to JWS
-  this.__proto__.__proto__ = new jws.JWS();
 };
 
-JWCert.prototype = {
-  init: function(issuer, expires, pk, principal) {
-    this.issuer = issuer;
-    this.expires = expires;
-    this.pk = pk;
-    this.principal = principal;
-  },
+JWCert.prototype = new jws.JWS();
+
+// add some methods
+
+JWCert.prototype.init = function(issuer, expires, pk, principal) {
+  this.issuer = issuer;
+  this.expires = expires;
+  this.pk = pk;
+  this.principal = principal;
+};
+
+JWCert.prototype.serializePayload = function() {
+  return JSON.stringify({
+    iss: this.issuer,
+    exp: this.expires.valueOf(),
+    "public-key": {
+      alg: this.pk.algorithm,
+      value: this.pk.serialize()
+    },
+    principal: this.principal
+  });
+};
+
+// this is called automatically by JWS
+// after verification
+JWCert.prototype.deserializePayload = function(payload) {
+  var obj = JSON.parse(payload);
+  var d = new Date();
+  d.setTime(obj.exp);
+
+  var pk = jws.getByAlg(obj['public-key'].alg).PublicKey.deserialize(obj['public-key'].value);
   
-  serializePayload: function() {
-    return JSON.stringify({
-      iss: this.issuer,
-      exp: this.expires.valueOf(),
-      "public-key": {
-        alg: this.pk.algorithm,
-        value: this.pk.serialize()
-      },
-      principal: this.principal
-    });
-  },
-
-  // this is called automatically by JWS
-  // after verification
-  deserializePayload: function(payload) {
-    var obj = JSON.parse(payload);
-    var d = new Date();
-    d.setTime(obj.exp);
-
-    var pk = jws.getByAlg(obj['public-key'].alg).PublicKey.deserialize(obj['public-key'].value);
-
-    this.init(obj.iss, d, pk, obj.principal);
-  }  
-
+  this.init(obj.iss, d, pk, obj.principal);
 };
 
 exports.JWCert = JWCert;

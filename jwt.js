@@ -37,62 +37,35 @@ var libs = require("./libs/all"),
     utils = require("./utils"),
     jws = require("./jws");
 
-// Assertion expires is a proper JS date object
+function JWT(issuer, expires, audience) {
+  this.init(issuer, expires, audience);
+}
 
-function Assertion(issuer, expires, audience) {
+JWT.prototype =  new jws.JWS();
+
+// add some methods
+
+JWT.prototype.init = function(issuer, expires, audience) {
   this.issuer = issuer;
   this.expires = expires;
   this.audience = audience;
-}
-
-Assertion.prototype = {
-  serialize : function() {
-    return JSON.stringify({
-      iss: this.issuer,
-      exp: this.expires.valueOf(),
-      aud: this.audience
-    });
-  }
 };
 
-Assertion.deserialize = function(str) {
-  var obj = JSON.parse(str);
+JWT.prototype.serializePayload = function() {
+  return JSON.stringify({
+    iss: this.issuer,
+    exp: this.expires.valueOf(),
+    aud: this.audience
+  });
+};
+
+// this is called automatically by JWS
+// after verification
+JWT.prototype.deserializePayload = function(payload) {
+  var obj = JSON.parse(payload);
   var d = new Date();
   d.setTime(obj.exp);
-  return new Assertion(obj.iss, d, obj.aud);
-};
-
-function JWT(issuer, expires, audience) {
-  this.init(issuer, expires, audience);
-
-  // fallback to JWS
-  this.__proto__.__proto__ = new jws.JWS();
-}
-
-JWT.prototype = {
-  init: function(issuer, expires, audience) {
-    this.issuer = issuer;
-    this.expires = expires;
-    this.audience = audience;
-  },
-  
-  serializePayload: function() {
-    return JSON.stringify({
-      iss: this.issuer,
-      exp: this.expires.valueOf(),
-      aud: this.audience
-    });
-  },
-
-  // this is called automatically by JWS
-  // after verification
-  deserializePayload: function(payload) {
-    var obj = JSON.parse(payload);
-    var d = new Date();
-    d.setTime(obj.exp);
-    this.init(obj.iss, d, obj.aud);
-  }  
+  this.init(obj.iss, d, obj.aud);
 };
 
 exports.JWT = JWT;
-exports.Assertion = Assertion;
