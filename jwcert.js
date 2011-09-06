@@ -69,7 +69,8 @@
 var libs = require("./libs/all"),
     utils = require("./utils"),
     jwk = require("./jwk"),
-    jws = require("./jws");
+    jws = require("./jws"),
+    und = require("./underscore.js");
 
 function JWCert(issuer, expires, pk, principal) {
   this.init(issuer, expires, pk, principal);
@@ -105,6 +106,47 @@ JWCert.prototype.deserializePayload = function(payload) {
   var pk = jwk.PublicKey.fromSimpleObject(obj['public-key']);
   
   this.init(obj.iss, d, pk, obj.principal);
+};
+
+// a utility function to verify a chain of certificates
+// where each certificate is serialized
+// rootCB is a callback function that fetches the necessary
+// root PK given the issuer domain
+//
+// if the chain verifies, the last public key is returned
+// if the chain does not verify, null is returned (FIXME: throw an exception?)
+JWCert.verifyChain = function(listOfSerializedCert, rootCB) {
+  // parse all the certs
+  var certs = und.map(listOfSerializedCert, function(serializedCert) {
+    var c = new JWCert();
+    c.parse(serializedCert);
+    return c;
+  });
+
+  // figure out issuer of first cert
+  var root_issuer = certs[0].issuer;
+  var root_pk = rootCB(root_issuer);
+
+  // if no root pk, stop now
+  if (!root_pk)
+    return null;
+
+  // start the loop here
+  var current_pk = root_pk;
+  var goodsig = true;
+  und.each(certs, function(cert) {
+    if (!cert.verify(current_pk))
+      goodsig = false;
+
+    // next pk to check
+    current_pk = cert.pk;
+  });
+
+  if (!goodsig)
+    return null;
+  
+  // return last certified public key
+  return current_pk;
 };
 
 exports.JWCert = JWCert;

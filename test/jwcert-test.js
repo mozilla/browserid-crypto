@@ -72,5 +72,42 @@ vows.describe('jwcert').addBatch({
       assert.equal(json_cert.issuer, "issuer.com");
       assert.equal(json_cert.principal.email, "john@issuer.com");
     }
+  },
+  "generate cert chain" : {
+    topic: function() {
+      // generate three keypairs to chain things
+      var root_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var intermediate_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var user_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+
+      // generate the two certs
+      var intermediate_cert = new jwcert.JWCert("root.com", new Date(), intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
+      var user_cert = new jwcert.JWCert("intermediate.root.com", new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
+
+      return {
+        root_pk: root_kp.publicKey,
+        certificates : [intermediate_cert, user_cert],
+        user_pk : user_kp.publicKey
+      };
+    },
+    "verifies": function(stuff) {
+      var pk = jwcert.JWCert.verifyChain(stuff.certificates, function(issuer) {
+        if (issuer == "root.com")
+          return stuff.root_pk;
+        else
+          return null;
+      });
+
+      // this one should fail
+      var pk2 = jwcert.JWCert.verifyChain(stuff.certificates, function(issuer) {
+        if (issuer == "root.com")
+          return stuff.user_pk;
+        else
+          return null;
+      });
+      
+      assert.isTrue(pk.equals(stuff.user_pk));
+      assert.isNull(pk2);
+    }
   }
 }).export(module);
