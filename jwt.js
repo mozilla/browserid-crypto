@@ -52,11 +52,16 @@ JWT.prototype.init = function(issuer, expires, audience) {
 };
 
 JWT.prototype.serializePayload = function() {
-  return JSON.stringify({
-    iss: this.issuer,
+  // make the issuer optional
+  var assertion = {
     exp: this.expires.valueOf(),
     aud: this.audience
-  });
+  };
+  
+  if (this.issuer)
+    assertion.iss = this.issuer;
+
+  return JSON.stringify(assertion);
 };
 
 // this is called automatically by JWS
