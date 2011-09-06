@@ -61,6 +61,32 @@ vows.describe('keys').addBatch(
       "should have secret key": function(keypair) {
         assert.notEqual(keypair.secretKey, null);
       },
+      "serialize and deserialize the public key": {
+        topic: function(keypair) {
+          var pk_serialized = keypair.publicKey.serialize();
+          var pk = jwk.PublicKey.deserialize(pk_serialized);
+          return pk;
+        },
+        "reconstituted pk is not null": function(pk) {
+          assert.notEqual(pk, null);
+        },
+        "reconstituted pk has proper algorithm": function(pk) {
+          assert.equal(pk.algorithm, "RS");
+        }
+      },
+      "serialize and deserialize the secret key": {
+        topic: function(keypair) {
+          var sk_serialized = keypair.secretKey.serialize();
+          var sk = jwk.SecretKey.deserialize(sk_serialized);
+          return sk;
+        },
+        "reconstituted sk is not null": function(sk) {
+          assert.notEqual(sk, null);
+        },
+        "reconstituted sk has proper algorithm": function(sk) {
+          assert.equal(sk.algorithm, "RS");
+        }
+      },
       "with a message": {
         topic: function(keypair) {
           var message_to_sign= "testing!";

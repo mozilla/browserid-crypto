@@ -108,9 +108,10 @@ PublicKey.fromSimpleObject = function(obj) {
   if (!ALGS[obj.algorithm])
     throw new NotImplementedException("no such algorithm: " + obj.algorithm);
 
-  var sk = new ALGS[obj.algorithm].PublicKey();
-  sk.deserializeFromObject(obj);
-  return sk;
+  var pk = new ALGS[obj.algorithm].PublicKey();
+  pk.algorithm = obj.algorithm;
+  pk.deserializeFromObject(obj);
+  return pk;
 };
 
 PublicKey.deserialize = function(str) {
@@ -141,6 +142,7 @@ SecretKey.fromSimpleObject = function(obj) {
     throw new NotImplementedException("no such algorithm: " + obj.algorithm);
 
   var sk = new ALGS[obj.algorithm].SecretKey();
+  sk.algorithm = obj.algorithm;
   sk.deserializeFromObject(obj);
   return sk;
 };
