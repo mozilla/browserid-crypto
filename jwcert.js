@@ -111,11 +111,11 @@ JWCert.prototype.deserializePayload = function(payload) {
 // a utility function to verify a chain of certificates
 // where each certificate is serialized
 // rootCB is a callback function that fetches the necessary
-// root PK given the issuer domain
+// root PK given the issuer domain. It is given a continuation parameter
 //
 // if the chain verifies, the last public key is returned
 // if the chain does not verify, null is returned (FIXME: throw an exception?)
-JWCert.verifyChain = function(listOfSerializedCert, rootCB) {
+JWCert.verifyChain = function(listOfSerializedCert, rootCB, successCB, errorCB) {
   // parse all the certs
   var certs = und.map(listOfSerializedCert, function(serializedCert) {
     var c = new JWCert();
@@ -125,28 +125,30 @@ JWCert.verifyChain = function(listOfSerializedCert, rootCB) {
 
   // figure out issuer of first cert
   var root_issuer = certs[0].issuer;
-  var root_pk = rootCB(root_issuer);
 
-  // if no root pk, stop now
-  if (!root_pk)
-    return null;
+  // fetch the root pk and continue
+  rootCB(root_issuer, function(root_pk) {
+    // if no root pk, stop now
+    if (!root_pk)
+      return errorCB("no root PK found");
+    
+    // start the loop here
+    var current_pk = root_pk;
+        var goodsig = true;
+    und.each(certs, function(cert) {
+      if (!cert.verify(current_pk))
+        goodsig = false;
+      
+      // next pk to check
+      current_pk = cert.pk;
+    });
 
-  // start the loop here
-  var current_pk = root_pk;
-  var goodsig = true;
-  und.each(certs, function(cert) {
-    if (!cert.verify(current_pk))
-      goodsig = false;
-
-    // next pk to check
-    current_pk = cert.pk;
-  });
-
-  if (!goodsig)
-    return null;
+    if (!goodsig)
+      return errorCB("bad signature in chain");
   
-  // return last certified public key
-  return current_pk;
+    // return last certified public key
+    successCB(current_pk);
+  });
 };
 
 exports.JWCert = JWCert;

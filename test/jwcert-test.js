@@ -39,7 +39,8 @@ var vows = require("vows"),
     assert = require("assert"),
     jwk = require("../jwk"),
     jws = require("../jws"),
-    jwcert = require("../jwcert");
+    jwcert = require("../jwcert"),
+    events = require("events");
 
 // signing
 var ALG = "RS";
@@ -90,24 +91,33 @@ vows.describe('jwcert').addBatch({
         user_pk : user_kp.publicKey
       };
     },
-    "verifies": function(stuff) {
-      var pk = jwcert.JWCert.verifyChain(stuff.certificates, function(issuer) {
-        if (issuer == "root.com")
-          return stuff.root_pk;
-        else
-          return null;
-      });
-
-      // this one should fail
-      var pk2 = jwcert.JWCert.verifyChain(stuff.certificates, function(issuer) {
-        if (issuer == "root.com")
-          return stuff.user_pk;
-        else
-          return null;
-      });
-      
-      assert.isTrue(pk.equals(stuff.user_pk));
-      assert.isNull(pk2);
+    "proper root": {
+      topic: function(stuff) {
+        var cb = this.callback;
+        jwcert.JWCert.verifyChain(stuff.certificates, function(issuer, next) {
+          if (issuer == "root.com")
+            next(stuff.root_pk);
+          else
+            next(null);
+        }, function(pk) {cb({pk:pk, stuff:stuff});});
+      },
+      "verifies": function(res, err) {
+        assert.isTrue(res.pk.equals(res.stuff.user_pk));
+      }
+    },
+    "improper root": {
+      topic: function(stuff) {
+        // this one should fail
+        jwcert.JWCert.verifyChain(stuff.certificates, function(issuer, next) {
+          if (issuer == "root.com")
+            next(stuff.user_pk);
+          else
+            next(null);
+        }, function(pk) {},this.callback);
+      },
+      "does not verify": function(message, err) {
+        assert.isTrue(message != null);
+      }
     }
   }
 }).export(module);
