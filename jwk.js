@@ -89,52 +89,65 @@ function PublicKey() {
 }
 
 PublicKey.prototype = {
-  serialize: function() {
-    var obj = {
-      algorithm: this.algorithm
-    };
+  // produce a ready-to-be-JSON'ed object
+  toSimpleObject: function() {
+    var obj = {algorithm: this.algorithm};
     this.serializeToObject(obj);
-    return JSON.stringify(obj);
+    return obj;
   },
+
+  // ok, JSON'ify it
+  serialize: function() {
+    return JSON.stringify(this.toSimpleObject());
+  },
+  
   getAlgorithm : _getAlgorithm
 };
 
-PublicKey.deserialize = function(str) {
-  var obj = JSON.parse(str);
-
+PublicKey.fromSimpleObject = function(obj) {
   if (!ALGS[obj.algorithm])
     throw new NotImplementedException("no such algorithm: " + obj.algorithm);
 
   var sk = new ALGS[obj.algorithm].PublicKey();
   sk.deserializeFromObject(obj);
   return sk;
-}
+};
+
+PublicKey.deserialize = function(str) {
+  var obj = JSON.parse(str);
+  return PublicKey.fromSimpleObject(obj);
+};
 
 function SecretKey() {
 }
 
 SecretKey.prototype = {
-  serialize: function() {
-    var obj = {
-      algorithm: this.algorithm
-    };
+  toSimpleObject: function() {
+    var obj = {algorithm: this.algorithm};
     this.serializeToObject(obj);
-    return JSON.stringify(obj);
+    return obj;
+  },
+  
+  serialize: function() {
+    return JSON.stringify(this.toSimpleObject());
   },
 
   getAlgorithm: _getAlgorithm
 
 };
 
-SecretKey.deserialize = function(str) {
-  var obj = JSON.parse(str);
-
+SecretKey.fromSimpleObject = function(obj) {
   if (!ALGS[obj.algorithm])
     throw new NotImplementedException("no such algorithm: " + obj.algorithm);
 
   var sk = new ALGS[obj.algorithm].SecretKey();
   sk.deserializeFromObject(obj);
   return sk;
+};
+
+SecretKey.deserialize = function(str) {
+  var obj = JSON.parse(str);
+  return SecretKey.fromSimpleObject(obj);
 };
 
 

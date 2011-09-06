@@ -90,7 +90,7 @@ JWCert.prototype.serializePayload = function() {
   return JSON.stringify({
     iss: this.issuer,
     exp: this.expires.valueOf(),
-    "public-key": JSON.parse(this.pk.serialize()),
+    "public-key": this.pk.toSimpleObject(),
     principal: this.principal
   });
 };
@@ -102,7 +102,7 @@ JWCert.prototype.deserializePayload = function(payload) {
   var d = new Date();
   d.setTime(obj.exp);
 
-  var pk = jwk.PublicKey.deserialize(JSON.stringify(obj['public-key']));
+  var pk = jwk.PublicKey.fromSimpleObject(obj['public-key']);
   
   this.init(obj.iss, d, pk, obj.principal);
 };
