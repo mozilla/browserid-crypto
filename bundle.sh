@@ -5,7 +5,7 @@ echo ''
 echo '****Bundling VEP for Browser****'
 echo ''
 
-INPUT="./vep.js"
+INPUT="./bundle.js"
 OUTPUT="./vepbundle.js"
 
 # package
