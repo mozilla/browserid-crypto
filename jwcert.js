@@ -132,22 +132,25 @@ JWCert.verifyChain = function(listOfSerializedCert, rootCB, successCB, errorCB) 
     if (!root_pk)
       return errorCB("no root PK found");
     
-    // start the loop here
     var current_pk = root_pk;
-        var goodsig = true;
+    var current_principal = null;
+    var goodsig = true;
+
+    // loop through certs
     und.each(certs, function(cert) {
       if (!cert.verify(current_pk))
         goodsig = false;
       
       // next pk to check
       current_pk = cert.pk;
+      current_principal = cert.principal;
     });
 
     if (!goodsig)
       return errorCB("bad signature in chain");
   
     // return last certified public key
-    successCB(current_pk);
+    successCB(current_pk, current_principal);
   });
 };
 
