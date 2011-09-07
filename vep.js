@@ -30,12 +30,28 @@
  * ***** END LICENSE BLOCK ***** */
 
 // VEP parameters
-
-var jwt = require("./jwt");
+const utils = require("./utils");
 
 params = {
   algorithm: "RS",
   keysize: 256,
 };
 
+// takes an array of serialized certs and a serialized assertion
+function bundleCertsAndAssertion(certificates, assertion) {
+  var str = JSON.stringify({
+    certificates: certificates,
+    assertion: assertion
+  });
+
+  return utils.base64urlencode(str);
+}
+
+// returns an object with certificates and assertion
+function unbundleCertsAndAssertion(bundle) {
+  return JSON.parse(utils.base64urldecode(bundle));
+}
+
 exports.params = params;
+exports.bundleCertsAndAssertion = bundleCertsAndAssertion;
+exports.unbundleCertsAndAssertion = unbundleCertsAndAssertion;
