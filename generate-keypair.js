@@ -2,10 +2,10 @@
 // generate a keypair quick
 //
 
-var jws = require("./jws"),
+var jwk = require("./jwk"),
     fs = require("fs");
 
-var keypair = jws.getByAlg("RS").KeyPair.generate(64);
+var keypair = jwk.KeyPair.generate("RS",64);
 var pk = {
   alg: "RS",
   value: keypair.publicKey.serialize()
