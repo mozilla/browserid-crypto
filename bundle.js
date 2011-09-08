@@ -31,5 +31,7 @@
 
 var utils = require("./utils");
 var jwcert = require("./jwcert");
+var jwt = require("./jwt");
+var jwk = require("./jwk");
 var vep = require("./vep");
 

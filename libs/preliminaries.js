@@ -1,5 +1,5 @@
 // faking some objects so all goes well
-if (typeof(navigator) == "undefined") {
+if (typeof(OVERRIDE) == "undefined") {
   var navigator = {
     appName: "Netscape"
   };
@@ -15,7 +15,10 @@ if (typeof(navigator) == "undefined") {
 
   var alert = function(msg) {
     console.log(msg);
-  }
+  };
+} else {
+  var navigator = OVERRIDE.navigator;
+  var window = OVERRIDE.window;
 }
 
 

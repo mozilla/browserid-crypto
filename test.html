@@ -2,10 +2,20 @@
   <title>test VEP from Browser</title>
   <script type="text/javascript" src="vepbundle.js"></script>
   <script type="text/javascript">
-    var jwt = require("./jwt");
-    var keypair = jwt.getByAlg("RS").KeyPair.generate(64);
-    alert(keypair.publicKey.serialize());
+    // a small subset of vows tests
+    function runtests() {
+      var jwk = require("./jwk");
+      var jwt = require("./jwt");
+      var jwcert = require("./jwcert");
+      var user_kp = jwk.KeyPair.generate("RS",64);
+      var root_kp = jwk.KeyPair.generate("RS",64);
+      var cert = new jwcert.JWCert("foo.com", new Date(), user_kp.publicKey, {email : "foo@foo.com"}).sign(root_kp.secretKey);
+
+      var tok = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
+      alert("cert:\n" + cert + "\nassertion:\n" + tok);
+    }
   </script>
 </head>
 <body>
+<button onclick="runtests();">run tests</button>
 </body>
