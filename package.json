@@ -1,0 +1,19 @@
+{
+    "name": "jwcrypto"
+  , "version": "0.0.1"
+  , "dependencies": {
+    "browserify": "1.5.0",
+    "vows": "0.5.11"
+  }
+  , "scripts": {
+    "postinstall": "./bundle.sh",
+    "test": "vows"
+  }
+  , "repository" :
+  { "type" : "git"
+  , "url" : "http://github.com/mozilla/jwcrypto.git"
+  }
+  , "bin" : {
+    "generate-keypair": "./generate-keypair.js"
+  }
+}
