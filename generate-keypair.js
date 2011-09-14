@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 //
 // generate a keypair quick
 //
