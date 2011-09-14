@@ -13,4 +13,7 @@
   { "type" : "git"
   , "url" : "http://github.com/mozilla/jwcrypto.git"
   }
+  , "bin" : {
+    "generate-keypair": "./generate-keypair.js"
+  }
 }
