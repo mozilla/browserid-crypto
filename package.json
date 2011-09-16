@@ -14,6 +14,7 @@
   , "url" : "http://github.com/mozilla/jwcrypto.git"
   }
   , "bin" : {
-    "generate-keypair": "./generate-keypair.js"
+    "generate-keypair": "./generate-keypair.js",
+    "check-assertion": "./check-assertion.js"
   }
 }
