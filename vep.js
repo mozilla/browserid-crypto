@@ -30,7 +30,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 // VEP parameters
-const utils = require("./utils");
+var utils = require("./utils");
 
 params = {
   algorithm: "RS",
