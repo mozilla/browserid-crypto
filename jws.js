@@ -130,6 +130,11 @@ JWS.prototype = {
 
     return algBytes + "." + jsonBytes + "." + signatureValue;
   },
+
+  // this is used by subclasses to further verify the payload
+  verifyPayload: function() {
+    return true;
+  },
   
   verify: function _verify(key) {
     // we verify based on the actual string
@@ -143,9 +148,11 @@ JWS.prototype = {
     }
     
     // decode the signature, and verify it
-    var result = key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
+    var sig_verification = key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
 
-    return result;
+    var payload_verification = this.verifyPayload();
+
+    return sig_verification && payload_verification;
   }
 };
   

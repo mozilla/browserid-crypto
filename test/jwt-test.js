@@ -47,7 +47,7 @@ var KEYSIZE = 64;
 
 // JWT
 vows.describe('jwt').addBatch({
-  "generate jwt" : {
+  "valid jwt" : {
     topic: function() {
       // generate a key
       var key = jwk.KeyPair.generate(ALG, KEYSIZE);
@@ -70,7 +70,24 @@ vows.describe('jwt').addBatch({
       json_wt.parse(topic.token);
       json_wt.verify(topic.key.publicKey);
       assert.equal(json_wt.issuer, "issuer.com");
-      console.log(json_wt.expires);
+    }
+  },
+  "expired jwt" : {
+    topic: function() {
+      // generate a key
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var d = new Date();
+      d.setTime(new Date().valueOf() - 2100);
+      var tok = new jwt.JWT("issuer.com", d, "rp.com");
+      return {
+        key: key,
+        token: tok.sign(key.secretKey)
+      };
+    },
+    "does not verify": function(topic) {
+      var json_wt = new jwt.JWT();
+      json_wt.parse(topic.token);
+      assert.isFalse(json_wt.verify(topic.key.publicKey));
     }
   }
 }).export(module);

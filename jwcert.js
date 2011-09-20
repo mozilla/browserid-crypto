@@ -115,7 +115,7 @@ JWCert.prototype.deserializePayload = function(payload) {
 //
 // if the chain verifies, the last public key is returned
 // if the chain does not verify, null is returned (FIXME: throw an exception?)
-JWCert.verifyChain = function(listOfSerializedCert, rootCB, successCB, errorCB) {
+JWCert.verifyChain = function(listOfSerializedCert, validUntil, rootCB, successCB, errorCB) {
   // parse all the certs
   var certs = und.map(listOfSerializedCert, function(serializedCert) {
     var c = new JWCert();
@@ -135,19 +135,29 @@ JWCert.verifyChain = function(listOfSerializedCert, rootCB, successCB, errorCB) 
     var current_pk = root_pk;
     var current_principal = null;
     var goodsig = true;
+    var fresh = true;
 
     // loop through certs
     und.each(certs, function(cert) {
-      if (!cert.verify(current_pk))
-        goodsig = false;
+      // is the cert expired?
+      if (cert.expires < validUntil) {
+        fresh = false;
+      } else {
+        // verify the cert only if it's valid
+        if (!cert.verify(current_pk))
+          goodsig = false;
+      }
       
       // next pk to check
       current_pk = cert.pk;
       current_principal = cert.principal;
     });
-
+    
     if (!goodsig)
       return errorCB("bad signature in chain");
+    
+    if (!fresh)
+      return errorCB("expired cert in chain");
   
     // return last certified public key
     successCB(current_pk, current_principal);

@@ -73,4 +73,14 @@ JWT.prototype.deserializePayload = function(payload) {
   this.init(obj.iss, d, obj.aud);
 };
 
+// this is called automatically by JWS
+// after verification and deserialization to ensure that
+// the payload verifies
+JWT.prototype.verifyPayload = function() {
+  // 2 minute window
+  var diff = Math.abs(this.expires.valueOf() - new Date().valueOf());
+
+  return (diff <= 2000);
+};
+
 exports.JWT = JWT;

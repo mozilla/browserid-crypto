@@ -55,7 +55,11 @@ vows.describe('vep').addBatch({
       var user_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
 
       // generate the cert on user key from root
-      var user_cert = new jwcert.JWCert("root.com", new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(root_kp.secretKey);
+      var raw_expiration = new Date().valueOf() + 60000
+      var expiration = new Date();
+      expiration.setTime(raw_expiration);
+
+      var user_cert = new jwcert.JWCert("root.com", expiration, user_kp.publicKey, {email: "john@root.com"}).sign(root_kp.secretKey);
 
       // generate assertion
       var tok = new jwt.JWT(null, new Date(), "rp.com");
@@ -75,17 +79,22 @@ vows.describe('vep').addBatch({
       topic: function(stuff) {
         var self = this;
         
-        jwcert.JWCert.verifyChain(stuff.certificates, function(issuer, next) {
-          if (issuer == "root.com")
-            next(root_kp.publicKey);
-          else
-            next(null);
-        }, function(pk) {
-          var tok = new jwt.JWT();
-          tok.parse(stuff.assertion);
-          var result = tok.verify(pk);
-          self.callback(result);
-        });
+        jwcert.JWCert.verifyChain(
+          stuff.certificates,
+          new Date(),
+          function(issuer, next) {
+            if (issuer == "root.com")
+              next(root_kp.publicKey);
+            else
+              next(null);
+          }, function(pk) {
+            var tok = new jwt.JWT();
+            tok.parse(stuff.assertion);
+            var result = tok.verify(pk);
+            self.callback(result);
+          }, function(error) {
+            self.callback(null);
+          });
       },
       "still works": function(err, res) {
         assert.isTrue(res);

@@ -82,8 +82,11 @@ vows.describe('jwcert').addBatch({
       var user_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
 
       // generate the two certs
-      var intermediate_cert = new jwcert.JWCert("root.com", new Date(), intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
-      var user_cert = new jwcert.JWCert("intermediate.root.com", new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
+      var raw_expiration = new Date().valueOf() + 60000
+      var expiration = new Date();
+      expiration.setTime(raw_expiration);
+      var intermediate_cert = new jwcert.JWCert("root.com", expiration, intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
+      var user_cert = new jwcert.JWCert("intermediate.root.com", expiration, user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
 
       return {
         root_pk: root_kp.publicKey,
@@ -94,29 +97,85 @@ vows.describe('jwcert').addBatch({
     "proper root": {
       topic: function(stuff) {
         var cb = this.callback;
-        jwcert.JWCert.verifyChain(stuff.certificates, function(issuer, next) {
-          if (issuer == "root.com")
-            next(stuff.root_pk);
-          else
-            next(null);
-        }, function(pk) {cb({pk:pk, stuff:stuff});});
+        jwcert.JWCert.verifyChain(
+          stuff.certificates,
+          new Date(),
+          function(issuer, next) {
+            if (issuer == "root.com")
+              next(stuff.root_pk);
+            else
+              next(null);
+          },
+          function(pk) {cb({pk:pk, stuff:stuff});},
+          function(error) {cb({});});
       },
       "verifies": function(res, err) {
+        assert.ok(res.pk);
         assert.isTrue(res.pk.equals(res.stuff.user_pk));
       }
     },
     "improper root": {
       topic: function(stuff) {
         // this one should fail
-        jwcert.JWCert.verifyChain(stuff.certificates, function(issuer, next) {
-          if (issuer == "root.com")
-            next(stuff.user_pk);
-          else
-            next(null);
-        }, function(pk) {},this.callback);
+        jwcert.JWCert.verifyChain(
+          stuff.certificates,
+          new Date(),
+          function(issuer, next) {
+            if (issuer == "root.com")
+              next(stuff.user_pk);
+            else
+              next(null);
+          }, function(pk) {
+            console.log("oh oh!" + pk.serialize());
+          },this.callback);
       },
       "does not verify": function(message, err) {
         assert.isTrue(message != null);
+      }
+    }
+  },
+  "expired cert chain" : {
+    topic: function() {
+      // generate three keypairs to chain things
+      var root_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var intermediate_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var user_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+
+      // generate the two certs, one second old
+      var raw_expiration = new Date().valueOf() - 1000
+      var expiration = new Date();
+      expiration.setTime(raw_expiration);
+
+      var raw_expiration = new Date().valueOf() + 60000
+      var user_expiration = new Date();
+      user_expiration.setTime(raw_expiration);
+
+      var intermediate_cert = new jwcert.JWCert("root.com", expiration, intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
+      var user_cert = new jwcert.JWCert("intermediate.root.com", user_expiration, user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
+
+      return {
+        root_pk: root_kp.publicKey,
+        certificates : [intermediate_cert, user_cert],
+        user_pk : user_kp.publicKey
+      };
+    },
+    "fails to verify": {
+      topic: function(stuff) {
+        var cb = this.callback;
+        jwcert.JWCert.verifyChain(
+          stuff.certificates,
+          new Date(),
+          function(issuer, next) {
+            if (issuer == "root.com")
+              next(stuff.root_pk);
+            else
+              next(null);
+          },
+          function(pk) {cb({pk:pk, stuff:stuff});},
+          function(error) {cb({});});
+      },
+      "verifies": function(res, err) {
+        assert.equal(res.pk, null);
       }
     }
   }
