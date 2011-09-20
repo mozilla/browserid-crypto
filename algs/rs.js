@@ -43,6 +43,10 @@ var KEYSIZES = {
     rsaKeySize: 512,
     hashAlg: "sha256"
   },
+  128: {
+    rsaKeySize: 1024,
+    hashAlg: "sha256"
+  },
   256: {
     rsaKeySize: 2048,
     hashAlg: "sha256"
