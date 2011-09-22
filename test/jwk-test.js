@@ -41,7 +41,7 @@ var vows = require("vows"),
 
 // signing
 var ALG = "RS";
-var KEYSIZE = 64;
+var KEYSIZE = 128;
 
 vows.describe('keys').addBatch(
   {

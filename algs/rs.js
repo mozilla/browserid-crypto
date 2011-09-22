@@ -36,6 +36,8 @@ var libs = require("../libs/all"),
     exceptions = require("./exceptions"),
     jwk = require("../jwk");
 
+var BigInteger = libs.BigInteger;
+
 // supported keysizes
 var KEYSIZES = {
   // for testing only
@@ -101,8 +103,9 @@ PublicKey.prototype.verify = function(message, signature) {
 };
 
 PublicKey.prototype.serializeToObject = function(obj) {
-  // FIXME no more asn.1
-  obj.value = this.rsa.serializePublicASN1();
+  obj.n = this.rsa.n.toString();
+  obj.e = this.rsa.e.toString();
+  // obj.value = this.rsa.serializePublicASN1();
 };
 
 PublicKey.prototype.equals = function(other) {
@@ -110,12 +113,14 @@ PublicKey.prototype.equals = function(other) {
     return false;
   
   // FIXME: this is loser-ville if e is not an integer
-  return ((this.rsa.n.equals(other.rsa.n)) && (this.rsa.e == other.rsa.e) && (this.algorithm == other.algorithm));
+  return ((this.rsa.n.equals(other.rsa.n)) && (this.rsa.e == other.rsa.e || this.rsa.e.equals(other.rsa.e)) && (this.algorithm == other.algorithm));
 };
 
 PublicKey.prototype.deserializeFromObject = function(obj) {
   this.rsa = new libs.RSAKey();
-  this.rsa.readPublicKeyFromPEMString(obj.value);
+  this.rsa.n = new libs.BigInteger(obj.n, 10);
+  this.rsa.e = new libs.BigInteger(obj.e, 10);
+  // this.rsa.readPublicKeyFromPEMString(obj.value);
 
   this.keysize = _getKeySizeFromRSAKeySize(this.rsa.n.bitLength());
   return this;
@@ -133,12 +138,18 @@ SecretKey.prototype.sign = function(message) {
 };
 
 SecretKey.prototype.serializeToObject = function(obj) {
-  obj.value = this.rsa.serializePrivateASN1();
+  // obj.value = this.rsa.serializePrivateASN1();
+  obj.n = this.rsa.n.toString();
+  obj.e = this.rsa.e.toString();
+  obj.d = this.rsa.d.toString();
 };
 
 SecretKey.prototype.deserializeFromObject = function(obj) {
   this.rsa = new libs.RSAKey();
-  this.rsa.readPrivateKeyFromPEMString(obj.value);
+  // this.rsa.readPrivateKeyFromPEMString(obj.value);
+  this.rsa.n = new BigInteger(obj.n, 10);
+  this.rsa.e = new BigInteger(obj.e, 10);
+  this.rsa.d = new BigInteger(obj.d, 10);
 
   this.keysize = _getKeySizeFromRSAKeySize(this.rsa.n.bitLength());
   return this;
