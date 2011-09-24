@@ -80,7 +80,7 @@ JWT.prototype.verifyPayload = function() {
   // 2 minute window
   var diff = Math.abs(this.expires.valueOf() - new Date().valueOf());
 
-  return (diff <= 2000);
+  return (diff <= (2 * 60 * 1000));
 };
 
 exports.JWT = JWT;
