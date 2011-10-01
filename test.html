@@ -23,9 +23,19 @@
       var end = new Date();
       alert(end-start);
     }
+
+    function runperftests2() {
+      var jwk = require("./jwk");
+      var start = new Date();
+      for (var i = 0; i<10; i++)
+        jwk.KeyPair.generate("RS",64);
+      var end = new Date();
+      alert(end-start);
+    }
   </script>
 </head>
 <body>
 <button onclick="runtests();">run tests</button>
 <button onclick="runperftests();">run perf tests</button>
+<button onclick="runperftests2();">run perf tests 2</button>
 </body>

@@ -77,7 +77,7 @@ vows.describe('jwt').addBatch({
       // generate a key
       var key = jwk.KeyPair.generate(ALG, KEYSIZE);
       var d = new Date();
-      d.setTime(new Date().valueOf() - 2100);
+      d.setTime(new Date().valueOf() - 300100);
       var tok = new jwt.JWT("issuer.com", d, "rp.com");
       return {
         key: key,

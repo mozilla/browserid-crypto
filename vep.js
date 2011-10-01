@@ -34,7 +34,7 @@ var utils = require("./utils");
 
 params = {
   algorithm: "RS",
-  keysize: 256,
+  keysize: 256
 };
 
 // takes an array of serialized certs and a serialized assertion
