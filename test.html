@@ -14,8 +14,18 @@
       var tok = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
       alert("cert:\n" + cert + "\nassertion:\n" + tok);
     }
+
+    function runperftests() {
+      var jwk = require("./jwk");
+      var start = new Date();
+      for (var i = 0; i<10; i++)
+        jwk.KeyPair.generate("RS",64);
+      var end = new Date();
+      alert(end-start);
+    }
   </script>
 </head>
 <body>
 <button onclick="runtests();">run tests</button>
+<button onclick="runperftests();">run perf tests</button>
 </body>
