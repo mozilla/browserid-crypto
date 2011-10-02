@@ -116,19 +116,29 @@ JWS.prototype = {
   deserializePayload: function(payload) {
     this.payload = payload;
   },
-  
-  sign: function _sign(key) {
+
+  // callbacks for progress yielding and done
+  sign: function _sign(key, progressCB, doneCB) {
+    if (progressCB && !doneCB)
+      throw "need a done callback if progress callback is included";
+    
     var header = {"alg": key.getAlgorithm()};
     var algBytes = utils.base64urlencode(JSON.stringify(header));
     var jsonBytes = utils.base64urlencode(this.serializePayload());
     
     var stringToSign = algBytes + "." + jsonBytes;
 
-    // sign and encode
-    var rawSignature = key.sign(stringToSign);
-    var signatureValue = utils.hex2b64urlencode(rawSignature);
-
-    return algBytes + "." + jsonBytes + "." + signatureValue;
+    // sign and encode with async properties
+    if (!progressCB) {
+      var rawSignature = key.sign(stringToSign);
+      var signatureValue = utils.hex2b64urlencode(rawSignature);
+      return algBytes + "." + jsonBytes + "." + signatureValue;
+    } else {
+      key.sign(stringToSign, progressCB, function(rawSignature) {
+        var signatureValue = utils.hex2b64urlencode(rawSignature);
+        doneCB(algBytes + "." + jsonBytes + "." + signatureValue);
+      });
+    }
   },
 
   // this is used by subclasses to further verify the payload

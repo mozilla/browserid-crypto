@@ -136,8 +136,12 @@ function SecretKey(rsa, keysize) {
 
 SecretKey.prototype = new jwk.SecretKey();
 
-SecretKey.prototype.sign = function(message) {
-  return this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
+SecretKey.prototype.sign = function(message, progressCB, doneCB) {
+  var signature = this.rsa.signString(message, KEYSIZES[this.keysize].hashAlg);
+  if (!progressCB)
+    return signature;
+  else
+    doneCB(signature);
 };
 
 SecretKey.prototype.serializeToObject = function(obj) {

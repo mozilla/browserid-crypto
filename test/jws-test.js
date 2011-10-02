@@ -83,5 +83,29 @@ vows.describe('jws').addBatch({
       assert.isTrue(wt.verify(topic.key.publicKey));
       assert.equal(wt.payload, "stringtosign");
     }
+  },
+  
+  "generate jws async" : {
+    topic: function() {
+      // generate a key
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var tok = new jws.JWS("stringtosign");
+      var self = this;
+      tok.sign(key.secretKey, function() {}, function(token) {
+        self.callback({
+          key: key,
+          token: token
+        });
+      });
+    },
+    "token is approximately proper JWS format": function(topic, err) {
+      assert.length(topic.token.split('.'), 3);
+    },
+    "token is properly signed": function(topic, err) {
+      var wt = new jws.JWS();
+      wt.parse(topic.token);
+      assert.isTrue(wt.verify(topic.key.publicKey));
+      assert.equal(wt.payload, "stringtosign");
+    }
   }
 }).export(module);
