@@ -40,14 +40,15 @@
       var rng = new libs.SecureRandom();
       var qs = B>>1;
       this.e = parseInt(E,16);
-      var ee = new BigInteger(E,16);
+      var ee = new libs.BigInteger(E,16);
       var p;
       for(;;) {
-        p = new BigInteger(B-qs,1,rng);
-        if(p.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && p.isProbablePrime(10)) break;
+        p = new libs.BigInteger(B-qs,1,rng);
+        break;
+        // if(p.subtract(libs.BigInteger.ONE).gcd(ee).compareTo(libs.BigInteger.ONE) == 0 && p.isProbablePrime(10)) break;
       }
 
-      alert('done!');
+      alert('done: ' + p.toString());
     }
   </script>
 </head>

@@ -72,7 +72,7 @@ var KeyPair = function() {
 
 KeyPair.prototype = new jwk.KeyPair();
 
-KeyPair.prototype.generate = function(keysize) {
+KeyPair.prototype.generate = function(keysize, progressCB, doneCB) {
   if (!(keysize in KEYSIZES))
     throw new exceptions.KeySizeNotSupportedException(keysize.toString());
   
@@ -88,7 +88,10 @@ KeyPair.prototype.generate = function(keysize) {
 
   this.publicKey.algorithm = this.secretKey.algorithm = this.algorithm;
 
-  return this;
+  if (!progressCB)
+    return this;
+  else
+    doneCB(this);
 };
 
 var PublicKey = function(rsa, keysize) {

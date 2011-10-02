@@ -130,6 +130,20 @@ vows.describe('keys').addBatch(
         }
         
       }
+    },
+    "generate async keypair" : {
+      topic: function() {
+        jwk.KeyPair.generate(ALG, KEYSIZE, function() {}, this.callback);
+      },
+      "is a keypair": function(keypair, err) {
+        assert.instanceOf(keypair, jwk.KeyPair);
+      },
+      "should have right algorithm": function(keypair, err) {
+        assert.equal(keypair.algorithm, ALG);
+      },
+      "should have right number of bits": function(keypair, err) {
+        assert.equal(keypair.keysize, KEYSIZE);
+      }
     }
   }).export(module);
 

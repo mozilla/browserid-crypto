@@ -72,13 +72,29 @@ KeyPair.prototype = {
   getAlgorithm: _getAlgorithm
 };
 
-KeyPair.generate = function(alg, keysize) {
+/*
+ * the progressCB is called every so often
+ * the system will auto-yield to the UI thread right
+ * after each progressCB
+ *
+ * progressCB may be called with an estimated fraction
+ * of work done, or with nothing
+ */
+KeyPair.generate = function(alg, keysize, progressCB, doneCB) {
+  if (progressCB && !doneCB)
+    throw "need a done callback if progress callback is included";
+  
   if (!ALGS[alg])
     throw new NotImplementedException("algorithm " + alg + " not implemented");
 
   var kp = new ALGS[alg].KeyPair();
-  kp.generate(keysize);
-  return kp;
+
+  // pass the callbacks
+  kp.generate(keysize, progressCB, doneCB);
+
+  // don't return anything if it's asynchronous
+  if (!progressCB)
+    return kp;
 };
 
 KeyPair._register = function(alg, cls) {
