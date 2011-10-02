@@ -32,10 +32,28 @@
       var end = new Date();
       alert(end-start);
     }
+
+    function onePrime() {
+      var B = 512;
+      var E = "10001";
+      var libs = require("./libs/all");
+      var rng = new libs.SecureRandom();
+      var qs = B>>1;
+      this.e = parseInt(E,16);
+      var ee = new BigInteger(E,16);
+      var p;
+      for(;;) {
+        p = new BigInteger(B-qs,1,rng);
+        if(p.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && p.isProbablePrime(10)) break;
+      }
+
+      alert('done!');
+    }
   </script>
 </head>
 <body>
 <button onclick="runtests();">run tests</button>
 <button onclick="runperftests();">run perf tests</button>
 <button onclick="runperftests2();">run perf tests 2</button>
+<button onclick="onePrime();">one prime</button>
 </body>

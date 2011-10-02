@@ -6,6 +6,7 @@
 
 exports.RSAKey = RSAKey;
 exports.BigInteger = BigInteger;
+exports.SecureRandom = SecureRandom;
 exports.sjcl = sjcl;
 exports.hex2b64 = hex2b64;
 exports.b64tohex = b64tohex;
