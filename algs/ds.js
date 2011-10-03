@@ -67,9 +67,9 @@ var KEYSIZES = {
     hashAlg: "sha256"
   },
   256: {
-    p: "00b9001e683f1f0b9b8cb40f9139d6cffa03d4263babe6fd904fa9484a5bfda964bf1efb09a515762a19c8cf82447e5909f671d14bad01e2471ea30c4c1333fe52c53bf3a90be037753d53b822023520655ea4dc4ace0eb8f0656837bedb02e4b0de040416c77039a5729eb42e3f6d5c88ae658437a187a25f7633ad82429f82d7d0d3fff7c1708882426b046fc9fc21bf1223729c89120a2af36cfb2d521402eb93d164ebb33373a7192e784d9ff6f639c7799b9b2277524545448bccc17d0a985060a237ffe2146124f5e4ab23cd5310165900dfe4946e4adbeb8b91dbb95cf9d8cb8b74ee849a2b4aa62aaa1c777ab6d3fd00c8b1af010cd25a75a64e3fe409",
-    q: "00ef2082b5f5bf64cd49c8951c65da8b1be5f9f49f",
-    g: "465dd3d3639d423900e5453d624796db2acb830de6c2782895156d322ca6babbd760742a9445034f7728bf5983b079bdf4f914e1371e58a9485d489ae46e6e3b55218023020ca58e14b8c17030009a0443abf312b2701f0a593952c1e3977173371061527b5f87e5995c98e46bda76c1e0c5619390f6c2f9cd10484c48bb2a3c775ccf5fe710aae0712d78b8ee640873fffa11b7c8bc31858bc33ee1f1db431ef8d08a2eb8a4d1df96075d1c94ffedb43c8d698e2a307f66418d6526e2ef375263b33f11f348ec49fb073be654dea9384631eeb465878e29377a58a9666c361b576c4a31b3860875664f884f8fa01e0840fd7bb59d11289d7d2324fe7681e95b",
+    p: "815901aa6d3ced6a0bd488c617351e322c8aef8f9f90adf331a2583d8082ac46f74345a1e1cf561facbdf3239bc3f0ee71618b5d016266caafd48439b034a38f6560cd6b671e3a80248b46809ad8de7a4cc7250469611d59dae8d8af5c6d0f9f3665f9857e04e1134dc94b270e93341449ea503617447ecb83b2c01602878c070d080da464c974d9951c35c1a553407345ee31ebc4a29a3488d5a54702a971ee0a1ea4da93fcf64105040893ff4bec23ca11e8cffa279e899a46891137c28e85f5a2fc9c637af6d26f6b5deba3d60580df41c334ea123331f8b0adeb43ea64a037e0c5ac168c47ce421bc9718ba8357099a0221f778599acd917607f3e3024d7",
+    q: "87974deb793421ce3891540d906ac0806b85a2b95adc211a82ef8b659f8d9d25",
+    g: "75ee80f0a161dd0c025ac818db8d52d193a46655fe0ebd3c289a949f42185f58f2f88f825dcdb3e3e98c0598af87599728f4f0719a8f68b133e82eb1bc4e3b6b8a377a5c6b812d656efcde578fdf515ac6ef628f1564ac907745d53bc6213b74f0cc303bbe68f3ab2220dcacd0ceece7aac3a675aaa0604885a1fb1374e6c08f2dcf503e58ac6487be73b8ab2a10fa62a79522cbc777b6321fd346e0d36ee5a7291955117d8bb4284901eb26804bd2286a14af52f5301c489c80dfeafb7ce496af58479a4c6f57f29ec8c9e4f6b88deb06f5d120859d2d4de06e57b0476f8263f7a4a35f67ed21a4a927109fa89a6b7f4976e98e3ddb3cd232c516b1da5cc555",
     hashAlg: "sha256"
   }
 };
@@ -90,8 +90,9 @@ function _getKeySizeFromYBitlength(size) {
 
     // extremely unlikely to be more than 30 bits smaller than p
     // 2^-30. FIXME: should we be more tolerant here.
-    if (diff >= 0 || diff < 30)
+    if (diff >= 0 && diff < 30) {
       return keysize;
+    }
   }
 
   return null;
@@ -146,14 +147,18 @@ PublicKey.prototype.verify = function(message, signature) {
 
   // extract r and s
   var split_sig = signature.split("|");
-  var r = new BigInteger(split_sig[0], 10),
-      s = new BigInteger(split_sig[1], 10);
+  var r = new BigInteger(split_sig[0], 16),
+      s = new BigInteger(split_sig[1], 16);
 
   // check rangeconstraints
-  if ((r.compareTo(libs.BigInteger.ZERO) < 0) || (r.compareTo(params.q) > 0))
+  if ((r.compareTo(libs.BigInteger.ZERO) < 0) || (r.compareTo(params.q) > 0)) {
+    console.log("problem with r");
     return false;
-  if ((s.compareTo(libs.BigInteger.ZERO) < 0) || (s.compareTo(params.q) > 0))
+  }
+  if ((s.compareTo(libs.BigInteger.ZERO) < 0) || (s.compareTo(params.q) > 0)) {
+    console.log("problem with s");
     return false;
+  }
 
   var w = s.modInverse(params.q);
   var u1 = doHash(params.hashAlg, message, params.q).multiply(w).mod(params.q);
@@ -167,7 +172,7 @@ PublicKey.prototype.verify = function(message, signature) {
 };
 
 PublicKey.prototype.serializeToObject = function(obj) {
-  obj.y = this.y.toString();
+  obj.y = this.y.toString(16);
 };
 
 PublicKey.prototype.equals = function(other) {
@@ -178,7 +183,7 @@ PublicKey.prototype.equals = function(other) {
 };
 
 PublicKey.prototype.deserializeFromObject = function(obj) {
-  this.y = new libs.BigInteger(obj.y, 10);
+  this.y = new libs.BigInteger(obj.y, 16);
 
   this.keysize = _getKeySizeFromYBitlength(this.y.bitLength());
   return this;
@@ -233,7 +238,7 @@ SecretKey.prototype.sign = function(message, progressCB, doneCB) {
   }
 
   // format the signature, it's r and s
-  var signature = r.toString() + "|" + s.toString();
+  var signature = r.toString(16) + "|" + s.toString(16);
   
   if (!progressCB)
     return signature;
@@ -242,12 +247,12 @@ SecretKey.prototype.sign = function(message, progressCB, doneCB) {
 };
 
 SecretKey.prototype.serializeToObject = function(obj) {
-  obj.x = this.x.toString();
+  obj.x = this.x.toString(16);
   obj.keysize = this.keysize;
 };
 
 SecretKey.prototype.deserializeFromObject = function(obj) {
-  this.x = new BigInteger(obj.x, 10);
+  this.x = new BigInteger(obj.x, 16);
   this.keysize = obj.keysize;
 
   var params = KEYSIZES[keysize];

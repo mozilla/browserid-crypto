@@ -40,8 +40,8 @@ var vows = require("vows"),
     jwk = require("../jwk");
 
 // signing
-var ALGS = ["RS", "DS"];
-var KEYSIZES = [64, 128];
+var ALGS = ["DS","RS"];
+var KEYSIZES = [64, 128, 256];
 
 function batchForOneAlg(alg, keysize) {
   return {
