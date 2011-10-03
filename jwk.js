@@ -176,4 +176,5 @@ exports.SecretKey = SecretKey;
 // algorithms
 // FIXME: rs should self-register and should be added after this JWK definition
 var rs = require("./algs/rs");
+var ds = require("./algs/ds");
 

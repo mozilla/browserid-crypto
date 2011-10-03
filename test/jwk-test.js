@@ -40,23 +40,23 @@ var vows = require("vows"),
     jwk = require("../jwk");
 
 // signing
-var ALG = "RS";
-var KEYSIZE = 128;
+var ALGS = ["RS", "DS"];
+var KEYSIZES = [64, 128];
 
-vows.describe('keys').addBatch(
-  {
+function batchForOneAlg(alg, keysize) {
+  return {
     "generate keypair" : {
       topic: function() {
-        return jwk.KeyPair.generate(ALG, KEYSIZE);
+        return jwk.KeyPair.generate(alg, keysize);
       },
       "is a keypair": function(keypair) {
         assert.instanceOf(keypair, jwk.KeyPair);
       },
       "should have right algorithm": function(keypair) {
-        assert.equal(keypair.algorithm, ALG);
+        assert.equal(keypair.algorithm, alg);
       },
       "should have right number of bits": function(keypair) {
-        assert.equal(keypair.keysize, KEYSIZE);
+        assert.equal(keypair.keysize, keysize);
       },
       "should have secret key": function(keypair) {
         assert.notEqual(keypair.secretKey, null);
@@ -71,7 +71,7 @@ vows.describe('keys').addBatch(
           assert.notEqual(pk, null);
         },
         "reconstituted pk has proper algorithm": function(pk) {
-          assert.equal(pk.algorithm, "RS");
+          assert.equal(pk.algorithm, alg);
         }
       },
       "serialize and deserialize the secret key": {
@@ -84,7 +84,7 @@ vows.describe('keys').addBatch(
           assert.notEqual(sk, null);
         },
         "reconstituted sk has proper algorithm": function(sk) {
-          assert.equal(sk.algorithm, "RS");
+          assert.equal(sk.algorithm, alg);
         }
       },
       "with a message": {
@@ -133,17 +133,27 @@ vows.describe('keys').addBatch(
     },
     "generate async keypair" : {
       topic: function() {
-        jwk.KeyPair.generate(ALG, KEYSIZE, function() {}, this.callback);
+        jwk.KeyPair.generate(alg, keysize, function() {}, this.callback);
       },
       "is a keypair": function(keypair, err) {
         assert.instanceOf(keypair, jwk.KeyPair);
       },
       "should have right algorithm": function(keypair, err) {
-        assert.equal(keypair.algorithm, ALG);
+        assert.equal(keypair.algorithm, alg);
       },
       "should have right number of bits": function(keypair, err) {
-        assert.equal(keypair.keysize, KEYSIZE);
+        assert.equal(keypair.keysize, keysize);
       }
     }
-  }).export(module);
+  };
+}
 
+var suite = vows.describe('keys');
+
+ALGS.forEach(function(alg) {
+  KEYSIZES.forEach(function(keysize) {
+    suite.addBatch(batchForOneAlg(alg,keysize));
+  });
+});
+
+suite.export(module);
