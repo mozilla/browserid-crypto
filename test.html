@@ -3,6 +3,14 @@
   <script type="text/javascript" src="vepbundle.js"></script>
   <script type="text/javascript">
     // a small subset of vows tests
+    function runkeygen() {
+      var jwk = require("./jwk");
+      var start = new Date();
+      jwk.KeyPair.generate("RS",64);
+      var end = new Date();
+      alert(end-start);
+    }
+
     function runtests() {
       var jwk = require("./jwk");
       var jwt = require("./jwt");
@@ -53,6 +61,7 @@
   </script>
 </head>
 <body>
+<button onclick="runkeygen();">keygen-512</button>
 <button onclick="runtests();">run tests</button>
 <button onclick="runperftests();">run perf tests</button>
 <button onclick="runperftests2();">run perf tests 2</button>
