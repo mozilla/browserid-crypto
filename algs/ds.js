@@ -49,6 +49,14 @@ function doHash(hashAlg, message, modulus) {
   return new libs.BigInteger(HASH_ALGS[hashAlg](message), "16").mod(modulus);
 }
 
+// pad with leading 0s a hex string
+function hex_lpad(str, length) {
+  while (str.length < length) {
+    str = "0" + str;
+  }
+  return str;
+}
+
 // supported keysizes
 // the Diffie-Hellman group is specified for each keysize
 // this means we don't need to specify a parameter generation step.
@@ -80,6 +88,9 @@ for (keysize in KEYSIZES) {
   the_params.p = new BigInteger(the_params.p, "16");
   the_params.q = new BigInteger(the_params.q, "16");
   the_params.g = new BigInteger(the_params.g, "16");
+
+  // sizes
+  the_params.q_bitlength = the_params.q.bitLength();
 }
 
 
@@ -146,13 +157,18 @@ PublicKey.prototype.verify = function(message, signature) {
   var params = KEYSIZES[this.keysize];
 
   // extract r and s
-  var split_sig = signature.split("|");
-  var r = new BigInteger(split_sig[0], 16),
-      s = new BigInteger(split_sig[1], 16);
+  var hexlength = params.q_bitlength / 4;
+  if (signature.length != (hexlength * 2)) {
+    console.log("problem with r/s combo");
+    return false;
+  }
+
+  var r = new BigInteger(signature.substring(0, hexlength), 16),
+      s = new BigInteger(signature.substring(hexlength, hexlength*2), 16);
 
   // check rangeconstraints
   if ((r.compareTo(libs.BigInteger.ZERO) < 0) || (r.compareTo(params.q) > 0)) {
-    console.log("problem with r");
+    console.log("problem with r: " + r.toString(16));
     return false;
   }
   if ((s.compareTo(libs.BigInteger.ZERO) < 0) || (s.compareTo(params.q) > 0)) {
@@ -218,8 +234,10 @@ SecretKey.prototype.sign = function(message, progressCB, doneCB) {
     k = randomNumberMod(params.q, rng);
     r = params.g.modPow(k, params.p).mod(params.q);
     
-    if (r.equals(libs.BigInteger.ZERO))
+    if (r.equals(libs.BigInteger.ZERO)) {
+      console.log("oops r is zero");
       continue;
+    }
 
     // the hash
     var bigint_hash = doHash(params.hashAlg, message, params.q);
@@ -230,16 +248,19 @@ SecretKey.prototype.sign = function(message, progressCB, doneCB) {
     // compute s
     s = k.modInverse(params.q).multiply(message_dep).mod(params.q);
 
-    if (s.equals(libs.BigInteger.ZERO))
+    if (s.equals(libs.BigInteger.ZERO)) {
+      console.log("oops s is zero");
       continue;
+    }
 
     // r and s are non-zero, we can continue
     break;
   }
 
   // format the signature, it's r and s
-  var signature = r.toString(16) + "|" + s.toString(16);
-  
+  var hexlength = params.q_bitlength / 4;
+  var signature = hex_lpad(r.toString(16), hexlength) + hex_lpad(s.toString(16), hexlength);
+
   if (!progressCB)
     return signature;
   else
