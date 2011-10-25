@@ -41,7 +41,7 @@ var vows = require("vows"),
 
 // signing
 var ALGS = ["DS","RS"];
-var KEYSIZES = [64, 128, 256];
+var KEYSIZES = [128, 256];
 
 function batchForOneAlg(alg, keysize) {
   return {
