@@ -201,7 +201,7 @@ PublicKey.prototype.verify = function(message, signature) {
   // extract r and s
   var hexlength = params.q_bitlength / 4;
   if (signature.length != (hexlength * 2)) {
-    console.log("problem with r/s combo");
+    console.log("problem with r/s combo: " + signature.length + "/" + hexlength + " - " + signature);
     return false;
   }
 

@@ -1,5 +1,8 @@
+<html>
 <head>
-  <title>test VEP from Browser</title>
+<!-- stupid IE8 standards mode for JSON -->
+<meta http-equiv="x-ua-compatible" content="IE=8" />
+<title>test VEP from Browser</title>
   <script type="text/javascript" src="vepbundle.js"></script>
   <script type="text/javascript">
     // a small subset of vows tests
@@ -60,11 +63,14 @@
     }
 
     function rundsatests() {
+      alert(JSON);
       var jwk = require("./jwk");
+      var jwt = require("./jwt");
       var start = new Date();
       var count = 10;
       function do_next() {
-         jwk.KeyPair.generate("DS",256);
+         var kp = jwk.KeyPair.generate("DS",128);
+         var kp = jwk.KeyPair.generate("DS",128);
          count -= 1;
          if (count > 0)
            window.setTimeout(do_next, 0);
@@ -86,3 +92,4 @@
 <button onclick="onePrime();">one prime</button>
 <button onclick="rundsatests();">run dsa tests</button>
 </body>
+</html>

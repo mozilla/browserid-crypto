@@ -13,4 +13,11 @@ tok.parse(full_assertion.assertion);
 console.log("audience: " + tok.audience);
 console.log("expires: " + tok.expires);
 
+full_assertion.certificates.forEach(function(c) {
+  var cert = new jwcert.JWCert();
+  cert.parse(c);
+  console.log("cert: " + cert.issuer + "," + JSON.stringify(cert.principal) + "," + JSON.stringify(cert.pk));
+});
+
+
 // FIXME: add certificates
