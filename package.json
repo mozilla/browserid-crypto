@@ -16,6 +16,7 @@
   }
   , "bin" : {
     "generate-keypair": "./bin/generate-keypair",
-    "check-assertion": "./bin/check-assertion"
+    "check-assertion": "./bin/check-assertion",
+    "certify": "./bin/certify"
   }
 }
