@@ -75,7 +75,7 @@ vows.describe('jws').addBatch({
       };
     },
     "token is approximately proper JWS format": function(topic) {
-      assert.length(topic.token.split('.'), 3);
+      assert.lengthOf(topic.token.split('.'), 3);
     },
     "token is properly signed": function(topic) {
       var wt = new jws.JWS();
@@ -99,7 +99,7 @@ vows.describe('jws').addBatch({
       });
     },
     "token is approximately proper JWS format": function(topic, err) {
-      assert.length(topic.token.split('.'), 3);
+      assert.lengthOf(topic.token.split('.'), 3);
     },
     "token is properly signed": function(topic, err) {
       var wt = new jws.JWS();

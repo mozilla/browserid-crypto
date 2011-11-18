@@ -58,7 +58,7 @@ vows.describe('jwt').addBatch({
       };
     },
     "token is approximately proper JWS format": function(topic) {
-      assert.length(topic.token.split('.'), 3);
+      assert.lengthOf(topic.token.split('.'), 3);
     },
     "token is properly signed": function(topic) {
       var json_ws = new jws.JWS();

@@ -3,12 +3,12 @@
   , "version": "0.0.1"
   , "dependencies": {
     "browserify": "1.5.0",
-    "vows": "0.5.11",
+    "vows": "0.5.13",
     "optimist": "0.2.6"
   }
   , "scripts": {
     "postinstall": "./bundle.sh",
-    "test": "vows"
+    "test": "./node_modules/.bin/vows"
   }
   , "repository" :
   { "type" : "git"

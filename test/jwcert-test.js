@@ -59,7 +59,7 @@ vows.describe('jwcert').addBatch({
       };
     },
     "cert is approximately proper JWS format": function(topic) {
-      assert.length(topic.cert.split('.'), 3);
+      assert.lengthOf(topic.cert.split('.'), 3);
     },
     "cert is properly signed": function(topic) {
       var json_cert = new jws.JWS();
