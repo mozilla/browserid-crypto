@@ -20,7 +20,12 @@
       var jwcert = require("./jwcert");
       var user_kp = jwk.KeyPair.generate("RS",64);
       var root_kp = jwk.KeyPair.generate("RS",64);
-      var cert = new jwcert.JWCert("foo.com", new Date(), user_kp.publicKey, {email : "foo@foo.com"}).sign(root_kp.secretKey);
+
+      var exp = new Date((new Date()).getTime() + (6 * 60 * 60 * 1000));
+
+      var iat = new Date();
+
+      var cert = new jwcert.JWCert("foo.com", exp, iat, user_kp.publicKey, {email : "foo@foo.com"}).sign(root_kp.secretKey);
 
       var tok = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
       alert("cert:\n" + cert + "\nassertion:\n" + tok);

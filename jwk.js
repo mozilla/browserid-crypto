@@ -116,7 +116,7 @@ PublicKey.prototype = {
   serialize: function() {
     return JSON.stringify(this.toSimpleObject());
   },
-  
+
   getAlgorithm : _getAlgorithm
 };
 

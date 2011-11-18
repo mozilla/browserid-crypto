@@ -20,6 +20,7 @@
  * Contributor(s):
  *     Ben Adida <benadida@mozilla.com>
  *     Mike Hanson <mhanson@mozilla.com>
+ *     Lloyd Hilaiel <lloyd@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -52,7 +53,9 @@ vows.describe('jwcert').addBatch({
     topic: function() {
       // generate a key
       var key = jwk.KeyPair.generate(ALG, KEYSIZE);
-      var tok = new jwcert.JWCert("issuer.com", new Date(), key.publicKey, {email:"john@issuer.com"});
+      var exp = new Date((new Date()).getTime() + (6 * 60 * 60 * 1000));
+      var iat = new Date();
+      var tok = new jwcert.JWCert("issuer.com", exp, iat, key.publicKey, {email:"john@issuer.com"});
       return {
         key: key,
         cert: tok.sign(key.secretKey)
@@ -85,8 +88,8 @@ vows.describe('jwcert').addBatch({
       var raw_expiration = new Date().valueOf() + 60000
       var expiration = new Date();
       expiration.setTime(raw_expiration);
-      var intermediate_cert = new jwcert.JWCert("root.com", expiration, intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
-      var user_cert = new jwcert.JWCert("intermediate.root.com", expiration, user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
+      var intermediate_cert = new jwcert.JWCert("root.com", expiration, new Date(), intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
+      var user_cert = new jwcert.JWCert("intermediate.root.com", expiration, new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
 
       return {
         root_pk: root_kp.publicKey,
@@ -150,8 +153,8 @@ vows.describe('jwcert').addBatch({
       var user_expiration = new Date();
       user_expiration.setTime(raw_expiration);
 
-      var intermediate_cert = new jwcert.JWCert("root.com", expiration, intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
-      var user_cert = new jwcert.JWCert("intermediate.root.com", user_expiration, user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
+      var intermediate_cert = new jwcert.JWCert("root.com", expiration, new Date(), intermediate_kp.publicKey, {host: "intermediate.root.com"}).sign(root_kp.secretKey);
+      var user_cert = new jwcert.JWCert("intermediate.root.com", user_expiration, new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(intermediate_kp.secretKey);
 
       return {
         root_pk: root_kp.publicKey,

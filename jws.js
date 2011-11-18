@@ -72,7 +72,7 @@ function NotImplementedException(message) {
 function getByAlg(alg) {
   if (!alg)
     throw new NotImplementedException("no alg provided");
-  
+
   var module = algs[alg];
   if (!module)
     throw new NotImplementedException(alg);
@@ -100,12 +100,12 @@ JWS.prototype = {
 
     this.headerSegment = parts[0];
     this.payloadSegment = parts[1];
-    this.cryptoSegment = parts[2];  
+    this.cryptoSegment = parts[2];
 
     // set up the individual pieces of this JWS (and subclasses, potentially)
     this.deserializePayload(utils.base64urldecode(this.payloadSegment));
   },
-  
+
   // these noop serialization and deserialization functions
   // exist so JWS can call them generically even when other
   // libs build on top of JWS
@@ -121,11 +121,11 @@ JWS.prototype = {
   sign: function _sign(key, progressCB, doneCB) {
     if (progressCB && !doneCB)
       throw "need a done callback if progress callback is included";
-    
+
     var header = {"alg": key.getAlgorithm()};
     var algBytes = utils.base64urlencode(JSON.stringify(header));
     var jsonBytes = utils.base64urlencode(this.serializePayload());
-    
+
     var stringToSign = algBytes + "." + jsonBytes;
 
     // sign and encode with async properties
@@ -145,18 +145,18 @@ JWS.prototype = {
   verifyPayload: function() {
     return true;
   },
-  
+
   verify: function _verify(key) {
     // we verify based on the actual string
     // FIXME: we should validate that the header contains only proper fields
     var header = JSON.parse(utils.base64urldecode(this.headerSegment));
 
     // check that algorithm matches
-    if (key.getAlgorithm() != header.alg) { 
+    if (key.getAlgorithm() != header.alg) {
       console.log("Bad alg: " + key.getAlgorithm() + " / " + header.alg);
       return false;
     }
-    
+
     // decode the signature, and verify it
     var sig_verification = key.verify(this.headerSegment + "." + this.payloadSegment, utils.b64urltohex(this.cryptoSegment));
 

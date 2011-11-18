@@ -59,7 +59,7 @@ vows.describe('vep').addBatch({
       var expiration = new Date();
       expiration.setTime(raw_expiration);
 
-      var user_cert = new jwcert.JWCert("root.com", expiration, user_kp.publicKey, {email: "john@root.com"}).sign(root_kp.secretKey);
+      var user_cert = new jwcert.JWCert("root.com", expiration, new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(root_kp.secretKey);
 
       // generate assertion
       var tok = new jwt.JWT(null, new Date(), "rp.com");

@@ -41,6 +41,7 @@
 // {
 //   iss: "example.com",
 //   exp: "1313971280961",
+//   iat: "1313971259361",
 //   public-key: {
 //     alg: "RS256",
 //     value: "-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIn8oZeKoif0us1CTj12zGveebf1FfEmlBW2Gh38kejVP2fSgjSWtMuHzzCcQuWwxCe3M5L5My9BgOtcsyQCzpECAwEAAQ==-----END PUBLIC KEY-----"
@@ -57,6 +58,7 @@
 // {
 //   iss: "example.com",
 //   exp: "1313971280961",
+//   iat: "1313971259361",
 //   public-key: {
 //     alg: "RS",
 //     value: "-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIn8oZeKoif0us1CTj12zGveebf1FfEmlBW2Gh38kejVP2fSgjSWtMuHzzCcQuWwxCe3M5L5My9BgOtcsyQCzpECAwEAAQ==-----END PUBLIC KEY-----"
@@ -72,17 +74,18 @@ var libs = require("./libs/all"),
     jws = require("./jws"),
     und = require("./underscore.js");
 
-function JWCert(issuer, expires, pk, principal) {
-  this.init(issuer, expires, pk, principal);
+function JWCert(issuer, expires, issued_at, pk, principal) {
+  this.init(issuer, expires, issued_at, pk, principal);
 };
 
 JWCert.prototype = new jws.JWS();
 
 // add some methods
 
-JWCert.prototype.init = function(issuer, expires, pk, principal) {
+JWCert.prototype.init = function(issuer, expires, issued_at, pk, principal) {
   this.issuer = issuer;
   this.expires = expires;
+  this.issued_at = issued_at;
   this.pk = pk;
   this.principal = principal;
 };
@@ -91,6 +94,7 @@ JWCert.prototype.serializePayload = function() {
   return JSON.stringify({
     iss: this.issuer,
     exp: this.expires.valueOf(),
+    iat: this.issued_at.valueOf(),
     "public-key": this.pk.toSimpleObject(),
     principal: this.principal
   });
@@ -100,12 +104,14 @@ JWCert.prototype.serializePayload = function() {
 // after verification
 JWCert.prototype.deserializePayload = function(payload) {
   var obj = JSON.parse(payload);
-  var d = new Date();
-  d.setTime(obj.exp);
+  var exp = new Date();
+  exp.setTime(obj.exp);
+  var iat = new Date();
+  iat.setTime(obj.iat);
 
   var pk = jwk.PublicKey.fromSimpleObject(obj['public-key']);
-  
-  this.init(obj.iss, d, pk, obj.principal);
+
+  this.init(obj.iss, exp, iat, pk, obj.principal);
 };
 
 // a utility function to verify a chain of certificates
