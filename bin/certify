@@ -1,0 +1,39 @@
+#!/usr/bin/env node
+
+//
+// given a private key, public key, and expiration date.  Generate
+// a certificate (signing the public key with the private key)
+//
+
+var
+jwk = require("../jwk"),
+jwt = require("../jwt"),
+jwcert = require("../jwcert"),
+fs = require("fs");
+
+var args = require('optimist')
+.usage('Generate certificate which is a signed public key and some metadata\nUsage: $0')
+.alias('p', 'public')
+.describe('p', 'public key to sign')
+.demand('p')
+.alias('h', 'help')
+.describe('h', 'display this usage message')
+.alias('s', 'secret')
+.describe('s', 'secret key to use to sign the public key')
+.demand('s')
+.alias('d', 'duration')
+.describe('d', 'duration of certificate in seconds')
+.default('s', 365 * 24 * 60 * 60);
+
+var argv = args.argv;
+
+if (argv.h) {
+  args.showHelp();
+  process.exit(1);
+}
+
+var pk = jwk.PublicKey.deserialize(fs.readFileSync(argv.p));
+var sk = jwk.SecretKey.deserialize(fs.readFileSync(argv.s));
+var expires = new Date(new Date().getTime() + (args.d * 1000));
+var cert = new jwcert.JWCert(null, expires, new Date(), pk, {}).sign(sk);
+console.log(cert);
