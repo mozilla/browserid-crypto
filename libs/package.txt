@@ -1,4 +1,5 @@
 preliminaries.js
+external/base64-shim.js
 external/sha1.js
 external/sjcl.js
 external/base64.js
