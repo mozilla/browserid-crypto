@@ -77,10 +77,7 @@ JWT.prototype.deserializePayload = function(payload) {
 // after verification and deserialization to ensure that
 // the payload verifies
 JWT.prototype.verifyPayload = function() {
-  // 2 minute window
-  var diff = Math.abs(this.expires.valueOf() - new Date().valueOf());
-
-  return (diff <= (2 * 60 * 1000));
+  return (this.expires > new Date());
 };
 
 exports.JWT = JWT;

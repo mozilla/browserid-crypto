@@ -62,7 +62,8 @@ vows.describe('vep').addBatch({
       var user_cert = new jwcert.JWCert("root.com", expiration, new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(root_kp.secretKey);
 
       // generate assertion
-      var tok = new jwt.JWT(null, new Date(), "rp.com");
+      assertionExpiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, assertionExpiration, "rp.com");
       var assertion = tok.sign(user_kp.secretKey);
 
       // bundle
