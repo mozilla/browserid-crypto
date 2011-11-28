@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ##
 
 echo ''
@@ -19,8 +19,7 @@ OUTPUT="./vepbundle.js"
 
 # package
 cd libs
-./package.sh
-
+$BASH ./package.sh
 cd ../
 
 # remove the existing file if it exists

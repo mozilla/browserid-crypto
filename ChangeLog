@@ -1,2 +1,5 @@
+0.0.2:
+	* fix scripts invoked by post-install steps on node 0.6.3 with built-in npm
+
 0.0.1:
 	* first version published to npm

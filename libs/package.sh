@@ -1,5 +1,4 @@
-#!/bin/sh
-##
+#!/bin/bash
 
 echo ''
 echo '****Packaging External Dependencies****'
@@ -21,4 +20,3 @@ fi
 cat "$PACKAGE" |while read filename; do
     cat "${filename}" >> "$OUTPUT";
 done
-

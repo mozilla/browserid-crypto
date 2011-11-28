@@ -1,13 +1,13 @@
 {
     "name": "jwcrypto"
-  , "version": "0.0.1"
+  , "version": "0.0.2"
   , "dependencies": {
     "browserify": "1.5.0",
     "vows": "0.5.13",
     "optimist": "0.2.6"
   }
   , "scripts": {
-    "postinstall": "./bundle.sh",
+    "postinstall": "bash bundle.sh",
     "test": "./node_modules/.bin/vows"
   }
   , "repository" :
