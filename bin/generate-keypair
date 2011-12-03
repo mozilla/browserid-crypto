@@ -4,8 +4,10 @@
 // generate a keypair quick
 //
 
-var jwk = require("../jwk"),
-    fs = require("fs");
+var
+jwk = require("../jwk"),
+jwcert = require("../jwcert"),
+fs = require("fs");
 
 var args = require('optimist')
 .usage('Generate an RSA keypair.\nUsage: $0', [ "foo" ])
