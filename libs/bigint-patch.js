@@ -1,3 +1,7 @@
+
+var jsBigInteger = BigInteger;
+var nativeBigInteger = null;
+
 // patches to bigint to use native node code if possible
 try {
   // if we can get node-bigint, we continue. If not, blarg.
@@ -81,6 +85,9 @@ try {
       return this._bigint.probPrime(reps);
     }
   };
+
+  nativeBigInteger = BigInteger;
 } catch (x) {
   // oh well, we use normal JS
 }
+
