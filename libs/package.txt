@@ -15,4 +15,5 @@ external/rsa-sign.js
 external/x509.js
 external/prng4.js
 external/rng.js
+bigint-patch.js
 exports.js

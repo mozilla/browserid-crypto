@@ -4,7 +4,8 @@
   , "dependencies": {
     "browserify": "1.5.0",
     "vows": "0.5.13",
-    "optimist": "0.2.6"
+    "optimist": "0.2.6",
+    "bigint": "https://github.com/benadida/node-bigint/tarball/2ac68"
   }
   , "scripts": {
     "postinstall": "bash bundle.sh",

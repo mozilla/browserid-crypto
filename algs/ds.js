@@ -36,6 +36,7 @@ var libs = require("../libs/all"),
     exceptions = require("./exceptions"),
     jwk = require("../jwk");
 
+//var BigInteger = libs.BigInteger;
 var BigInteger = libs.BigInteger;
 
 var HASH_ALGS = {
@@ -51,7 +52,7 @@ function doHash(hashAlg, message, modulus) {
   // that the parameters we use match hash-output bitlength.
 
   // we don't actually need to do modulus here, because of the previous assumption
-  return new libs.BigInteger(raw_hash, "16");
+  return new BigInteger(raw_hash, "16");
 }
 
 // pad with leading 0s a hex string
@@ -122,7 +123,7 @@ function randomNumberMod(q, rng) {
   // wow, turns out this was actually not far off from FIPS186-3, who knew?
   // FIPS186-3 says to generate 64 more bits than needed into "c", then to do:
   // result = (c mod (q-1)) + 1
-  return new libs.BigInteger(q.bitLength() + 64, rng).mod(q.subtract(BigInteger.ONE)).add(BigInteger.ONE);
+  return new BigInteger(q.bitLength() + 64, rng).mod(q.subtract(BigInteger.ONE)).add(BigInteger.ONE);
 }
 
 function serializeParamsToObject(keysize, obj) {
@@ -136,9 +137,9 @@ function serializeParamsToObject(keysize, obj) {
 // this function will throw an exception if the parameters don't
 // match what's expected in KEYSIZES
 function keysizeFromObject(obj) {
-  var p = new libs.BigInteger(obj.p, 16);
-  var q = new libs.BigInteger(obj.q, 16);
-  var g = new libs.BigInteger(obj.g, 16);
+  var p = new BigInteger(obj.p, 16);
+  var q = new BigInteger(obj.q, 16);
+  var g = new BigInteger(obj.g, 16);
 
   var keysize = _getKeySizeFromYBitlength(p.bitLength());
   var params = getParams(keysize);
@@ -214,11 +215,11 @@ PublicKey.prototype.verify = function(message, signature) {
       s = new BigInteger(signature.substring(hexlength, hexlength*2), 16);
 
   // check rangeconstraints
-  if ((r.compareTo(libs.BigInteger.ZERO) < 0) || (r.compareTo(params.q) > 0)) {
+  if ((r.compareTo(BigInteger.ZERO) < 0) || (r.compareTo(params.q) > 0)) {
     console.log("problem with r: " + r.toString(16));
     return false;
   }
-  if ((s.compareTo(libs.BigInteger.ZERO) < 0) || (s.compareTo(params.q) > 0)) {
+  if ((s.compareTo(BigInteger.ZERO) < 0) || (s.compareTo(params.q) > 0)) {
     console.log("problem with s");
     return false;
   }
@@ -248,7 +249,7 @@ PublicKey.prototype.equals = function(other) {
 };
 
 PublicKey.prototype.deserializeFromObject = function(obj) {
-  this.y = new libs.BigInteger(obj.y, 16);
+  this.y = new BigInteger(obj.y, 16);
 
   //this.keysize = _getKeySizeFromYBitlength(this.y.bitLength());
   this.keysize = keysizeFromObject(obj);
@@ -284,7 +285,7 @@ SecretKey.prototype.sign = function(message, progressCB, doneCB) {
     k = randomNumberMod(params.q, rng);
     r = params.g.modPow(k, params.p).mod(params.q);
     
-    if (r.equals(libs.BigInteger.ZERO)) {
+    if (r.equals(BigInteger.ZERO)) {
       console.log("oops r is zero");
       continue;
     }
@@ -298,7 +299,7 @@ SecretKey.prototype.sign = function(message, progressCB, doneCB) {
     // compute s
     s = k.modInverse(params.q).multiply(message_dep).mod(params.q);
 
-    if (s.equals(libs.BigInteger.ZERO)) {
+    if (s.equals(BigInteger.ZERO)) {
       console.log("oops s is zero");
       continue;
     }
