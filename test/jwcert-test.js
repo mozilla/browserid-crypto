@@ -49,6 +49,24 @@ var KEYSIZE = 64;
 
 // JWcert
 vows.describe('jwcert').addBatch({
+  "null issued_at" : {
+    topic: function() {
+      // generate a key
+      var key = jwk.KeyPair.generate(ALG, KEYSIZE);
+      var exp = new Date((new Date()).getTime() + (6 * 60 * 60 * 1000));
+      var iat = null;
+      var tok = new jwcert.JWCert("issuer.com", exp, iat, key.publicKey, {email:"john@issuer.com"});
+      return {
+        key: key,
+        cert: tok.sign(key.secretKey)
+      };
+    },
+    "doesn't yield an erroneous date object": function(topic) {
+      var json_cert = new jwcert.JWCert();
+      json_cert.parse(topic.cert);
+      assert.isNull(json_cert.issued_at);
+    }
+  },
   "generate jwcert" : {
     topic: function() {
       // generate a key
