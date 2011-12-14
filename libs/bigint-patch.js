@@ -6,6 +6,7 @@ var nativeBigInteger = null;
 try {
   // if we can get node-bigint, we continue. If not, blarg.
   var bigint = require("bigint");
+  var crypto = require("crypto");
 
   // trying to mimick Tom Wu's constructor
   // except we ignore the rng for now
@@ -16,7 +17,9 @@ try {
           // random *prime* of bit size a, with certainty b
           var starting_point;
           while(true) {
-            starting_point = bigint.rand(bigint("1").shiftLeft(a));
+            // starting_point = bigint.rand(bigint("1").shiftLeft(a));
+            // strong starting point, assume even number of bytes
+            starting_point = bigint(crypto.randomBytes(a/8).toString('hex'), 16);
             if (starting_point.bitLength() == a)
               break;
           }
