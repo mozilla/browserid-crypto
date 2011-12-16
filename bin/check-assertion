@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 var vep = require("../vep"),
-    jwt = require("../jwt");
+    jwt = require("../jwt"),
+    jwcert = require("../jwcert");
 
 var full_raw_assertion = process.argv[2];
 var full_assertion = vep.unbundleCertsAndAssertion(full_raw_assertion);
