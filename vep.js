@@ -44,7 +44,7 @@ function bundleCertsAndAssertion(certificates, assertion, new_format) {
         certificates.length === 0) {
       throw "certificates must be a non-empty array"
     }
-    return [].concat(assertion, certificates).join('~');
+    return [].concat(certificates, assertion).join('~');
   } else {
     var str = JSON.stringify({
       certificates: certificates,
@@ -60,7 +60,7 @@ function unbundleCertsAndAssertion(bundle) {
   // if there are tilde's, this is a "new format" bundle
   if (bundle.indexOf('~') !== -1) {
     var arr = bundle.split('~');
-    var assertion = arr.shift();
+    var assertion = arr.pop();
     var certificates = arr;
     return {
       assertion: assertion,
