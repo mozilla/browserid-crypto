@@ -1,3 +1,9 @@
+0.1.1:
+	* new assertion format supported in vep - tilde's seperating different JWS structures
+
+0.1.0:
+	* move to node-bigint for a 50x performance improvement
+
 0.0.2:
 	* fix scripts invoked by post-install steps on node 0.6.3 with built-in npm
 
