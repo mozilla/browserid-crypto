@@ -102,4 +102,58 @@ vows.describe('vep').addBatch({
       }
     }
   }
+}).addBatch({
+  "generate params and bundle them" : {
+    topic: function() {
+      // generate user keys
+      var user_kp = jwk.KeyPair.generate(ALG, KEYSIZE);
+
+      // generate the cert on user key from root
+      var raw_expiration = new Date().valueOf() + 60000
+      var expiration = new Date();
+      expiration.setTime(raw_expiration);
+
+      var user_cert = new jwcert.JWCert("root.com", expiration, new Date(), user_kp.publicKey, {email: "john@root.com"}).sign(root_kp.secretKey);
+
+      // generate assertion
+      assertionExpiration = new Date(new Date().getTime() + (2 * 60 * 1000));
+      var tok = new jwt.JWT(null, assertionExpiration, "rp.com");
+      var assertion = tok.sign(user_kp.secretKey);
+
+      // bundle
+      var full_assertion = vep.bundleCertsAndAssertion([user_cert], assertion, true);
+      var unbundled_stuff = vep.unbundleCertsAndAssertion(full_assertion);
+
+      return unbundled_stuff;
+    },
+    "contains right stuff": function(stuff) {
+      assert.ok(stuff.assertion);
+      assert.ok(stuff.certificates);
+    },
+    "verification": {
+      topic: function(stuff) {
+        var self = this;
+        
+        jwcert.JWCert.verifyChain(
+          stuff.certificates,
+          new Date(),
+          function(issuer, next) {
+            if (issuer == "root.com")
+              next(root_kp.publicKey);
+            else
+              next(null);
+          }, function(pk) {
+            var tok = new jwt.JWT();
+            tok.parse(stuff.assertion);
+            var result = tok.verify(pk);
+            self.callback(result);
+          }, function(error) {
+            self.callback(null);
+          });
+      },
+      "still works": function(err, res) {
+        assert.isTrue(res);
+      }
+    }
+  }
 }).export(module);

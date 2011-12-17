@@ -38,18 +38,37 @@ params = {
 };
 
 // takes an array of serialized certs and a serialized assertion
-function bundleCertsAndAssertion(certificates, assertion) {
-  var str = JSON.stringify({
-    certificates: certificates,
-    assertion: assertion
-  });
+function bundleCertsAndAssertion(certificates, assertion, new_format) {
+  if (new_format) {
+    if (!certificates || typeof certificates.length != 'number' ||
+        certificates.length === 0) {
+      throw "certificates must be a non-empty array"
+    }
+    return [].concat(certificates, assertion).join('~');
+  } else {
+    var str = JSON.stringify({
+      certificates: certificates,
+      assertion: assertion
+    });
 
-  return utils.base64urlencode(str);
+    return utils.base64urlencode(str);
+  }
 }
 
 // returns an object with certificates and assertion
 function unbundleCertsAndAssertion(bundle) {
-  return JSON.parse(utils.base64urldecode(bundle));
+  // if there are tilde's, this is a "new format" bundle
+  if (bundle.indexOf('~') !== -1) {
+    var arr = bundle.split('~');
+    var assertion = arr.pop();
+    var certificates = arr;
+    return {
+      assertion: assertion,
+      certificates: certificates
+    };
+  } else {
+    return JSON.parse(utils.base64urldecode(bundle));
+  }
 }
 
 exports.params = params;
