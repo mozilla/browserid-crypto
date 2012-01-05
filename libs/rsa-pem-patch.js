@@ -13,7 +13,7 @@ function _rsapubpem_pemToBase64(sPEMPublicKey) {
 
 function _rsapem_readPublicKeyFromPEMString(keyPEM) {
   var keyB64 = _rsapubpem_pemToBase64(keyPEM);
-  var keyHex = b64tohex(keyB64) // depends base64.js
+  var keyHex = b64tohex(keyB64); // depends base64.js
 
   /* expected structure is:
       0:d=0  hl=4 l= 290 cons: SEQUENCE          

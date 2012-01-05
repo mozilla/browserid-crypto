@@ -42,7 +42,7 @@ function bundleCertsAndAssertion(certificates, assertion, new_format) {
   if (new_format) {
     if (!certificates || typeof certificates.length != 'number' ||
         certificates.length === 0) {
-      throw "certificates must be a non-empty array"
+      throw "certificates must be a non-empty array";
     }
     return [].concat(certificates, assertion).join('~');
   } else {
