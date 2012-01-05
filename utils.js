@@ -35,6 +35,11 @@
 
 var libs = require("./libs/all");
 
+function InputException(message) {
+  this.message = message;
+  this.toString = function() { return "Malformed input: "+this.message; };
+}
+
 // patch the window object;
 if (typeof(window) === "undefined")
   var window = libs.window;
