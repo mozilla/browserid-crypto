@@ -44,7 +44,7 @@ var int2char = libs.int2char;
 // convert a base64url string to hex
 var b64urlmap="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 function b64urltohex(s) {
-  var ret = ""
+  var ret = "";
   var i;
   var k = 0; // b64 state, 0-3
   var slop;
