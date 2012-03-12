@@ -26,8 +26,7 @@ exists('jwt.headerSegment', tok.headerSegment);
 exists('jwt.payloadSegment', tok.payloadSegment);
 exists('jwt.cryptoSegment', tok.cryptoSegment);
 
-var i=0;
-full_assertion.certificates.forEach(function(c) {
+full_assertion.certificates.forEach(function(c, i) {
   var cert = new jwcert.JWCert();
   cert.parse(c);
   console.log("cert: " + cert.issuer + "," + JSON.stringify(cert.principal) + "," + cert.pk.serialize());
@@ -41,7 +40,6 @@ full_assertion.certificates.forEach(function(c) {
   exists('cert_' + i + '.headerSegment', cert.headerSegment);
   exists('cert_' + i + '.payloadSegment', cert.payloadSegment);
   exists('cert_' + i + '.cryptoSegment', cert.cryptoSegment);
-  i++;
 });
 
 console.log(tok.verify(last_pk));
