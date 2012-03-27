@@ -4,6 +4,12 @@ var vep = require("../vep"),
     jwt = require("../jwt"),
     jwcert = require("../jwcert");
 
+var exists = function (name, value) {
+    if (!value || value.length === 0) {
+        console.log("ERROR: Missing " + name);
+    }
+}
+
 var full_raw_assertion = process.argv[2];
 var full_assertion = vep.unbundleCertsAndAssertion(full_raw_assertion);
 
@@ -12,13 +18,28 @@ tok.parse(full_assertion.assertion);
 console.log("audience: " + tok.audience);
 console.log("expires: " + tok.expires);
 
-var last_pk = null;
+// TODO - Why does tok have an empty issuer property?
+// exists('jwt.issuer', tok.issuer);
+exists('jwt.audience', tok.audience);
+exists('jwt.expires', tok.expires);
+exists('jwt.headerSegment', tok.headerSegment);
+exists('jwt.payloadSegment', tok.payloadSegment);
+exists('jwt.cryptoSegment', tok.cryptoSegment);
 
-full_assertion.certificates.forEach(function(c) {
+full_assertion.certificates.forEach(function(c, i) {
   var cert = new jwcert.JWCert();
   cert.parse(c);
   console.log("cert: " + cert.issuer + "," + JSON.stringify(cert.principal) + "," + cert.pk.serialize());
   last_pk = cert.pk;
+  exists('cert_' + i + '.issuer', cert.issuer);
+  exists('cert_' + i + '.principal', cert.principal);
+  exists('cert_' + i + '.pk', cert.pk);
+  exists('cert_' + i + '.expires', cert.expires);
+  // TODO - Why does cert have an empty issued_at property?
+  // exists('cert_' + i + '.issued_at', cert.issued_at);
+  exists('cert_' + i + '.headerSegment', cert.headerSegment);
+  exists('cert_' + i + '.payloadSegment', cert.payloadSegment);
+  exists('cert_' + i + '.cryptoSegment', cert.cryptoSegment);
 });
 
 console.log(tok.verify(last_pk));
