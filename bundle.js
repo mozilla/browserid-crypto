@@ -29,9 +29,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var utils = require("./utils");
-var jwcert = require("./jwcert");
-var jwt = require("./jwt");
-var jwk = require("./jwk");
-var vep = require("./vep");
+var jwcrypto = require("./lib/jwcrypto");
+require("./lib/algs/ds");
 

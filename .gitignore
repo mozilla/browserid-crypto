@@ -1,4 +1,5 @@
 *~
 libs/all.js
-vepbundle.js
+libs/minimal.js
+bidbundle.js
 node_modules
