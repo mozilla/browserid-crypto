@@ -30,3 +30,4 @@ var sha1 = {
 var sha256 = {
   hex: function(i) {return sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(i));}
 };
+

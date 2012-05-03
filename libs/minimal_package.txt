@@ -6,10 +6,6 @@ external/base64.js
 external/jsbn-optimized.js
 external/jsbn2-optimized.js
 jsbn-patch.js
-external/rsa.js
-external/rsa2.js
-external/rsa-sign.js
 external/prng4.js
 external/rng.js
-bigint-patch.js
-exports.js
+exports_minimal.js
