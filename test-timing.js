@@ -4,22 +4,19 @@
 // time test
 //
 
-var jwk = require("./jwk");
+var jwcrypto = require("./lib/jwcrypto");
+require("./lib/algs/ds");
+var libs = require("./libs/minimal");
 
-function timeit(stuff, n_times) {
+function timeit(func_with_cb) {
   var start = new Date();
-  for (var i=0; i<n_times; i++)
-    stuff();
-  var end = new Date();
-  console.log(n_times + " x : " + stuff.toString() + " : " + (end-start));
+  func_with_cb(function() {
+    var end = new Date();
+    console.log(func_with_cb.toString() + " : " + (end-start));
+  });
 }
 
-timeit(function() {jwk.KeyPair.generate("DS", 256);}, 10);  
+var rng = new libs.SecureRandom();
 
-var kp = jwk.KeyPair.generate("DS", 256);
+timeit(function(done) {jwcrypto.generateKeypair({algorithm:"DS", keysize: 256}, rng, done);});  
 
-timeit(function() {kp.secretKey.sign("foobar!!!!!");}, 10);
-
-var signature = kp.secretKey.sign("foobar!!!!!");
-
-timeit(function() {kp.publicKey.verify("foobar!!!!!", signature);}, 10);
