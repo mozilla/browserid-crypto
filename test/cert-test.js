@@ -24,9 +24,9 @@ testUtils.addBatches(suite, function(alg, keysize) {
           keypair = kp;
               
           var assertionParams = {
-            iss : "issuer.com",
-            iat : new Date(),
-            exp : new Date((new Date()).getTime() + (6 * 60 * 60 * 1000))
+            issuer : "issuer.com",
+            issuedAt : new Date(),
+            expiresAt : new Date((new Date()).getTime() + (6 * 60 * 60 * 1000))
           };
           
           // yes, we're signing our own public key, cause it's easier for now
@@ -66,16 +66,16 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.isObject(certParams);
         },
         "has right fields": function(err, payload, assertionParams, certParams) {
-          assert.isString(assertionParams.iss);
-          assert.equal(assertionParams.iss, "issuer.com");        
-          assert.isNotNull(assertionParams.iat);        
-          assert.isNotNull(assertionParams.exp);
+          assert.isString(assertionParams.issuer);
+          assert.equal(assertionParams.issuer, "issuer.com");        
+          assert.isNotNull(assertionParams.issuedAt);        
+          assert.isNotNull(assertionParams.expiresAt);
           assert.isObject(certParams.principal);
           assert.isObject(certParams['public-key']);
           
           // make sure iss and exp are dates
-          assert.isFunction(assertionParams.iat.getFullYear);
-          assert.isFunction(assertionParams.exp.getFullYear);
+          assert.isFunction(assertionParams.issuedAt.getFullYear);
+          assert.isFunction(assertionParams.expiresAt.getFullYear);
           assert.equal(certParams.principal.email, "john@issuer.com");
         }
       }
@@ -89,7 +89,8 @@ testUtils.addBatches(suite, function(alg, keysize) {
         
         // once the cert chain is done, sign a 
         function signAssertion(rootPK, certs, user_keypair) {
-          assertion.sign({aud: "fakesite.com"}, {exp: expiration},
+          assertion.sign({}, {audience: "https://fakesite.com",
+                              expiresAt: expiration},
                          user_keypair.secretKey,
                          function(err, signedAssertion) {
                            var bundle = cert.bundle(certs, signedAssertion);
@@ -108,10 +109,10 @@ testUtils.addBatches(suite, function(alg, keysize) {
             jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, user_kp) {
               // generate the two certs
               cert.sign(intermediate_kp.publicKey, {host: "intermediate.root.com"},
-                        {iss: "root.com", iat: new Date(), exp: expiration}, null,
+                        {issuer: "root.com", issuedAt: new Date(), expiresAt: expiration}, null,
                         root_kp.secretKey, function (err, signedIntermediate) {
                           cert.sign(user_kp.publicKey, {email: "john@root.com"},
-                                    {iss: "intermediate.root.com", iat: new Date(), exp: expiration},
+                                    {issuser: "intermediate.root.com", issuedAt: new Date(), expiresAt: expiration},
                                     null, intermediate_kp.secretKey,
                                     function(err, signedUser) {
                                       signAssertion(root_kp.publicKey,
@@ -158,6 +159,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.isArray(certParamsArray);
           assert.isObject(payload);        
           assert.isObject(assertionParams);
+          assert.isNotNull(assertionParams.audience);
         }
       },
       "improper root - just chain": {
@@ -203,9 +205,9 @@ testUtils.addBatches(suite, function(alg, keysize) {
         // generate a key
         jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, keypair) {
           var assertionParams = {
-            iss : "foo.com",
-            iat : null,
-            exp : new Date((new Date()).getTime() + (6 * 60 * 60 * 1000))
+            issuer : "foo.com",
+            issuedAt : null,
+            expiresAt : new Date((new Date()).getTime() + (6 * 60 * 60 * 1000))
           };
           
           // yes, we're signing our own public key, cause it's easier for now
@@ -216,7 +218,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
         });
       },
       "doesn't yield an erroneous date object": function(err, payload, assertionParams, certParams) {
-        assert.isNull(assertionParams.iat);
+        assert.isNull(assertionParams.issuedAt);
       }
     }
   };
