@@ -1,24 +1,15 @@
 #!/usr/bin/env node
 
-var vep = require("../vep"),
-    jwt = require("../jwt"),
-    jwcert = require("../jwcert");
+var jwcrypto = require("../index");
 
 var full_raw_assertion = process.argv[2];
-var full_assertion = vep.unbundleCertsAndAssertion(full_raw_assertion);
+var full_assertion = jwcrypto.cert.unbundle(full_raw_assertion);
 
-var tok = new jwt.JWT();
-tok.parse(full_assertion.assertion);
-console.log("audience: " + tok.audience);
-console.log("expires: " + tok.expires);
+var components = jwcrypto.extractComponents(full_assertion.assertion);
 
-var last_pk = null;
+console.log("audience: " + components.payload.aud);
+console.log("expires: " + components.payload.exp);
 
-full_assertion.certificates.forEach(function(c) {
-  var cert = new jwcert.JWCert();
-  cert.parse(c);
-  console.log("cert: " + cert.issuer + "," + JSON.stringify(cert.principal) + "," + cert.pk.serialize());
-  last_pk = cert.pk;
-});
+console.log("verifying with an expiration date that should be valid for this cert.");
 
-console.log(tok.verify(last_pk));
+// FIXME: reimplement this, the previous test was not that useful.

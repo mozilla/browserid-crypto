@@ -6,10 +6,11 @@
 //
 
 var
-jwk = require("../jwk"),
-jwt = require("../jwt"),
-jwcert = require("../jwcert"),
+jwcrypto = require("../index"),
 fs = require("fs");
+
+require("../lib/algs/ds");
+require("../lib/algs/rs");
 
 var args = require('optimist')
 .usage('Generate certificate which is a signed public key and some metadata\nUsage: $0')
@@ -32,8 +33,13 @@ if (argv.h) {
   process.exit(1);
 }
 
-var pk = jwk.PublicKey.deserialize(fs.readFileSync(argv.p));
-var sk = jwk.SecretKey.deserialize(fs.readFileSync(argv.s));
+var pk = jwcrypto.loadPublicKey(fs.readFileSync(argv.p));
+var sk = jwcrypto.loadSecretKey(fs.readFileSync(argv.s));
 var expires = new Date(new Date().getTime() + (args.d * 1000));
-var cert = new jwcert.JWCert(null, expires, new Date(), pk, {}).sign(sk);
-console.log(cert);
+
+var cert = jwcrypto.cert.sign(
+  pk, {}, {exp: expires, iat: new Date(), iss: ""}, {},
+  sk, function(err, cert) {
+    console.log(cert);
+  }
+);

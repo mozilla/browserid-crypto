@@ -32,7 +32,8 @@ testUtils.addBatches(suite, function(alg, keysize) {
       },
       "sign an assertion": {
         topic: function(kp) {
-          assertion.sign(payload, {iss: "foo.com", exp: in_a_minute},
+          assertion.sign(payload, {issuer: "foo.com", expiresAt: in_a_minute,
+                                   audience: "https://example.com"},
                          kp.secretKey,
                          this.callback);
         },
@@ -54,6 +55,9 @@ testUtils.addBatches(suite, function(alg, keysize) {
           "returns payload with all expected fields": function(err, payload) {
             assert.isNotNull(payload.foo);
             assert.isNotNull(payload.exp);
+            assert.isNotNull(payload.iss);
+            assert.isNotNull(payload.aud);
+            assert.equal(payload.aud, "https://example.com");
             assert.equal(payload.exp, in_a_minute.valueOf());
           }
         },
@@ -71,13 +75,18 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.equal(JSON.stringify(payload), JSON.stringify(newPayload));
           },
           "assertionparams is good": function(err, newPayload, assertionParams) {
-            assert.equal(assertionParams.exp.valueOf(), in_a_minute.valueOf());
+            assert.isNotNull(assertionParams.expiresAt);
+            assert.isNotNull(assertionParams.issuer);
+            assert.isNotNull(assertionParams.audience);
+            assert.equal(assertionParams.audience, "https://example.com");            
+            assert.equal(assertionParams.expiresAt.valueOf(), in_a_minute.valueOf());
           }
         }
       },
       "sign an assertion that is already expired": {
         topic: function(kp) {
-          assertion.sign(payload, {iss: "foo.com", exp: a_second_ago},
+          assertion.sign(payload, {issuer: "foo.com", expiresAt: a_second_ago,
+                                  audience: "https://example.com"},
                          kp.secretKey,
                          this.callback);
         },
@@ -99,6 +108,9 @@ testUtils.addBatches(suite, function(alg, keysize) {
           "returns payload with all expected fields": function(err, payload) {
             assert.isNotNull(payload.foo);
             assert.isNotNull(payload.exp);
+            assert.isNotNull(payload.iss);
+            assert.isNotNull(payload.aud);
+            assert.equal(payload.aud, "https://example.com");
             assert.equal(payload.exp, a_second_ago.valueOf());
           }
         },
@@ -118,7 +130,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
       },
       "sign an assertion issued in the future": {
         topic: function(kp) {
-          assertion.sign(payload, {iss: "foo.com", iat: in_a_minute, exp: in_a_minute},
+          assertion.sign(payload, {issuer: "foo.com", issuedAt: in_a_minute, expiresAt: in_a_minute},
                          kp.secretKey,
                          this.callback);
         },
@@ -140,7 +152,9 @@ testUtils.addBatches(suite, function(alg, keysize) {
           "returns payload with all expected fields": function(err, payload) {
             assert.isNotNull(payload.foo);
             assert.isNotNull(payload.exp);
-            assert.isNotNull(payload.iat);            
+            assert.isNotNull(payload.iat);
+            assert.isNotNull(payload.iss);
+            assert.isUndefined(payload.aud);
             assert.equal(payload.exp, in_a_minute.valueOf());
             assert.equal(payload.iat, in_a_minute.valueOf());            
           }

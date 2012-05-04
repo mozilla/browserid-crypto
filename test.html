@@ -3,98 +3,28 @@
 <!-- stupid IE8 standards mode for JSON -->
 <meta http-equiv="x-ua-compatible" content="IE=8" />
 <title>test VEP from Browser</title>
-  <script type="text/javascript" src="vepbundle.js"></script>
+  <script type="text/javascript" src="bidbundle-min.js"></script>
   <script type="text/javascript">
     // a small subset of vows tests
     function runkeygen() {
-      var jwk = require("./jwk");
+      var jwcrypto = require("./lib/jwcrypto");
       var start = new Date();
-      jwk.KeyPair.generate("RS",64);
-      var end = new Date();
-      alert(end-start);
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
+        var end = new Date();
+        alert(end-start);
+      });
     }
 
-    function runtests() {
-      var jwk = require("./jwk");
-      var jwt = require("./jwt");
-      var jwcert = require("./jwcert");
-      var user_kp = jwk.KeyPair.generate("RS",64);
-      var root_kp = jwk.KeyPair.generate("RS",64);
-
-      var exp = new Date((new Date()).getTime() + (6 * 60 * 60 * 1000));
-
-      var iat = new Date();
-
-      var cert = new jwcert.JWCert("foo.com", exp, iat, user_kp.publicKey, {email : "foo@foo.com"}).sign(root_kp.secretKey);
-
-      var tok = new jwt.JWT(null, new Date(), "rp.com").sign(user_kp.secretKey);
-      alert("cert:\n" + cert + "\nassertion:\n" + tok);
-    }
-
-    function runperftests() {
-      var jwk = require("./jwk");
-      var start = new Date();
-      for (var i = 0; i<10; i++)
-        jwk.KeyPair.generate("RS",64);
-      var end = new Date();
-      alert(end-start);
-    }
-
-    function runperftests2() {
-      var jwk = require("./jwk");
-      var start = new Date();
-      for (var i = 0; i<10; i++)
-        jwk.KeyPair.generate("RS",64);
-      var end = new Date();
-      alert(end-start);
-    }
-
-    function onePrime() {
-      var B = 512;
-      var E = "10001";
-      var libs = require("./libs/all");
-      var rng = new libs.SecureRandom();
-      var qs = B>>1;
-      this.e = parseInt(E,16);
-      var ee = new libs.BigInteger(E,16);
-      var p;
-      for(;;) {
-        p = new libs.BigInteger(B-qs,1,rng);
-        break;
-        // if(p.subtract(libs.BigInteger.ONE).gcd(ee).compareTo(libs.BigInteger.ONE) == 0 && p.isProbablePrime(10)) break;
-      }
-
-      alert('done: ' + p.toString());
-    }
-
-    function rundsatests() {
-      alert(JSON);
-      var jwk = require("./jwk");
-      var jwt = require("./jwt");
-      var start = new Date();
-      var count = 10;
-      function do_next() {
-         var kp = jwk.KeyPair.generate("DS",128);
-         var kp = jwk.KeyPair.generate("DS",128);
-         count -= 1;
-         if (count > 0)
-           window.setTimeout(do_next, 0);
-         else {
-          var end = new Date();
-          alert("10 keygens: " + (end-start));
-         }
-      }
-
-      do_next();
-    }
   </script>
 </head>
 <body>
-<button onclick="runkeygen();">keygen-512</button>
+<button onclick="runkeygen();">keygen-DS256</button>
+<!--
 <button onclick="runtests();">run tests</button>
 <button onclick="runperftests();">run perf tests</button>
 <button onclick="runperftests2();">run perf tests 2</button>
 <button onclick="onePrime();">one prime</button>
 <button onclick="rundsatests();">run dsa tests</button>
+-->
 </body>
 </html>
