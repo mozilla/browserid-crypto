@@ -1,22 +1,26 @@
 #!/usr/bin/env node
 
-var vep = require("../vep"),
-    jwt = require("../jwt"),
-    jwcert = require("../jwcert"),
-    jwk = require("../jwk");
+var jwcrypto = require("../index");
 
 var cert_raw = process.argv[2];
 var pk_raw = process.argv[3];
 
-var cert = new jwcert.JWCert();
-cert.parse(cert_raw);
-console.log("issuer: " + cert.issuer);
-console.log("full payload: " + cert.serializePayload());
-console.log("principal:" + JSON.stringify(cert.principal));
-console.log("key:" + cert.pk.serialize());
-console.log("expiration:" + cert.expires);
+var cert = jwcrypto.extractComponents(cert_raw);
+console.log("issuer: " + cert.payload.iss);
+console.log("full payload: " + JSON.stringify(cert.payload));
+console.log("principal:" + JSON.stringify(cert.payload.principal));
+console.log("key:" + cert.payload['public-key'].serialize());
+console.log("expiration:" + cert.payload.exp);
 
-var pk_obj = JSON.parse(pk_raw);
-var pk = jwk.PublicKey.fromSimpleObject(pk_obj);
+var pk = jwcrypto.loadPublicKey(pk_raw);
 
-console.log("works? " + cert.verify(pk));
+console.log("verifying the raw signature - no cert specific verification");
+
+jwcrypto.verify(cert, pk, function(err, payload) {
+  if (err) {
+    console.log("doesn't work");
+    console.log(err);
+  } else{
+    console.log("works");
+  }
+});

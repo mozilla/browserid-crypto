@@ -79,7 +79,7 @@ var in_a_minute = new Date(new Date().valueOf() + 60000);
 suite.addBatch({
   "sign an assertion": {
     topic: function() {
-      jwcrypto.assertion.sign({aud: AUDIENCE}, {exp: in_a_minute},
+      jwcrypto.assertion.sign({}, {expiresAt: in_a_minute, audience: AUDIENCE},
                               userKeypair.secretKey, this.callback);
     },
     "works" : function(err, signedObject) {
@@ -123,7 +123,7 @@ suite.addBatch({
   "sign a cert": {
     topic: function() {
       jwcrypto.cert.sign(userKeypair.publicKey, {email: EMAIL},
-                         {iat: now, iss: ISSUER, exp: in_a_minute},
+                         {issuedAt: now, issuer: ISSUER, expiresAt: in_a_minute},
                          {},
                          domainKeypair.secretKey, this.callback);
     },

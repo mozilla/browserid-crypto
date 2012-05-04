@@ -36,7 +36,7 @@ suite.addBatch(
       topic: function() {
         jwcrypto.cert.verifyBundle(
           assertion, now, function(issuer, next) {
-            process.nextTick(function() {next(null, pk);});
+            next(null, pk);
           },
           this.callback);
       },
@@ -52,15 +52,25 @@ suite.addBatch(
       topic: function() {
         jwcrypto.cert.verifyBundle(
           assertion, timeThatShouldWork, function(issuer, next) {
-            process.nextTick(function() {next(null, pk);});
+            next(null, pk);
           },
           this.callback);
       },
       "succeed": function(err, certParamsArray, payload, assertionParams) {
         assert.isNull(err);
+      },
+      "contains the right fields": function(err, certParamsArray, payload, assertionParams) {
+        assert.isNotNull(assertionParams.expiresAt);
+        assert.isNotNull(assertionParams.expiresAt.getFullYear);        
+        assert.isString(assertionParams.audience);
+
+        assert.isUndefined(assertionParams.aud);
+        assert.isUndefined(assertionParams.exp);        
+        assert.isUndefined(payload.aud);
+        assert.isUndefined(payload.exp);        
       }
     }    
-}).export(module);
+});
 
 suite.export(module);
 

@@ -94,7 +94,8 @@ Sometimes the JSON object to sign should be a standard assertion with pre-define
 
     // add special fields which will be encoded properly
     // payload cannot contain reserved fields
-    assertion.sign(payload, {iss: "foo.com", exp: new Date()},
+    assertion.sign(payload, {issuer: "foo.com", expiresAt: new Date(),
+                             issuedAt: new Date(), audience: "https://example.com"},
                       keypair.secretKey,
                       function(err, signedAssertion) {
        // a normal signedObject, much like above
@@ -104,7 +105,8 @@ Sometimes the JSON object to sign should be a standard assertion with pre-define
        var now = new Date();
        assertion.verify(signedObject, keypair.publicKey, now, function(err, payload, assertionParams) {
           // payload is the original payload
-          // assertionParams contains iat, exp as a date, etc.
+          // assertionParams contains issuedAt, expiresAt as dates
+          // and issuer and audience as strings.
        });
     });
 
@@ -118,7 +120,8 @@ Sometimes the JSON objects to sign are certificates
 
     var keyToCertify = keypairToCertify.publicKey;
     var principal = {email: "someone@example.com"};
-    var assertionParams = {iss: "foo.com", iat: new Date(), exp: new Date()};
+    var assertionParams = {issuer: "foo.com", issuedAt: new Date(),
+                           expiresAt: new Date()};
     var additionalPayload = {};
 
     // payload cannot contain reserved fields
