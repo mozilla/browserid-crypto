@@ -1,6 +1,8 @@
+0.2.2:
+	* fix IE8 compatibility
+
 0.2.1:
 	* fix stray const, preventing functioning on IE
-
 
 0.1.1:
 	* new assertion format supported in vep - tilde's seperating different JWS structures
