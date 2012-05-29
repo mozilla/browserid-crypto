@@ -19,6 +19,7 @@ console.log("==== cert ====");
 
 var components = jwcrypto.extractComponents(full_assertion.certs[0]);
 console.log("issuer: " + components.payload.iss);
+console.log("principal: " + JSON.stringify(components.payload.principal));
 console.log("iat: " + new Date(components.payload.iat));
 console.log("exp: " + new Date(components.payload.exp));
 
