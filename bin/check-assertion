@@ -1,15 +1,73 @@
 #!/usr/bin/env node
 
-var jwcrypto = require("../index");
+/* this should be invoked as follows
+ *
+ * check-assertion <root_pk> <full_assertion>
+ */
 
-var full_raw_assertion = process.argv[2];
+var jwcrypto = require("../index");
+require("../lib/algs/rs");
+require("../lib/algs/ds");
+
+var root_key_raw = process.argv[2];
+var root_key = jwcrypto.loadPublicKey(root_key_raw);
+
+var full_raw_assertion = process.argv[3];
 var full_assertion = jwcrypto.cert.unbundle(full_raw_assertion);
 
-var components = jwcrypto.extractComponents(full_assertion.assertion);
+console.log("==== cert ====");
 
-console.log("audience: " + components.payload.aud);
-console.log("expires: " + components.payload.exp);
+var components = jwcrypto.extractComponents(full_assertion.certs[0]);
+console.log("issuer: " + components.payload.iss);
+console.log("iat: " + new Date(components.payload.iat));
+console.log("exp: " + new Date(components.payload.exp));
 
-console.log("verifying with an expiration date that should be valid for this cert.");
+console.log("using a median timestamp to ensure no timestamp failure");
+var median = new Date(components.payload.iat + (components.payload.exp - components.payload.iat)/2);
 
-// FIXME: reimplement this, the previous test was not that useful.
+jwcrypto.cert.verify(
+  full_assertion.certs[0], root_key, median,
+  function(err, payload, assertionParams, certParams) {
+    if (err) {
+      console.log("cert is NOT properly signed: " + err);
+    } else {
+      console.log("cert is properly signed");
+    }
+    doAssertion(certParams['public-key'], components.payload.iat, components.payload.exp);
+  });
+
+function doAssertion(publicKey, iat, exp) {
+  console.log("\n==== assertion ====");
+  
+  var components = jwcrypto.extractComponents(full_assertion.signedAssertion);
+  console.log(components);
+  
+  console.log("audience: " + components.payload.aud);
+  console.log("expires: " + new Date(components.payload.exp));
+
+  if (components.payload.exp < iat)
+    console.log("OY: assertion expires before cert is valid");
+  
+  if (components.payload.exp > (exp + 5000))
+    console.log("OY: assertion was likely issued after cert expired");
+
+  console.log("verifying with an expiration date that should be valid for this cert.");
+  var checkDate = new Date(components.payload.exp - 1);
+
+  jwcrypto.assertion.verify(
+    full_assertion.signedAssertion, publicKey, checkDate,
+    function(err, payload, assertionParams) {
+      if (err) {
+        console.log("assertion is NOT properly signed: " + err);
+      } else {
+        console.log("assertion is properly signed");
+      }
+
+      doBundle();
+    }
+  );
+}
+
+function doBundle() {
+  console.log("\n==== bundle ====");
+}
