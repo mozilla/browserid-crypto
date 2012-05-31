@@ -32,6 +32,13 @@ We use JWA (JSON Web Algorithms) to specify algorithms:
 http://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-00
 (we add algorithm "DS" to indicate DSA, with DS160 the standard DSA 1024/160.)
 
+Usage
+=====
+
+  1. ensure that `libgmp` is installed on your system, it's required by [bigint](https://github.com/substack/node-bigint), upon which jwcrypto depends
+  2. npm install jwcrypto
+  3. in javascript: `require('jwcrypto')`
+
 Basic API
 =========
 
