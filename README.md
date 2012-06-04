@@ -35,7 +35,7 @@ http://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-00
 Usage
 =====
 
-  1. ensure that `libgmp` is installed on your system, it's required by [bigint](https://github.com/substack/node-bigint), upon which jwcrypto depends
+  1. ensure that `libgmp` is installed on your system (e.g. `apt-get install libgmp-dev`), it's required by [bigint](https://github.com/substack/node-bigint), upon which jwcrypto depends
   2. npm install jwcrypto
   3. in javascript: `require('jwcrypto')`
 
