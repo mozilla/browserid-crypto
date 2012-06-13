@@ -29,12 +29,16 @@ var median = new Date(components.payload.iat + (components.payload.exp - compone
 jwcrypto.cert.verify(
   full_assertion.certs[0], root_key, median,
   function(err, payload, assertionParams, certParams) {
+    var pk;
     if (err) {
       console.log("cert is NOT properly signed: " + err);
+      console.log(components.payload['public-key']);
+      pk = jwcrypto.loadPublicKey(JSON.stringify(components.payload['public-key']));
     } else {
       console.log("cert is properly signed");
+      pk = certParams['public-key'];
     }
-    doAssertion(certParams['public-key'], components.payload.iat, components.payload.exp);
+    doAssertion(pk, components.payload.iat, components.payload.exp);
   });
 
 function doAssertion(publicKey, iat, exp) {
