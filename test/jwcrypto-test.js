@@ -15,6 +15,18 @@ var suite = vows.describe('API tests');
 // disable vows (often flakey?) async error behavior
 suite.options.error = false;
 
+suite.addBatch({
+  "adding entropy": {
+    topic: function() {
+      jwcrypto.addEntropy("foobarbaz");
+      return null;
+    },
+    "works": function() {
+      assert.ok(true);
+    }
+  }
+});
+
 testUtils.addBatches(suite, function(alg, keysize) {
   var keypair;
   var obj = {foo: "bar"};

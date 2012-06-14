@@ -9,9 +9,20 @@
     function runkeygen() {
       var jwcrypto = require("./lib/jwcrypto");
       var start = new Date();
+      jwcrypto.addEntropy("12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
       jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
         var end = new Date();
-        alert(end-start);
+        alert(end-start + "ms");
+      });
+    }
+
+    function runrandom() {
+      var rng = require("./lib/rng");
+      var the_rng = new rng.RNG();
+      the_rng.autoseed(function() {
+        var bytes = new Array(20);
+        the_rng.nextBytes(bytes);
+        alert(bytes);
       });
     }
 
@@ -19,6 +30,7 @@
 </head>
 <body>
 <button onclick="runkeygen();">keygen-DS256</button>
+<button onclick="runrandom();">run-random</button>
 <!--
 <button onclick="runtests();">run tests</button>
 <button onclick="runperftests();">run perf tests</button>
