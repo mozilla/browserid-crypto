@@ -44,8 +44,13 @@ Basic API
 
     var jwcrypto = require("jwcrypto");
 
-    // random number generation is taken care of automatically.
+    // random number generation is taken care of automatically
+    // with auto-seeding that is optimized for server or browser
+    // setup
+
     // more entropy can be added as follows
+    // this can be useful to incorporate server-provided entropy
+    // on clients that don't have any good entropy of their own
     // entropy should be either a 32 bit int, an array of ints, or a string
     jwcrypto.addEntropy(entropy);
 
