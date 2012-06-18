@@ -25,6 +25,11 @@ var args = require('optimist')
 
 var argv = args.argv;
 
+if (argv.h) {
+  args.showHelp();
+  process.exit(1);
+}
+
 var debug = argv.d;
 
 if (debug) console.log('Reading cert file=', argv.c);
