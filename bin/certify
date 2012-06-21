@@ -24,7 +24,10 @@ var args = require('optimist')
 .demand('s')
 .alias('d', 'duration')
 .describe('d', 'duration of certificate in seconds')
-.default('d', 365 * 24 * 60 * 60);
+.default('d', 365 * 24 * 60 * 60)
+.alias('i', 'issuer')
+.describe('i', 'issuer of certificate - should be a domain')
+.default('i', undefined);
 
 var argv = args.argv;
 
@@ -35,10 +38,10 @@ if (argv.h) {
 
 var pk = jwcrypto.loadPublicKey(fs.readFileSync(argv.p));
 var sk = jwcrypto.loadSecretKey(fs.readFileSync(argv.s));
-var expires = new Date(new Date().getTime() + (args.d * 1000));
+var expires = new Date(new Date().valueOf() + (argv.d * 1000));
 
 var cert = jwcrypto.cert.sign(
-  pk, {}, {exp: expires, iat: new Date(), iss: ""}, {},
+  pk, {}, {expiresAt: expires, issuedAt: new Date(), issuer: argv.i}, {},
   sk, function(err, cert) {
     console.log(cert);
   }
