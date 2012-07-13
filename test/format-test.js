@@ -102,8 +102,11 @@ suite.addBatch({
         assert.equal(components.payload.exp, in_a_minute.valueOf());
         assert.equal(components.payload.aud, AUDIENCE);
 
+        // optionally a version
+
         // nothing else
-        assert.equal(Object.keys(components.payload).length, 2);
+        assert.ok(Object.keys(components.payload).length <= 3);
+        assert.ok(Object.keys(components.payload).length >= 2);
       },
       "has proper signature": function(components) {
         assert.isString(components.signature);
@@ -122,7 +125,7 @@ suite.addBatch({
 suite.addBatch({
   "sign a cert": {
     topic: function() {
-      jwcrypto.cert.sign(userKeypair.publicKey, {email: EMAIL},
+      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, principal: {email: EMAIL}},
                          {issuedAt: now, issuer: ISSUER, expiresAt: in_a_minute},
                          {},
                          domainKeypair.secretKey, this.callback);
@@ -152,10 +155,14 @@ suite.addBatch({
         assert.equal(components.payload.principal.email, EMAIL);
         assert.equal(Object.keys(components.payload.principal).length, 1);
 
-        assert.equal(JSON.stringify(components.payload['public-key']), userKeypair.publicKey.serialize());
+        // assert.equal(JSON.stringify(components.payload.publicKey), userKeypair.publicKey.serialize());
+        assert.equal(JSON.stringify(components.payload['public-key']), userKeypair.publicKey.serialize());        
 
+        // optionally version
+        
         // nothing else
-        assert.equal(Object.keys(components.payload).length, 5);
+        assert.ok(Object.keys(components.payload).length <= 6);
+        assert.ok(Object.keys(components.payload).length >= 5);        
       },
       "has proper signature": function(components) {
         assert.isString(components.signature);

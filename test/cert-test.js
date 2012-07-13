@@ -30,7 +30,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
           };
           
           // yes, we're signing our own public key, cause it's easier for now
-          cert.sign(keypair.publicKey, {email: "john@issuer.com"},
+          cert.sign({publicKey: keypair.publicKey, principal:{email: "john@issuer.com"}},
                     assertionParams, null, keypair.secretKey, self.callback);
         });
       },
@@ -71,7 +71,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.isNotNull(assertionParams.issuedAt);        
           assert.isNotNull(assertionParams.expiresAt);
           assert.isObject(certParams.principal);
-          assert.isObject(certParams['public-key']);
+          assert.isObject(certParams.publicKey);
           
           // make sure iss and exp are dates
           assert.isFunction(assertionParams.issuedAt.getFullYear);
@@ -108,10 +108,10 @@ testUtils.addBatches(suite, function(alg, keysize) {
           jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, intermediate_kp) {
             jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, user_kp) {
               // generate the two certs
-              cert.sign(intermediate_kp.publicKey, {host: "intermediate.root.com"},
+              cert.sign({publicKey: intermediate_kp.publicKey, principal: {host: "intermediate.root.com"}},
                         {issuer: "root.com", issuedAt: new Date(), expiresAt: expiration}, null,
                         root_kp.secretKey, function (err, signedIntermediate) {
-                          cert.sign(user_kp.publicKey, {email: "john@root.com"},
+                          cert.sign({publicKey: user_kp.publicKey, principal: {email: "john@root.com"}},
                                     {issuer: "intermediate.root.com", issuedAt: new Date(), expiresAt: expiration},
                                     null, intermediate_kp.secretKey,
                                     function(err, signedUser) {
@@ -211,7 +211,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
           };
           
           // yes, we're signing our own public key, cause it's easier for now
-          cert.sign(keypair.publicKey, {email: "user@example.com"},
+          cert.sign({publicKey: keypair.publicKey, principal: {email: "user@example.com"}},
                     assertionParams, null, keypair.secretKey, function(err, signedObj) {
                       cert.verify(signedObj, keypair.publicKey, new Date(), self.callback);
                     });

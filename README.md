@@ -82,8 +82,6 @@ Basic API
         });
 
         // also, if loading a secret key from somewhere
-        // note how JWK determines automatically if it's a secret key
-        // or public key. XXX should this be more explicit?
         var otherSecretKey = jwcrypto.loadSecretKey(storedSecretKey);
 
         // verify it
@@ -106,7 +104,7 @@ Sometimes the JSON object to sign should be a standard assertion with pre-define
 
     // add special fields which will be encoded properly
     // payload cannot contain reserved fields
-    assertion.sign(payload, {issuer: "foo.com", expiresAt: new Date(),
+    assertion.sign(payload, {issuer: "foo.com", expiresAt: new Date(new Date().valueOf() + 5000),
                              issuedAt: new Date(), audience: "https://example.com"},
                       keypair.secretKey,
                       function(err, signedAssertion) {
@@ -132,15 +130,22 @@ Sometimes the JSON objects to sign are certificates
 
     var keyToCertify = keypairToCertify.publicKey;
     var principal = {email: "someone@example.com"};
+
     var assertionParams = {issuer: "foo.com", issuedAt: new Date(),
                            expiresAt: new Date()};
+
+    // cert params, kid is optional, others are required
+    var certParams = {kid: "key-2012-08-11",
+                      publicKey: keyToCertify,
+                      principal: principal};
+
     var additionalPayload = {};
 
     // payload cannot contain reserved fields
-    cert.sign(keyToCertify, principal,
-                assertionParams, additionalPayload,
-                keypair.secretKey,
-                function(err, signedObject) {
+    cert.sign(certParams,
+              assertionParams, additionalPayload,
+              keypair.secretKey,
+              function(err, signedObject) {
        // normal signedObject
        // can be verified with jwcrypto.verify
 
@@ -177,3 +182,32 @@ Sometimes the JSON objects to sign are certificates
        // certParamsArray is the array of individual cert params from each verification
        // payload is the assertion payload, and assertionParams is the assertion params.
     });
+
+Versioning
+====
+
+The formats of public-keys, as well as the special payload parameters of assertions and certificates, will be versioned.
+
+Not indicating a version number in the serialized payload indicates
+the alpha format in the BrowserID specification from June
+2012. Otherwise, a version number is required. The BrowserID Beta version number is <tt>2012.08.15</tt>.
+
+By default, <tt>jwcrypto</tt> will use the latest format
+automatically, and will parse any past format (unless that becomes
+impossible, in which case we'll define behavior then.)
+
+The version of the data format can be discovered as:
+
+     jwcrypto.DATA_FORMAT_VERSION
+
+If one wishes to use <tt>jwcrypto</tt> with an older data format:
+
+     jwcrypto.setDataFormatVersion('2012.08.15');
+
+or, to use the pre-versioning format:
+
+     jwcrypto.setDataFormatVersion('');
+
+or, to go back to the library default:
+
+     jwcrypto.setDataFormatVersion();

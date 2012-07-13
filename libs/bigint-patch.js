@@ -86,7 +86,15 @@ try {
     },
     isProbablePrime: function(reps) {
       return this._bigint.probPrime(reps);
+    },
+    toBase64: function() {
+      return this._bigint.toBuffer().toString('base64');
     }
+  };
+
+  BigInteger.fromBase64 = function(b64_string) {
+    var bi = bigint.fromBuffer(new Buffer(b64_string, 'base64'));
+    return BigInteger._from_bigint(bi);
   };
 
   nativeBigInteger = BigInteger;

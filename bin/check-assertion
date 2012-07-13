@@ -36,23 +36,23 @@ jwcrypto.cert.verify(
       pk = jwcrypto.loadPublicKey(JSON.stringify(components.payload['public-key']));
     } else {
       console.log("cert is properly signed");
-      pk = certParams['public-key'];
+      pk = certParams.publicKey;
     }
     doAssertion(pk, components.payload.iat, components.payload.exp);
   });
 
 function doAssertion(publicKey, iat, exp) {
   console.log("\n==== assertion ====");
-  
+
   var components = jwcrypto.extractComponents(full_assertion.signedAssertion);
   console.log(components);
-  
+
   console.log("audience: " + components.payload.aud);
   console.log("expires: " + new Date(components.payload.exp));
 
   if (components.payload.exp < iat)
     console.log("OY: assertion expires before cert is valid");
-  
+
   if (components.payload.exp > (exp + 5000))
     console.log("OY: assertion was likely issued after cert expired");
 
