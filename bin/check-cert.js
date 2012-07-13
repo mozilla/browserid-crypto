@@ -16,7 +16,7 @@ var pk = jwcrypto.loadPublicKey(pk_raw);
 
 console.log("verifying the raw signature - no cert specific verification");
 
-jwcrypto.verify(cert, pk, function(err, payload) {
+jwcrypto.verify(cert_raw, pk, function(err, payload) {
   if (err) {
     console.log("doesn't work");
     console.log(err);
