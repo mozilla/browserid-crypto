@@ -85,7 +85,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
         var self = this;
         
         // expiration date
-        var expiration = new Date(new Date().valueOf() + 60000);
+        var expiration = new Date(new Date().valueOf() + 120000);
         
         // once the cert chain is done, sign a 
         function signAssertion(rootPK, certs, user_keypair) {

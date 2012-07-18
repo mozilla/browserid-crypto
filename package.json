@@ -2,14 +2,16 @@
     "name": "jwcrypto"
   , "version": "0.3.2"
   , "dependencies": {
-    "browserify": "1.8.1",
+    "browserify": "1.13.5",
     "vows": "0.5.13",
     "optimist": "0.2.6",
-    "uglify-js": "1.0.6",
+    "uglify-js": "1.0.6"
+  }
+  , "optionalDependencies": {
     "bigint": "https://github.com/benadida/node-bigint/tarball/2ac68"
   }
   , "scripts": {
-    "postinstall": "bash bundle.sh",
+    "postinstall": "node ./scripts/bundle.js",
     "test": "./node_modules/.bin/vows"
   }
   , "repository" :
