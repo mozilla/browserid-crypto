@@ -23,7 +23,7 @@ if (existsSync(OUTPUT)) {
   fs.unlinkSync(OUTPUT);
 }
 
-var bundle = browserify();
+var bundle = browserify({ exports: 'require' });
 bundle.ignore(['crypto', 'bigint']);
 bundle.addEntry(INPUT);
 
