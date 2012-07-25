@@ -8,6 +8,7 @@ vows = require('vows'),
 assert = require('assert'),
 path = require('path'),
 jwcrypto = require('../index'),
+utils = require('../lib/utils'),
 testUtils = require('./utils');
 
 var suite = vows.describe('API tests');
@@ -26,6 +27,14 @@ suite.addBatch({
     }
   }
 });
+
+function mungePayload(signedObject) {
+    var p = jwcrypto.extractComponents(signedObject);
+    var payload = p.payload;
+    payload.evilNewField = "evil";
+    var newPayloadSegment = utils.base64urlencode(JSON.stringify(payload));
+    return p.headerSegment+"."+newPayloadSegment+"."+p.cryptoSegment;
+}
 
 testUtils.addBatches(suite, function(alg, keysize) {
   var keypair;
@@ -109,7 +118,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
         },
         "munged": {
           topic: function(err, signedObject) {
-            jwcrypto.verify(signedObject + "CRUD", keypair.publicKey, this.callback);
+            jwcrypto.verify(mungePayload(signedObject), keypair.publicKey, this.callback);
           },
           "errors": function(err, payload) {
             assert.isNotNull(err);
@@ -142,7 +151,8 @@ testUtils.addBatches(suite, function(alg, keysize) {
         },
         "munged": {
           topic: function(err, signedObject) {
-            jwcrypto.verify(signedObject + "CRUD", jwcrypto.loadPublicKey(keypair.publicKey.serialize()),
+            jwcrypto.verify(mungePayload(signedObject),
+                            jwcrypto.loadPublicKey(keypair.publicKey.serialize()),
                             this.callback);
           },
           "errors": function(err, payload) {
