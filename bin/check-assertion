@@ -2,77 +2,239 @@
 
 /* this should be invoked as follows
  *
- * check-assertion <root_pk> <full_assertion>
+ * check-assertion [root_pk] <full_assertion>
  */
 
-var jwcrypto = require("../index");
+var jwcrypto = require("../index"),
+path = require('path'),
+fs = require('fs'),
+https = require('https');
+
 require("../lib/algs/rs");
 require("../lib/algs/ds");
 
-var root_key_raw = process.argv[2];
-var root_key = jwcrypto.loadPublicKey(root_key_raw);
+function fail(why) {
+  process.stderr.write(why + "\n");
+  process.exit(1);
+}
 
-var full_raw_assertion = process.argv[3];
-var full_assertion = jwcrypto.cert.unbundle(full_raw_assertion);
+if (process.argv.length < 3 || process.argv.length > 4) {
+  fail("Usage: " + path.basename(process.argv[1]) +
+       " [public key file or contents or url] " + " <assertion file or contents>\n");
+}
 
-console.log("==== cert ====");
+// extractPublicKey, given a "thing" (something provided on the command line) and
+// an "issuer" (a hostname extracted from the provided assertion), let's try
+// our darndest to find the public key that this is associated with.
+// The public key may be:
+//   * null - in which case the user didn't provide one, and we'll try to fetch it
+//            from the net, using the issuer.
+//   * a file name - in which case we'll read from that file
+//   * the "public key" itself!
+//
+// Once we handle those cases, there are various formats that a public key may be
+// provided in:
+//   * base64 encoded ("serialized" form)
+//   * represented as a JSON object
+//
+// Let's find a public key and make the human happy!
+function extractPublicKey(thing, issuer, cb) {
+  function dealWithTheThing() {
+    // if thing is null, let's fall through to our error case
+    if (thing === null) thing = "";
 
-var components = jwcrypto.extractComponents(full_assertion.certs[0]);
-console.log("issuer: " + components.payload.iss);
-console.log("principal: " + JSON.stringify(components.payload.principal));
-console.log("iat: " + new Date(components.payload.iat));
-console.log("exp: " + new Date(components.payload.exp));
-
-console.log("using a median timestamp to ensure no timestamp failure");
-var median = new Date(components.payload.iat + (components.payload.exp - components.payload.iat)/2);
-
-jwcrypto.cert.verify(
-  full_assertion.certs[0], root_key, median,
-  function(err, payload, assertionParams, certParams) {
-    var pk;
-    if (err) {
-      console.log("cert is NOT properly signed: " + err);
-      console.log(components.payload['public-key']);
-      pk = jwcrypto.loadPublicKey(JSON.stringify(components.payload['public-key']));
-    } else {
-      console.log("cert is properly signed");
-      pk = certParams.publicKey;
-    }
-    doAssertion(pk, components.payload.iat, components.payload.exp);
-  });
-
-function doAssertion(publicKey, iat, exp) {
-  console.log("\n==== assertion ====");
-
-  var components = jwcrypto.extractComponents(full_assertion.signedAssertion);
-  console.log(components);
-
-  console.log("audience: " + components.payload.aud);
-  console.log("expires: " + new Date(components.payload.exp));
-
-  if (components.payload.exp < iat)
-    console.log("OY: assertion expires before cert is valid");
-
-  if (components.payload.exp > (exp + 5000))
-    console.log("OY: assertion was likely issued after cert expired");
-
-  console.log("verifying with an expiration date that should be valid for this cert.");
-  var checkDate = new Date(components.payload.exp - 1);
-
-  jwcrypto.assertion.verify(
-    full_assertion.signedAssertion, publicKey, checkDate,
-    function(err, payload, assertionParams) {
-      if (err) {
-        console.log("assertion is NOT properly signed: " + err);
-      } else {
-        console.log("assertion is properly signed");
+    // is it a path?
+    fs.stat(thing, function(err, stats) {
+      if (!err && stats.isFile()) {
+        thing = fs.readFileSync(thing);
       }
 
-      doBundle();
+      // now we've got a blob of text.  what could it be?
+      thing = thing.toString();
+
+      // is it a base64 encoded public key?
+      try { return cb(null, jwcrypto.loadPublicKey(thing)); } catch(e) { console.log(e); }
+
+      // nooo....  Well is it encoded as an object?
+      try { return cb(null, jwcrypto.loadPublicKeyFromObject(JSON.parse(thing))); } catch(e) { }
+
+      cb('Cannot parse your public key.  What is that thing?');
+    });
+  }
+
+  // if no public key was provided, let's try to fetch one!
+  if (thing == null) {
+    function tryToFetch(issuer) {
+      console.log("(seeking public key! trying to fetch .well-known from " + issuer + ")");
+      var req = https.request({
+        host: issuer,
+        path: '/.well-known/browserid',
+        method: 'GET'
+      }, function(res) {
+        var data = "";
+        res.on('data', function(x) { data += x });
+        res.on('end', function() {
+          thing = data;
+          try {
+            thing = JSON.stringify(JSON.parse(data)['public-key']);
+            return dealWithTheThing();
+          } catch(e) { }
+          // uh oh, couldn't parse.  maybe this is delegated?
+          try {
+            issuer = JSON.parse(data)['authority'];
+            return tryToFetch(issuer);
+          } catch(e) { }
+          // nothing is working.  let's fall through to parsing.
+          dealWithTheThing()
+        });
+      });
+      req.on('error', function() {
+        dealWithTheThing();
+      });
+      req.end();
     }
-  );
+    tryToFetch(issuer);
+  } else {
+    dealWithTheThing();
+  }
 }
 
-function doBundle() {
-  console.log("\n==== bundle ====");
+// Here we'll try our best to parse an assertion.  two common forms that assertions
+// may be provided in include embedded in a json blob under the 'assertion' key
+// (possible if the human pulls the payload out of an HTTP transaction from their
+// browser) or in serialized form (possible if the copy/paste is more granular, or
+// the human better understands the boundaries of what we call an "assertion").
+function extractAssertion(thing, cb) {
+  // is it a path?
+  fs.stat(thing, function(err, stats) {
+    if (!err && stats.isFile()) {
+      thing = fs.readFileSync(thing);
+    }
+    // is it embedded in an object?
+    try { thing = JSON.parse(thing).assertion; } catch(e) {};
+
+    try {
+      var raw_assertion = thing.toString().trim();
+      return cb(null, raw_assertion, jwcrypto.cert.unbundle(raw_assertion)); } catch(e) { }
+    cb("Cannot parse your assertion.  What is that thing!?");
+  });
 }
+
+// support two invocation forms:
+// check_assertion <public key> <assertion>
+// check_assertion <assertion>
+var root_key = null;
+var full_assertion = null;
+
+if (process.argv.length === 4) {
+  root_key = process.argv[2];
+  full_assertion = process.argv[3];
+} else {
+  root_key = null;
+  full_assertion = process.argv[2];
+}
+
+extractAssertion(full_assertion, function (err, raw_assertion, full_assertion) {
+  if (err) fail(err);
+
+  console.log("==== cert ====");
+
+  var components = jwcrypto.extractComponents(full_assertion.certs[0]);
+  console.log("issuer: " + components.payload.iss);
+  console.log("principal: " + JSON.stringify(components.payload.principal));
+  console.log("iat: " + new Date(components.payload.iat) + " (" + components.payload.iat + ")");
+  console.log("exp: " + new Date(components.payload.exp) + " (" + components.payload.exp + ")");
+
+  // now, let's try to parse this key thing
+  extractPublicKey(root_key, components.payload.iss, function(err, root_key) {
+    if (err) fail(err);
+
+    console.log("(using a median timestamp to ensure no timestamp failure)");
+    var median = new Date(components.payload.iat + (components.payload.exp - components.payload.iat)/2);
+
+    jwcrypto.cert.verify(
+      full_assertion.certs[0], root_key, median,
+      function(err, payload, assertionParams, certParams) {
+        var pk;
+        if (err) {
+          console.log("FATAL: cert is NOT properly signed: " + err);
+          console.log(components.payload['public-key']);
+          pk = jwcrypto.loadPublicKey(JSON.stringify(components.payload['public-key']));
+        } else {
+          console.log("cert is properly signed");
+          pk = certParams['public-key'];
+        }
+        if (typeof components.payload.iat !== 'number')
+          console.log("FATAL: cert lacks an 'issued at' (.iat) field");
+
+        if (typeof components.payload.exp !== 'number')
+          console.log("FATAL: cert lacks an 'expires' (.exp) field");
+
+        doAssertion(pk, components.payload.iat, components.payload.exp);
+      });
+
+    function doAssertion(publicKey, iat, exp) {
+      console.log("\n==== assertion ====");
+
+      var components = jwcrypto.extractComponents(full_assertion.signedAssertion);
+      console.log(components);
+
+      console.log("audience: " + components.payload.aud);
+      console.log("expires: " + new Date(components.payload.exp));
+
+
+      if (components.payload.exp < iat)
+        console.log("FATAL: assertion expires before cert is valid");
+
+      if (components.payload.exp > (exp + 5000))
+        console.log("FATAL: assertion was likely issued after cert expired");
+
+      console.log("(verifying with an expiration date that should be valid for this assertion.)");
+      var checkDate = new Date(components.payload.exp - 1);
+
+      jwcrypto.assertion.verify(
+        full_assertion.signedAssertion, publicKey, checkDate,
+        function(err, payload, assertionParams) {
+          if (err) {
+            console.log("FATAL: assertion is NOT properly signed: " + err);
+          } else {
+            console.log("assertion is properly signed");
+          }
+
+          doBundle();
+        }
+      );
+    }
+
+    function doBundle() {
+      console.log("\n==== bundle ====");
+
+      var components = jwcrypto.extractComponents(full_assertion.signedAssertion);
+      var checkDate = new Date(components.payload.exp - 1);
+
+      var ultimateIssuer;
+      jwcrypto.cert.verifyBundle(
+        raw_assertion,
+        checkDate, function(issuer, next) {
+          console.log("assuming public key is the key for", issuer);
+          ultimateIssuer = issuer;
+          next(null, root_key);
+        },
+        function(err, certParamsArray, payload, assertionParams) {
+          if (err) {
+            console.log("FATAL: assertion is invalid:", err);
+          } else {
+            console.log("bundle *seems* to verify ok!");
+            console.log("cert chain length: ", certParamsArray.length);
+            console.log("audience:          ", assertionParams.audience);
+
+            var principal = certParamsArray[certParamsArray.length - 1].certParams.principal;
+
+            console.log("domain from email: ", principal.email.replace(/^.*@/, ''));
+            console.log("certificate issuer:", ultimateIssuer);
+          }
+        });
+    }
+  });
+});
+
