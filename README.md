@@ -211,3 +211,4 @@ or, to use the pre-versioning format:
 or, to go back to the library default:
 
      jwcrypto.setDataFormatVersion();
+
