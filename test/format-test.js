@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const
+var
 vows = require('vows'),
 assert = require('assert'),
 path = require('path'),
@@ -45,15 +45,15 @@ suite.addBatch({
 function extractComponents(signedObject) {
   if (typeof(signedObject) != 'string')
     throw "malformed signature " + typeof(signedObject);
-  
+
   var parts = signedObject.split(".");
   if (parts.length != 3) {
     throw "signed object must have three parts, this one has " + parts.length;
-  }    
-  
+  }
+
   var headerSegment = parts[0];
   var payloadSegment = parts[1];
-  var cryptoSegment = parts[2];  
+  var cryptoSegment = parts[2];
 
   // we verify based on the actual string
   // FIXME: we should validate that the header contains only proper fields
@@ -69,9 +69,9 @@ function extractComponents(signedObject) {
           cryptoSegment: cryptoSegment};
 };
 
-const AUDIENCE = "http://foobar.com";
-const ISSUER = "issuer.com";
-const EMAIL = "john@example.com";
+var AUDIENCE = "http://foobar.com";
+var ISSUER = "issuer.com";
+var EMAIL = "john@example.com";
 
 var now = new Date();
 var in_a_minute = new Date(new Date().valueOf() + 60000);
@@ -102,8 +102,11 @@ suite.addBatch({
         assert.equal(components.payload.exp, in_a_minute.valueOf());
         assert.equal(components.payload.aud, AUDIENCE);
 
+        // optionally a version
+
         // nothing else
-        assert.equal(Object.keys(components.payload).length, 2);
+        assert.ok(Object.keys(components.payload).length <= 3);
+        assert.ok(Object.keys(components.payload).length >= 2);
       },
       "has proper signature": function(components) {
         assert.isString(components.signature);
@@ -113,7 +116,7 @@ suite.addBatch({
         // likelihood of X zeros, 1/(2^(4X))
         // let's allow for up to 5 zeros.
         assert.ok(components.signature.length <= 80);
-        assert.ok(components.signature.length > 75);        
+        assert.ok(components.signature.length > 75);
       }
     }
   }
@@ -122,7 +125,7 @@ suite.addBatch({
 suite.addBatch({
   "sign a cert": {
     topic: function() {
-      jwcrypto.cert.sign(userKeypair.publicKey, {email: EMAIL},
+      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, principal: {email: EMAIL}},
                          {issuedAt: now, issuer: ISSUER, expiresAt: in_a_minute},
                          {},
                          domainKeypair.secretKey, this.callback);
@@ -152,10 +155,14 @@ suite.addBatch({
         assert.equal(components.payload.principal.email, EMAIL);
         assert.equal(Object.keys(components.payload.principal).length, 1);
 
+        // assert.equal(JSON.stringify(components.payload.publicKey), userKeypair.publicKey.serialize());
         assert.equal(JSON.stringify(components.payload['public-key']), userKeypair.publicKey.serialize());
 
+        // optionally version
+
         // nothing else
-        assert.equal(Object.keys(components.payload).length, 5);
+        assert.ok(Object.keys(components.payload).length <= 6);
+        assert.ok(Object.keys(components.payload).length >= 5);
       },
       "has proper signature": function(components) {
         assert.isString(components.signature);

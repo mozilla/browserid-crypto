@@ -41,7 +41,8 @@ var sk = jwcrypto.loadSecretKey(fs.readFileSync(argv.s));
 var expires = new Date(new Date().valueOf() + (argv.d * 1000));
 
 var cert = jwcrypto.cert.sign(
-  pk, {}, {expiresAt: expires, issuedAt: new Date(), issuer: argv.i}, {},
+  {publicKey: pk, principal: {}},
+  {expiresAt: expires, issuedAt: new Date(), issuer: argv.i}, {},
   sk, function(err, cert) {
     console.log(cert);
   }

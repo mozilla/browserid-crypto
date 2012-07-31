@@ -5,6 +5,11 @@ function hex2b64(h) {
   var i;
   var c;
   var ret = "";
+
+  // fix by bwarner
+  if (h.length % 2 == 1)
+    h = "0"+h;
+  
   for(i = 0; i+3 <= h.length; i+=3) {
     c = parseInt(h.substring(i,i+3),16);
     ret += b64map.charAt(c >> 6) + b64map.charAt(c & 63);

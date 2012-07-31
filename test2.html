@@ -1,0 +1,22 @@
+<html>
+<head>
+<!-- stupid IE8 standards mode for JSON -->
+<meta http-equiv="x-ua-compatible" content="IE=8" />
+<title>test jwcrypto from Browser</title>
+  <script type="text/javascript" src="bidbundle-min.js"></script>
+  <script type="text/javascript">
+    function run() {
+    var jwcrypto = require("./lib/jwcrypto");
+    require("./lib/algs/ds");
+    var rng = new jwcrypto.rng();
+
+    jwcrypto.generateKeypair({algorithm:"DS", keysize: 256}, rng, function(err, kp) {
+       alert(kp.publicKey.serialize());
+    });
+
+    }
+  </script>
+<body>
+<button onclick="run();">try</button>
+</body>
+</html>
