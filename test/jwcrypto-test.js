@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const
+var
 vows = require('vows'),
 assert = require('assert'),
 path = require('path'),
@@ -110,7 +110,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             jwcrypto.verify(signedObject, keypair.publicKey, this.callback);
           },
           "payload is the same": function(err, payload) {
-            assert.equal(JSON.stringify(payload), JSON.stringify(obj));            
+            assert.equal(JSON.stringify(payload), JSON.stringify(obj));
           },
           "no error": function(err, payload) {
             assert.isNull(err);
@@ -125,7 +125,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
           },
           "no payload": function(err, payload) {
             assert.isUndefined(payload);
-          }          
+          }
         }
       },
       "signing with reserialized keys": {
@@ -143,7 +143,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
                             this.callback);
           },
           "payload is the same": function(err, payload) {
-            assert.equal(JSON.stringify(payload), JSON.stringify(obj));            
+            assert.equal(JSON.stringify(payload), JSON.stringify(obj));
           },
           "no error": function(err, payload) {
             assert.isNull(err);

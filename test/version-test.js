@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const
+var
 vows = require('vows'),
 assert = require('assert'),
 jwcrypto = require('../index'),
@@ -18,7 +18,7 @@ suite.addBatch({
     },
     "return what we expect": function(version) {
       // assert.equal(version, '2012.08.15');
-      // assert.equal(version, '');      
+      // assert.equal(version, '');
     }
   }
 });
