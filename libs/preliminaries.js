@@ -24,6 +24,7 @@ if (typeof(OVERRIDE) == "undefined") {
 
 var sha1 = {
   hex: function(){
+      throw new Error("Not Implemented");
     }
 };
 
