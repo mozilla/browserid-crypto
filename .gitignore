@@ -3,3 +3,6 @@ libs/all.js
 libs/minimal.js
 bidbundle.js
 node_modules
+bidbundle.js
+bidbundle-min.js
+bidbundle-min.js.gz
