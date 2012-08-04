@@ -162,7 +162,7 @@ extractAssertion(full_assertion, function (err, raw_assertion, full_assertion) {
           pk = jwcrypto.loadPublicKey(JSON.stringify(components.payload['public-key']));
         } else {
           console.log("cert is properly signed");
-          pk = certParams['public-key'];
+          pk = certParams['publicKey'];
         }
         if (typeof components.payload.iat !== 'number')
           console.log("FATAL: cert lacks an 'issued at' (.iat) field");
