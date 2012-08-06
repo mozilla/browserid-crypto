@@ -1,3 +1,9 @@
+0.4.1:
+	* fix node 0.6 compatibility by including a shrinkwrap file to lock to specific versions of nested dependencies
+
+0.4.0:
+	* incompatible data format and API changes
+
 0.3.2:
 	* fix IE8 compatibility
 
