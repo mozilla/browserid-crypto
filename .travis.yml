@@ -2,7 +2,6 @@ language: node_js
 
 before_install:
  - sudo apt-get install libgmp3-dev
- - npm install bigint
 
 node_js:
  - 0.6
