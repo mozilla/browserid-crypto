@@ -1,7 +1,7 @@
 
-[![Build Status](https://secure.travis-ci.org/mozilla/jwcrypto.png)](http://travis-ci.org/mozilla/jwcrypto)
-
 JavaScript implementation of JSON Web Signatures and JSON Web Tokens, especially as needed by BrowserID.
+
+[![Build Status](https://secure.travis-ci.org/mozilla/jwcrypto.png)](http://travis-ci.org/mozilla/jwcrypto)
 
 - libs contains third-party libraries that need to be included. See
 libs/dependencies.txt and libs/package.txt
