@@ -1,3 +1,6 @@
+0.4.2:
+	* really fix node 0.6 compatibility: add a fake dependency on http-browserify@0.1.1, remove the shrinkwrap file (it causes problems with bigint)
+
 0.4.1:
 	* fix node 0.6 compatibility by including a shrinkwrap file to lock to specific versions of nested dependencies
 
