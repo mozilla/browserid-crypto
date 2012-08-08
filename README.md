@@ -108,7 +108,7 @@ Sometimes the JSON object to sign should be a standard assertion with pre-define
     // add special fields which will be encoded properly
     // payload cannot contain reserved fields
     assertion.sign(payload, {issuer: "foo.com", expiresAt: new Date(new Date().valueOf() + 5000),
-                             issuedAt: new Date(), audience: "https://example.com"},
+                             issuedAt: new Date().valueOf(), audience: "https://example.com"},
                       keypair.secretKey,
                       function(err, signedAssertion) {
        // a normal signedObject, much like above
@@ -123,6 +123,7 @@ Sometimes the JSON object to sign should be a standard assertion with pre-define
        });
     });
 
+Note that timestamps (for `issuedAt` and `expiresAt`) are integers containing the standard JS milliseconds-since-epoch, or objects with methods named `.valueOf()` which will return such an integer. The assertion format currently serializes these integers verbatim; a future version may serialize them as seconds (instead of milliseconds) to conform with the JWT specifications.
 
 Certs
 =======
