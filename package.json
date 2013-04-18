@@ -9,7 +9,7 @@
     "uglify-js": "1.0.6"
   }
   , "optionalDependencies": {
-    "bigint": "0.3.9"
+    "bigint": "0.4.2"
   }
   , "scripts": {
     "postinstall": "node ./scripts/bundle.js",
