@@ -55,7 +55,7 @@ function _rsasign_getHexPaddedDigestInfoForString(s, keySize, hashAlg) {
   for (var i = 0; i < fLen; i += 2) {
     sMid += "ff";
   }
-  sPaddedMessageHex = sHead + sMid + sTail;
+  var sPaddedMessageHex = sHead + sMid + sTail;
   return sPaddedMessageHex;
 }
 
