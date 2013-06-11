@@ -83,6 +83,30 @@ testUtils.addBatches(suite, function(alg, keysize) {
           }
         }
       },
+      "sign an assertion with extra data": {
+        topic: function(kp) {
+          assertion.sign(payload, {issuer: "foo.com", expiresAt: in_a_minute,
+                                   audience: "https://example.com",
+                                   extra: {webrtc: {fingerprint: "DE:AD:BE:EF"}}
+                                   },
+                         kp.secretKey,
+                         this.callback);
+        },
+        "when verified with assertion": {
+          topic: function(signedObject, kp) {
+            // now is Date()
+            assertion.verify(signedObject, kp.publicKey, now, this.callback);
+          },
+          "assertionparams is good": function(err, newPayload, assertionParams) {
+            assert.isNotNull(assertionParams.expiresAt);
+            assert.isNotNull(assertionParams.issuer);
+            assert.isNotNull(assertionParams.audience);
+            assert.equal(assertionParams.audience, "https://example.com");
+            assert.equal(assertionParams.expiresAt.valueOf(), in_a_minute.valueOf());
+            assert.equal(assertionParams.extra.webrtc.fingerprint, "DE:AD:BE:EF");
+          }
+        }
+      },
       "sign an assertion that is already expired": {
         topic: function(kp) {
           assertion.sign(payload, {issuer: "foo.com", expiresAt: a_second_ago,
