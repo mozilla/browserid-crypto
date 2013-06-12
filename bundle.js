@@ -31,4 +31,5 @@
 
 var jwcrypto = require("./lib/jwcrypto");
 require("./lib/algs/ds");
+require("./lib/algs/rs");
 
