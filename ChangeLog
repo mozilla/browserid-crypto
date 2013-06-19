@@ -1,3 +1,6 @@
+0.4.4:
+	* fix global leak of sPaddedMessageHex, improve exception when given an unknown key size
+
 0.4.3:
 	* add node 0.10 compatibility, which means bumping to bigint-0.4.2
 
