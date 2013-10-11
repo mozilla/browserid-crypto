@@ -58,6 +58,8 @@ function extractPublicKey(thing, issuer, cb) {
       // nooo....  Well is it encoded as an object?
       try { return cb(null, jwcrypto.loadPublicKeyFromObject(JSON.parse(thing))); } catch(e) { }
 
+      try { return cb(null, jwcrypto.loadPublicKeyFromObject(JSON.parse(thing)['public-key'])); } catch(e) { }
+
       cb('Cannot parse your public key.  What is that thing?');
     });
   }
