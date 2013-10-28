@@ -7,7 +7,6 @@
   "noarg": true,
   "undef": true,
   "unused": true,
-  "browser": true,
   "laxbreak": true,
   "laxcomma": true,
   "eqeqeq": true,
