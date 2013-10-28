@@ -1,26 +1,30 @@
 {
-    "name": "jwcrypto"
-  , "version": "0.4.4"
-  , "dependencies": {
+  "name": "jwcrypto",
+  "version": "0.4.4",
+  "dependencies": {
     "browserify": "1.13.5",
     "http-browserify": "0.1.1",
     "vows": "0.5.13",
     "optimist": "0.2.6",
     "uglify-js": "1.0.6"
-  }
-  , "optionalDependencies": {
+  },
+  "devDependencies": {
+    "jshint": "~2.1.10",
+    "walk": "~2.2.1"
+  },
+  "optionalDependencies": {
     "bigint": "0.4.2"
-  }
-  , "scripts": {
+  },
+  "scripts": {
     "postinstall": "node ./scripts/bundle.js",
     "test": "./node_modules/.bin/vows"
-  }
-  , "repository" :
-  { "type" : "git"
-  , "url" : "http://github.com/mozilla/jwcrypto.git"
-  }
-  , "main" : "index.js"
-  , "bin" : {
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/mozilla/jwcrypto.git"
+  },
+  "main": "index.js",
+  "bin": {
     "generate-keypair": "./bin/generate-keypair",
     "check-assertion": "./bin/check-assertion",
     "certify": "./bin/certify"
