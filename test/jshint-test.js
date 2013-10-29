@@ -5,12 +5,12 @@
 // jshinting (syntax checking) of the source
 
 const vows = require("vows"),
-      should = require("should"),
       fs = require('fs'),
       path = require('path'),
       jshint = require('jshint').JSHINT,
       walk = require('walk'),
-      util = require('util');
+      util = require('util'),
+      assert = require('assert');
 
 var suite = vows.describe('jshint');
 
@@ -28,8 +28,8 @@ suite.addBatch({
       fs.readFile(path.join(__dirname, '../.jshintrc'), this.callback);
     },
     "should be readable": function(err, string) {
-      should.not.exist(err);
-      (string).should.be.an.instanceOf(Buffer);
+      assert(!err);
+      assert(string);
     },
     "should parse": {
       topic: function(string) {
