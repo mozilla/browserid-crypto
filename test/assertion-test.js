@@ -78,7 +78,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isNotNull(assertionParams.expiresAt);
             assert.isNotNull(assertionParams.issuer);
             assert.isNotNull(assertionParams.audience);
-            assert.equal(assertionParams.audience, "https://example.com");            
+            assert.equal(assertionParams.audience, "https://example.com");
             assert.equal(assertionParams.expiresAt.valueOf(), in_a_minute.valueOf());
           }
         }
@@ -124,7 +124,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isUndefined(payload);
           },
           "returns the right error message": function(err, payload, assertionParams) {
-            assert.equal(err, "assertion has expired");
+            assert.equal(err, "expired");
           }
         }
       },
@@ -156,7 +156,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isNotNull(payload.iss);
             assert.isUndefined(payload.aud);
             assert.equal(payload.exp, in_a_minute.valueOf());
-            assert.equal(payload.iat, in_a_minute.valueOf());            
+            assert.equal(payload.iat, in_a_minute.valueOf());
           }
         },
         "when verified with assertion": {
@@ -169,7 +169,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isUndefined(payload);
           },
           "returns the right error message": function(err, payload, assertionParams) {
-            assert.equal(err, "assertion issued later than verification date");
+            assert.equal(err, "issued later than verification date");
           }
         }
       }
