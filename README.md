@@ -1,4 +1,3 @@
-
 JavaScript implementation of JSON Web Signatures and JSON Web Tokens, especially as needed by BrowserID.
 
 [![Build Status](https://secure.travis-ci.org/mozilla/jwcrypto.png)](http://travis-ci.org/mozilla/jwcrypto)
@@ -68,7 +67,7 @@ Basic API
         // error in err?
 
         // serialize the public key
-        console.log(keypair.publicKey.toString());
+        console.log(keypair.publicKey.serialize());
 
         // just the JSON object to embed in another structure
         console.log(JSON.stringify({stuff: keypair.publicKey.toJSONObject()}));
