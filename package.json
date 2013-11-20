@@ -1,6 +1,6 @@
 {
   "name": "jwcrypto",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "dependencies": {
     "browserify": "1.13.5",
     "http-browserify": "0.1.1",
@@ -9,8 +9,8 @@
     "uglify-js": "1.0.6"
   },
   "devDependencies": {
-    "jshint": "~2.1.10",
-    "walk": "~2.2.1"
+    "jshint": "2.1.10",
+    "walk": "2.2.1"
   },
   "optionalDependencies": {
     "bigint": "0.4.2"
