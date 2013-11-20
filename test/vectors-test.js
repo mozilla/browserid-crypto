@@ -142,9 +142,9 @@ suite.addBatch(
           this.callback);
       },
       "fails appropriately": function(err, certParamsArray, payload, assertionParams) {
-        assert.equal(err, "assertion has expired");
+        assert.equal(err, "certificate expired");
       }
-    }    
+    }
 })
 
 suite.addBatch(
