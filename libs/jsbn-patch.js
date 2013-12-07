@@ -5,5 +5,5 @@ BigInteger.prototype.toBase64 = function() {
 };
 
 BigInteger.fromBase64 = function(str) {
-  return new BigInteger(b64tohex(str), 16);
+  return new BigInteger(new Buffer(str, 'base64').toString('hex'), 16);
 };
