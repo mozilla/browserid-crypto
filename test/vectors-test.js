@@ -37,22 +37,24 @@ var PUBLIC_KEYS = [
    "p":"d6c4e5045697756c7a312d02c2289c25d40f9954261f7b5876214b6df109c738b76226b199bb7e33f8fc7ac1dcc316e1e7c78973951bfc6ff2e00cc987cd76fcfb0b8c0096b0b460fffac960ca4136c28f4bfb580de47cf7e7934c3985e3b3d943b77f06ef2af3ac3494fc3c6fc49810a63853862a02bb1c824a01b7fc688e4028527a58ad58c9d512922660db5d505bc263af293bc93bcd6d885a157579d7f52952236dd9d06a4fc3bc2247d21f1a70f5848eb0176513537c983f5a36737f01f82b44546e8e7f0fabc457e3de1d9c5dba96965b10a2a0580b0ad0f88179e10066107fb74314a07e6745863bc797b7002ebec0b000a98eb697414709ac17b401",
    "q":"b1e370f6472c8754ccd75e99666ec8ef1fd748b748bbbc08503d82ce8055ab3b",
    "g":"9a8269ab2e3b733a5242179d8f8ddb17ff93297d9eab00376db211a22b19c854dfa80166df2132cbc51fb224b0904abb22da2c7b7850f782124cb575b116f41ea7c4fc75b1d77525204cd7c23a15999004c23cdeb72359ee74e886a1dde7855ae05fe847447d0a68059002c3819a75dc7dcbb30e39efac36e07e2c404b7ca98b263b25fa314ba93c0625718bd489cea6d04ba4b0b7f156eeb4c56c44b50e4fb5bce9d7ae0d55b379225feb0214a04bed72f33e0664d290e7c840df3e2abb5e48189fa4e90646f1867db289c6560476799f7be8420a6dc01d078de437f280fff2d7ddf1248d56e1a54b933a41629d6c252983c58795105802d30d7bcd819cf6ef"   
-  },
-  
+  }
+/*
+  ,
+
   // newer format stuff
-  {key: {"algorithm":"RS","version":"2012.08.15","modulus":"Zx5aDEB62oTwkoTikAp4ck+HGQv4oIa8+L5KdjcANbvjR2jtXAjswepZrwvzYFhP/mwFl/Oy4YElW3OyPy9I6K0OR0xQgBsOprpEOFNEFs14Jy9LJi59yb4gA+xSUlN/SN8s0JKzQ2jYwD8ibZicZWt2C2vvyaBmWaUZm2o5V59DYH6D7ecZSPkwWi9PoD3lCeK2ZeJa7jZpD02bCvybbwyFnDPca2o9MP7/r8Fs6BWJqGAIxlDqvvLUZ+2CeKAie5a98lyBvE//kc0ANY9yjDcWp+c7IXx+lSn5AobiicM2PbiWUdqAXWOguf61ooT1yGazSAeAhZElcy+jd8VZ3Q==","exponent":"AQAB"},
+  {key: {"algorithm":"RS","modulus":"Zx5aDEB62oTwkoTikAp4ck+HGQv4oIa8+L5KdjcANbvjR2jtXAjswepZrwvzYFhP/mwFl/Oy4YElW3OyPy9I6K0OR0xQgBsOprpEOFNEFs14Jy9LJi59yb4gA+xSUlN/SN8s0JKzQ2jYwD8ibZicZWt2C2vvyaBmWaUZm2o5V59DYH6D7ecZSPkwWi9PoD3lCeK2ZeJa7jZpD02bCvybbwyFnDPca2o9MP7/r8Fs6BWJqGAIxlDqvvLUZ+2CeKAie5a98lyBvE//kc0ANY9yjDcWp+c7IXx+lSn5AobiicM2PbiWUdqAXWOguf61ooT1yGazSAeAhZElcy+jd8VZ3Q==","exponent":"AQAB"},
    algorithm: "RSA",
    modulus: "671e5a0c407ada84f09284e2900a78724f87190bf8a086bcf8be4a76370035bbe34768ed5c08ecc1ea59af0bf360584ffe6c0597f3b2e181255b73b23f2f48e8ad0e474c50801b0ea6ba4438534416cd78272f4b262e7dc9be2003ec5252537f48df2cd092b34368d8c03f226d989c656b760b6befc9a06659a5199b6a39579f43607e83ede71948f9305a2f4fa03de509e2b665e25aee36690f4d9b0afc9b6f0c859c33dc6b6a3d30feffafc16ce81589a86008c650eabef2d467ed8278a0227b96bdf25c81bc4fff91cd00358f728c3716a7e73b217c7e9529f90286e289c3363db89651da805d63a0b9feb5a284f5c866b3480780859125732fa377c559dd",
    exponent: "10001"
   },
-  {key: {"algorithm":"DS","version":"2012.08.15","y":"EgxmUUA4YD/wNDJH3mX+QTIiIwDtn2cAaCkXr0HGKFN3eTuoOqt6iCvTXEkFZCSIog9ml6wKIasJO8mcT+ZVD+40oD+CXKeRJ7LXPnpSuB5rSvgUxEtVY4/8wWra5RnhoHn8BOgb6tq/zOn9EEV6nE6h/t4rVb/dLW1QTono1Q8=","p":"/2AEg9tqv8W0Xqt4WUs1M9VQ2fG/Kpkqeo2qbcNPgEWtTm4MQp0zTu6q79fiPUgQvgDkzBSSy6MluoH/LVpbMFqNF+s79KBqNJ05LgDTKXRKUXk4A0ToKhjEeTNDj4keIq7vgS1pyPdeMmy3DqAAw/d239vWBGOMLvcX/CbQLhc=","q":"4h4E+RHR7XmRAI7Kqzv3dZhDCcM=","g":"xSpKD/O35h/fGGfOhBODaaYVT0r6kpZuPIJ+Jc+mz1CLkOXeQZ4TN+B6Lp4qPNXepwTRdfjr9q85fWnhELlq+xfHoDJZMp5IKbDQO7x4lrFbSt5T4TCFjMNNliaaqJBB9AkTbHJCo4iVydW8ytTzia8dekvROYvQct/6iWIzOXo="},
+  {key: {"algorithm":"DS","y":"EgxmUUA4YD/wNDJH3mX+QTIiIwDtn2cAaCkXr0HGKFN3eTuoOqt6iCvTXEkFZCSIog9ml6wKIasJO8mcT+ZVD+40oD+CXKeRJ7LXPnpSuB5rSvgUxEtVY4/8wWra5RnhoHn8BOgb6tq/zOn9EEV6nE6h/t4rVb/dLW1QTono1Q8=","p":"/2AEg9tqv8W0Xqt4WUs1M9VQ2fG/Kpkqeo2qbcNPgEWtTm4MQp0zTu6q79fiPUgQvgDkzBSSy6MluoH/LVpbMFqNF+s79KBqNJ05LgDTKXRKUXk4A0ToKhjEeTNDj4keIq7vgS1pyPdeMmy3DqAAw/d239vWBGOMLvcX/CbQLhc=","q":"4h4E+RHR7XmRAI7Kqzv3dZhDCcM=","g":"xSpKD/O35h/fGGfOhBODaaYVT0r6kpZuPIJ+Jc+mz1CLkOXeQZ4TN+B6Lp4qPNXepwTRdfjr9q85fWnhELlq+xfHoDJZMp5IKbDQO7x4lrFbSt5T4TCFjMNNliaaqJBB9AkTbHJCo4iVydW8ytTzia8dekvROYvQct/6iWIzOXo="},
    algorithm: "DSA",
    y: "120c66514038603ff0343247de65fe4132222300ed9f6700682917af41c6285377793ba83aab7a882bd35c4905642488a20f6697ac0a21ab093bc99c4fe6550fee34a03f825ca79127b2d73e7a52b81e6b4af814c44b55638ffcc16adae519e1a079fc04e81beadabfcce9fd10457a9c4ea1fede2b55bfdd2d6d504e89e8d50f",
    p: "ff600483db6abfc5b45eab78594b3533d550d9f1bf2a992a7a8daa6dc34f8045ad4e6e0c429d334eeeaaefd7e23d4810be00e4cc1492cba325ba81ff2d5a5b305a8d17eb3bf4a06a349d392e00d329744a5179380344e82a18c47933438f891e22aeef812d69c8f75e326cb70ea000c3f776dfdbd604638c2ef717fc26d02e17",
    q: "e21e04f911d1ed7991008ecaab3bf775984309c3",
    g: "c52a4a0ff3b7e61fdf1867ce84138369a6154f4afa92966e3c827e25cfa6cf508b90e5de419e1337e07a2e9e2a3cd5dea704d175f8ebf6af397d69e110b96afb17c7a03259329e4829b0d03bbc7896b15b4ade53e130858cc34d96269aa89041f409136c7242a38895c9d5bccad4f389af1d7a4bd1398bd072dffa896233397a"
   }
-  
+*/
 ];
 
 var SECRET_KEYS = [
@@ -70,6 +72,7 @@ var SECRET_KEYS = [
    "p":"ff600483db6abfc5b45eab78594b3533d550d9f1bf2a992a7a8daa6dc34f8045ad4e6e0c429d334eeeaaefd7e23d4810be00e4cc1492cba325ba81ff2d5a5b305a8d17eb3bf4a06a349d392e00d329744a5179380344e82a18c47933438f891e22aeef812d69c8f75e326cb70ea000c3f776dfdbd604638c2ef717fc26d02e17","q":"e21e04f911d1ed7991008ecaab3bf775984309c3",
    "g":"c52a4a0ff3b7e61fdf1867ce84138369a6154f4afa92966e3c827e25cfa6cf508b90e5de419e1337e07a2e9e2a3cd5dea704d175f8ebf6af397d69e110b96afb17c7a03259329e4829b0d03bbc7896b15b4ade53e130858cc34d96269aa89041f409136c7242a38895c9d5bccad4f389af1d7a4bd1398bd072dffa896233397a"
   },
+/*
   {
     key: {"algorithm":"RS","version":"2012.08.15","modulus":"Zx5aDEB62oTwkoTikAp4ck+HGQv4oIa8+L5KdjcANbvjR2jtXAjswepZrwvzYFhP/mwFl/Oy4YElW3OyPy9I6K0OR0xQgBsOprpEOFNEFs14Jy9LJi59yb4gA+xSUlN/SN8s0JKzQ2jYwD8ibZicZWt2C2vvyaBmWaUZm2o5V59DYH6D7ecZSPkwWi9PoD3lCeK2ZeJa7jZpD02bCvybbwyFnDPca2o9MP7/r8Fs6BWJqGAIxlDqvvLUZ+2CeKAie5a98lyBvE//kc0ANY9yjDcWp+c7IXx+lSn5AobiicM2PbiWUdqAXWOguf61ooT1yGazSAeAhZElcy+jd8VZ3Q==","exponent":"AQAB","secretExponent":"Kh75xVtpU21OH2tsaE3+mSLnGlILgvbGpgyEufkJeul+kyLHIfr7StKBQ8Fr7oTkWBajykffX8GzEsIVoz2bWH+n/3OqxklHGM+pIiDRBUd0tvzYg4YmF4wz46ZakgpNSeTvl1r1IqnnL9AaLg5ShBL7Kvsx/XgplqCb7yHavnFoQiVB5Fg4fEoUxrOzRrTkssxS5rverkczW5speghsOiEffszkW8tF7rh/xdIelh8xGVfCANkLVaYb9L/4vgZ/ZcCvLcC2oFOCDB1335QSO9iNvMon71r3xER8397cYAFArRExfdYcts8NKkJJ86dsJhydoqG8as72VLge3dQYAQ=="},
    algorithm: "RSA",
@@ -85,6 +88,7 @@ var SECRET_KEYS = [
     g: "c52a4a0ff3b7e61fdf1867ce84138369a6154f4afa92966e3c827e25cfa6cf508b90e5de419e1337e07a2e9e2a3cd5dea704d175f8ebf6af397d69e110b96afb17c7a03259329e4829b0d03bbc7896b15b4ade53e130858cc34d96269aa89041f409136c7242a38895c9d5bccad4f389af1d7a4bd1398bd072dffa896233397a",
     x: "af0ce0b1222b53a87e065784ff6c0333bb1966d9"
   }
+*/
 ];
 
 var CERTS = [
@@ -93,14 +97,14 @@ var CERTS = [
    "email": "user@exampleidp.com",
    "certifierPublicKey": {"algorithm":"RS","n":"14992830413702950214310095212044491259620359262383741324696388958190897089691526259734048412721912364240221301689826865084526414386073707804839978986676709963946069225361038897793675105866773424177081334731736862288361853661697790251045350661007112837048725805572051406892322870828536513516637815563734426985085169776230353505099335068959396036415837272499551706990150656379682592552383284722119011793645821942132094135988926383389368449569136547237729302181561293580509148227224997417221099523657138090327493805636962561720869470208329064396135474786068129369609669835010448697628273776942729022409017231229381035477","e":"65537"},
    "containedPublicKey": {"algorithm":"DS","y":"be83f1cf4dc2569af822b6b5c541792e321d9c6194ea567142e9869e495bb25fbf49693c6f577efe162093ef27c7c550ec3d810bf005e523d3ee6c77346e05fdcd9adf584670b368005b1ed2e26adc0eef9b2a871d7d51e5601349822710f3028a58b5af45f72b8366f530936a98ca7eafc7ba31d6e13636365e113a0a5b626c","p":"ff600483db6abfc5b45eab78594b3533d550d9f1bf2a992a7a8daa6dc34f8045ad4e6e0c429d334eeeaaefd7e23d4810be00e4cc1492cba325ba81ff2d5a5b305a8d17eb3bf4a06a349d392e00d329744a5179380344e82a18c47933438f891e22aeef812d69c8f75e326cb70ea000c3f776dfdbd604638c2ef717fc26d02e17","q":"e21e04f911d1ed7991008ecaab3bf775984309c3","g":"c52a4a0ff3b7e61fdf1867ce84138369a6154f4afa92966e3c827e25cfa6cf508b90e5de419e1337e07a2e9e2a3cd5dea704d175f8ebf6af397d69e110b96afb17c7a03259329e4829b0d03bbc7896b15b4ade53e130858cc34d96269aa89041f409136c7242a38895c9d5bccad4f389af1d7a4bd1398bd072dffa896233397a"}
-  },
+  } /* ,
   {
     cert: "eyJhbGciOiJSUzI1NiJ9.eyJwdWJsaWNLZXkiOnsiYWxnb3JpdGhtIjoiRFMiLCJ2ZXJzaW9uIjoiMjAxMi4wOC4xNSIsInkiOiJFZ3htVVVBNFlEL3dOREpIM21YK1FUSWlJd0R0bjJjQWFDa1hyMEhHS0ZOM2VUdW9PcXQ2aUN2VFhFa0ZaQ1NJb2c5bWw2d0tJYXNKTzhtY1QrWlZEKzQwb0QrQ1hLZVJKN0xYUG5wU3VCNXJTdmdVeEV0Vlk0Lzh3V3JhNVJuaG9IbjhCT2diNnRxL3pPbjlFRVY2bkU2aC90NHJWYi9kTFcxUVRvbm8xUTg9IiwicCI6Ii8yQUVnOXRxdjhXMFhxdDRXVXMxTTlWUTJmRy9LcGtxZW8ycWJjTlBnRVd0VG00TVFwMHpUdTZxNzlmaVBVZ1F2Z0RrekJTU3k2TWx1b0gvTFZwYk1GcU5GK3M3OUtCcU5KMDVMZ0RUS1hSS1VYazRBMFRvS2hqRWVUTkRqNGtlSXE3dmdTMXB5UGRlTW15M0RxQUF3L2QyMzl2V0JHT01MdmNYL0NiUUxoYz0iLCJxIjoiNGg0RStSSFI3WG1SQUk3S3F6djNkWmhEQ2NNPSIsImciOiJ4U3BLRC9PMzVoL2ZHR2ZPaEJPRGFhWVZUMHI2a3BadVBJSitKYyttejFDTGtPWGVRWjRUTitCNkxwNHFQTlhlcHdUUmRmanI5cTg1ZlduaEVMbHEreGZIb0RKWk1wNUlLYkRRTzd4NGxyRmJTdDVUNFRDRmpNTk5saWFhcUpCQjlBa1RiSEpDbzRpVnlkVzh5dFR6aWE4ZGVrdlJPWXZRY3QvNmlXSXpPWG89In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InVzZXJAZXhhbXBsZWlkcC5jb20ifSwidmVyc2lvbiI6IjIwMTIuMDguMTUiLCJpYXQiOjEzNDI4MDE2OTA1NzAsImV4cCI6MTM0MjgwMTY5NjU3MCwiaXNzIjoiZXhhbXBsZWlkcC5jb20ifQ.IP1owFXMabG0FtLJmp9owqy5KdaY1qMERNpaCgvBZxccofC4cGRqJGsvNbPMMWlxRYUt_jR6F2M_hSEXHDJQrAhthZGaZYEDTRZIkBVQO_ufA7_6VeeY5Z-cvUBaXEtJD0HsYJhSDRsUS3WdTyCJasv7csA6_4ovuNm69rmY3QxlQs0wux4tAN_5P5xM6Y4rZwZaBpdLRmwxGcObEsQ_OS6c8OER5TSXrbKaFPL5iThL5xI_mdi7mCqcwPnPtLwcV2ARQ3qFqd8Xf30RP5cAetC-0pwr4o4xuby81ZRjf-ulp5lIbLE_uZVTgSZbIR3aP6edqrdJ-wZYf_oDQnNQbA",
     "issued_at":1342801690570,"expires_at":1342801696570,"issuer":"exampleidp.com",
     "email":"user@exampleidp.com",
     certifierPublicKey: {"algorithm":"RS","version":"2012.08.15","modulus":"Zx5aDEB62oTwkoTikAp4ck+HGQv4oIa8+L5KdjcANbvjR2jtXAjswepZrwvzYFhP/mwFl/Oy4YElW3OyPy9I6K0OR0xQgBsOprpEOFNEFs14Jy9LJi59yb4gA+xSUlN/SN8s0JKzQ2jYwD8ibZicZWt2C2vvyaBmWaUZm2o5V59DYH6D7ecZSPkwWi9PoD3lCeK2ZeJa7jZpD02bCvybbwyFnDPca2o9MP7/r8Fs6BWJqGAIxlDqvvLUZ+2CeKAie5a98lyBvE//kc0ANY9yjDcWp+c7IXx+lSn5AobiicM2PbiWUdqAXWOguf61ooT1yGazSAeAhZElcy+jd8VZ3Q==","exponent":"AQAB"},
     containedPublicKey: {"algorithm":"DS","version":"2012.08.15","y":"EgxmUUA4YD/wNDJH3mX+QTIiIwDtn2cAaCkXr0HGKFN3eTuoOqt6iCvTXEkFZCSIog9ml6wKIasJO8mcT+ZVD+40oD+CXKeRJ7LXPnpSuB5rSvgUxEtVY4/8wWra5RnhoHn8BOgb6tq/zOn9EEV6nE6h/t4rVb/dLW1QTono1Q8=","p":"/2AEg9tqv8W0Xqt4WUs1M9VQ2fG/Kpkqeo2qbcNPgEWtTm4MQp0zTu6q79fiPUgQvgDkzBSSy6MluoH/LVpbMFqNF+s79KBqNJ05LgDTKXRKUXk4A0ToKhjEeTNDj4keIq7vgS1pyPdeMmy3DqAAw/d239vWBGOMLvcX/CbQLhc=","q":"4h4E+RHR7XmRAI7Kqzv3dZhDCcM=","g":"xSpKD/O35h/fGGfOhBODaaYVT0r6kpZuPIJ+Jc+mz1CLkOXeQZ4TN+B6Lp4qPNXepwTRdfjr9q85fWnhELlq+xfHoDJZMp5IKbDQO7x4lrFbSt5T4TCFjMNNliaaqJBB9AkTbHJCo4iVydW8ytTzia8dekvROYvQct/6iWIzOXo="}
-  }
+  } */
 ];
 
 var BACKED_ASSERTIONS = [
@@ -109,6 +113,7 @@ var BACKED_ASSERTIONS = [
    "issued_at":1342635951027,"expires_at":1342635957027,"audience":"https://example.com",
    "email": 'user@exampleidp.com'
   },
+  /*
   {
     assertion: "eyJhbGciOiJSUzI1NiJ9.eyJwdWJsaWNLZXkiOnsiYWxnb3JpdGhtIjoiRFMiLCJ2ZXJzaW9uIjoiMjAxMi4wOC4xNSIsInkiOiJFZ3htVVVBNFlEL3dOREpIM21YK1FUSWlJd0R0bjJjQWFDa1hyMEhHS0ZOM2VUdW9PcXQ2aUN2VFhFa0ZaQ1NJb2c5bWw2d0tJYXNKTzhtY1QrWlZEKzQwb0QrQ1hLZVJKN0xYUG5wU3VCNXJTdmdVeEV0Vlk0Lzh3V3JhNVJuaG9IbjhCT2diNnRxL3pPbjlFRVY2bkU2aC90NHJWYi9kTFcxUVRvbm8xUTg9IiwicCI6Ii8yQUVnOXRxdjhXMFhxdDRXVXMxTTlWUTJmRy9LcGtxZW8ycWJjTlBnRVd0VG00TVFwMHpUdTZxNzlmaVBVZ1F2Z0RrekJTU3k2TWx1b0gvTFZwYk1GcU5GK3M3OUtCcU5KMDVMZ0RUS1hSS1VYazRBMFRvS2hqRWVUTkRqNGtlSXE3dmdTMXB5UGRlTW15M0RxQUF3L2QyMzl2V0JHT01MdmNYL0NiUUxoYz0iLCJxIjoiNGg0RStSSFI3WG1SQUk3S3F6djNkWmhEQ2NNPSIsImciOiJ4U3BLRC9PMzVoL2ZHR2ZPaEJPRGFhWVZUMHI2a3BadVBJSitKYyttejFDTGtPWGVRWjRUTitCNkxwNHFQTlhlcHdUUmRmanI5cTg1ZlduaEVMbHEreGZIb0RKWk1wNUlLYkRRTzd4NGxyRmJTdDVUNFRDRmpNTk5saWFhcUpCQjlBa1RiSEpDbzRpVnlkVzh5dFR6aWE4ZGVrdlJPWXZRY3QvNmlXSXpPWG89In0sInByaW5jaXBhbCI6eyJlbWFpbCI6InVzZXJAZXhhbXBsZWlkcC5jb20ifSwidmVyc2lvbiI6IjIwMTIuMDguMTUiLCJpYXQiOjEzNDI4MDE2OTA1NzAsImV4cCI6MTM0MjgwMTY5NjU3MCwiaXNzIjoiZXhhbXBsZWlkcC5jb20ifQ.IP1owFXMabG0FtLJmp9owqy5KdaY1qMERNpaCgvBZxccofC4cGRqJGsvNbPMMWlxRYUt_jR6F2M_hSEXHDJQrAhthZGaZYEDTRZIkBVQO_ufA7_6VeeY5Z-cvUBaXEtJD0HsYJhSDRsUS3WdTyCJasv7csA6_4ovuNm69rmY3QxlQs0wux4tAN_5P5xM6Y4rZwZaBpdLRmwxGcObEsQ_OS6c8OER5TSXrbKaFPL5iThL5xI_mdi7mCqcwPnPtLwcV2ARQ3qFqd8Xf30RP5cAetC-0pwr4o4xuby81ZRjf-ulp5lIbLE_uZVTgSZbIR3aP6edqrdJ-wZYf_oDQnNQbA~eyJhbGciOiJEUzEyOCJ9.eyJpYXQiOjEzNDI4MDE2OTA1NzAsImV4cCI6MTM0MjgwMTY5NjU3MCwiYXVkIjoiaHR0cHM6Ly9leGFtcGxlLmNvbSIsInZlcnNpb24iOiIyMDEyLjA4LjE1In0.ytUhc5Zt71ZtUmYnf7jaRfC10Y4zbzQweNXIMRO-bC0z8wrBuM42gA",
     "issued_at":1342801690570,"expires_at":1342801696570,
@@ -116,6 +121,7 @@ var BACKED_ASSERTIONS = [
     "email": 'user@exampleidp.com',
     certifyingKey: {"algorithm":"RS","version":"2012.08.15","modulus":"Zx5aDEB62oTwkoTikAp4ck+HGQv4oIa8+L5KdjcANbvjR2jtXAjswepZrwvzYFhP/mwFl/Oy4YElW3OyPy9I6K0OR0xQgBsOprpEOFNEFs14Jy9LJi59yb4gA+xSUlN/SN8s0JKzQ2jYwD8ibZicZWt2C2vvyaBmWaUZm2o5V59DYH6D7ecZSPkwWi9PoD3lCeK2ZeJa7jZpD02bCvybbwyFnDPca2o9MP7/r8Fs6BWJqGAIxlDqvvLUZ+2CeKAie5a98lyBvE//kc0ANY9yjDcWp+c7IXx+lSn5AobiicM2PbiWUdqAXWOguf61ooT1yGazSAeAhZElcy+jd8VZ3Q==","exponent":"AQAB"}
   }
+*/
 ];
 
 var assertion = ASSERTIONS[0].assertion;
@@ -162,15 +168,15 @@ suite.addBatch(
       },
       "contains the right fields": function(err, certParamsArray, payload, assertionParams) {
         assert.isNotNull(assertionParams.expiresAt);
-        assert.isNotNull(assertionParams.expiresAt.getFullYear);        
+        assert.isNotNull(assertionParams.expiresAt.getFullYear);
         assert.isString(assertionParams.audience);
 
         assert.isUndefined(assertionParams.aud);
-        assert.isUndefined(assertionParams.exp);        
+        assert.isUndefined(assertionParams.exp);
         assert.isUndefined(payload.aud);
-        assert.isUndefined(payload.exp);        
+        assert.isUndefined(payload.exp);
       }
-    }    
+    }
 });
 
 // check the public keys
@@ -193,7 +199,7 @@ var addPublicKeyBatch = function(pkObject) {
           assert.ok(pk.y);
           assert.ok(pk.g);
           assert.ok(pk.q);
-          assert.ok(pk.p);          
+          assert.ok(pk.p);
         }
       },
       "has fields with correct values": function(pk) {
@@ -206,7 +212,7 @@ var addPublicKeyBatch = function(pkObject) {
           assert.equal(pk.y.toString(16), pkObject.y);
           assert.equal(pk.g.toString(16), pkObject.g);
           assert.equal(pk.q.toString(16), pkObject.q);
-          assert.equal(pk.p.toString(16), pkObject.p);          
+          assert.equal(pk.p.toString(16), pkObject.p);
         }
       },
       "two reserializations equals the same thing": function(pk) {
@@ -235,14 +241,14 @@ var addSecretKeyBatch = function(skObject) {
         if (skObject.algorithm == "RSA") {
           assert.ok(sk.rsa.n);
           assert.ok(sk.rsa.d);
-          assert.ok(sk.rsa.e);          
+          assert.ok(sk.rsa.e);
         }
 
         if (skObject.algorithm == "DSA") {
           assert.ok(sk.x);
           assert.ok(sk.g);
           assert.ok(sk.q);
-          assert.ok(sk.p);        
+          assert.ok(sk.p);
         }
       },
       "has fields with correct values": function(sk) {
@@ -256,7 +262,7 @@ var addSecretKeyBatch = function(skObject) {
           assert.equal(sk.x.toString(16), skObject.x);
           assert.equal(sk.g.toString(16), skObject.g);
           assert.equal(sk.q.toString(16), skObject.q);
-          assert.equal(sk.p.toString(16), skObject.p);          
+          assert.equal(sk.p.toString(16), skObject.p);
         }
       },
       "two reserializations equals the same thing": function(sk) {
@@ -298,7 +304,6 @@ var addCertBatch = function(certObject) {
       "contains the right email": function(err, payload, assertionParams, certParams) {
         assert.equal(certParams.principal.email, certObject.email);
       }
-      
     }
   });
 };
@@ -334,7 +339,7 @@ var addBackedAssertionBatch = function(backedAssertionObject) {
       },
       "contains the right audience": function(err, certParamsArray, payload, assertionParams) {
         assert.equal(assertionParams.audience, backedAssertionObject.audience);
-      }      
+      }
     }
   });
 };
