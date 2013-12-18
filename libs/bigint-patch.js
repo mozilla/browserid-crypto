@@ -101,5 +101,3 @@ try {
 } catch (x) {
   // oh well, we use normal JS
 }
-
-var util = require('../lib/util.js');
