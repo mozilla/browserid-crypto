@@ -102,3 +102,4 @@ try {
   // oh well, we use normal JS
 }
 
+var util = require('../lib/util.js');
