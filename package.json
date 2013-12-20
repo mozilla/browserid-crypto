@@ -12,6 +12,9 @@
     "jshint": "2.1.10",
     "walk": "2.2.1"
   },
+  "engines": {
+    "node": ">= 0.8.11"
+  },
   "optionalDependencies": {
     "bigint": "0.4.2"
   },
