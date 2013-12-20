@@ -99,7 +99,7 @@ suite.addBatch({
       },
       "has proper payload": function(components) {
         assert.isObject(components.payload);
-        assert.equal(components.payload.exp, in_a_minute.valueOf());
+        assert.equal(components.payload.exp, Math.floor(in_a_minute.valueOf() / 1000));
         assert.equal(components.payload.aud, AUDIENCE);
 
         // optionally a version
@@ -148,8 +148,8 @@ suite.addBatch({
       "has proper payload": function(components) {
         assert.isObject(components.payload);
         assert.equal(components.payload.iss, ISSUER);
-        assert.equal(components.payload.exp, in_a_minute.valueOf());
-        assert.equal(components.payload.iat, now.valueOf());
+        assert.equal(components.payload.exp, Math.floor(in_a_minute.valueOf() / 1000));
+        assert.equal(components.payload.iat, Math.floor(now.valueOf() / 1000));
 
         assert.isObject(components.payload.principal);
         assert.equal(components.payload.principal.email, EMAIL);

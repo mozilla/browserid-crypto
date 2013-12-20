@@ -19,6 +19,15 @@ var now = new Date();
 var in_a_minute = new Date(now.getTime() + (60 * 1000));
 var a_second_ago = new Date(now.getTime() - 1000);
 
+// compare that two times are equal to the second
+// (because assertions store time in seconds, more granluarity
+// is not possible)
+function compareTimes(a, b) {
+  if (typeof a === 'number') a = new Date(a * 1000);
+  if (typeof b === 'number') b = new Date(b * 1000);
+  return Math.floor(a.valueOf() / 1000) === Math.floor(b.valueOf() / 1000);
+}
+
 testUtils.addBatches(suite, function(alg, keysize) {
   return {
     "generate keypair" : {
@@ -58,7 +67,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isNotNull(payload.iss);
             assert.isNotNull(payload.aud);
             assert.equal(payload.aud, "https://example.com");
-            assert.equal(payload.exp, in_a_minute.valueOf());
+            assert.ok(compareTimes(payload.exp, in_a_minute));
           }
         },
         "when verified with assertion": {
@@ -79,7 +88,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isNotNull(assertionParams.issuer);
             assert.isNotNull(assertionParams.audience);
             assert.equal(assertionParams.audience, "https://example.com");
-            assert.equal(assertionParams.expiresAt.valueOf(), in_a_minute.valueOf());
+            assert.ok(compareTimes(assertionParams.expiresAt, in_a_minute));
           }
         }
       },
@@ -111,7 +120,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isNotNull(payload.iss);
             assert.isNotNull(payload.aud);
             assert.equal(payload.aud, "https://example.com");
-            assert.equal(payload.exp, a_second_ago.valueOf());
+            assert.ok(compareTimes(payload.exp, a_second_ago));
           }
         },
         "when verified with assertion": {
@@ -155,8 +164,8 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isNotNull(payload.iat);
             assert.isNotNull(payload.iss);
             assert.isUndefined(payload.aud);
-            assert.equal(payload.exp, in_a_minute.valueOf());
-            assert.equal(payload.iat, in_a_minute.valueOf());
+            assert.ok(compareTimes(payload.exp, in_a_minute));
+            assert.ok(compareTimes(payload.iat, in_a_minute));
           }
         },
         "when verified with assertion": {
