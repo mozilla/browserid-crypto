@@ -79,13 +79,13 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.equal(assertionParams.issuer, "issuer.com");
           assert.isNotNull(assertionParams.issuedAt);
           assert.isNotNull(assertionParams.expiresAt);
-          assert.isObject(certParams.principal);
+          assert.isString(certParams.sub);
           assert.isObject(certParams.publicKey);
 
           // make sure iss and exp are dates
           assert.isFunction(assertionParams.issuedAt.getFullYear);
           assert.isFunction(assertionParams.expiresAt.getFullYear);
-          assert.equal(certParams.principal.email, "john@issuer.com");
+          assert.equal(certParams.sub, "john@issuer.com");
         }
       }
     },
