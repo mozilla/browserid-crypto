@@ -19,7 +19,7 @@ var userKeypair;
 suite.addBatch({
   "generate a keypair": {
     topic: function() {
-      jwcrypto.generateKeypair({algorithm: "RS", keysize: 256}, this.callback)
+      jwcrypto.generateKeypair({algorithm: "RSA", keysize: 256}, this.callback)
     },
     "works" : function(err, kp) {
       assert.isNull(err);
@@ -31,7 +31,7 @@ suite.addBatch({
 suite.addBatch({
   "generate a keypair": {
     topic: function() {
-      jwcrypto.generateKeypair({algorithm: "DS", keysize: 128}, this.callback)
+      jwcrypto.generateKeypair({algorithm: "DSA", keysize: 128}, this.callback)
     },
     "works" : function(err, kp) {
       assert.isNull(err);
