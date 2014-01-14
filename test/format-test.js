@@ -125,7 +125,7 @@ suite.addBatch({
 suite.addBatch({
   "sign a cert": {
     topic: function() {
-      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, principal: {email: EMAIL}},
+      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, sub: EMAIL},
                          {issuedAt: now, issuer: ISSUER, expiresAt: in_a_minute},
                          {},
                          domainKeypair.secretKey, this.callback);
@@ -151,9 +151,8 @@ suite.addBatch({
         assert.equal(components.payload.exp, Math.floor(in_a_minute.valueOf() / 1000));
         assert.equal(components.payload.iat, Math.floor(now.valueOf() / 1000));
 
-        assert.isObject(components.payload.principal);
-        assert.equal(components.payload.principal.email, EMAIL);
-        assert.equal(Object.keys(components.payload.principal).length, 1);
+        assert.isString(components.payload.sub);
+        assert.equal(components.payload.sub, EMAIL);
 
         // assert.equal(JSON.stringify(components.payload.publicKey), userKeypair.publicKey.serialize());
         assert.equal(JSON.stringify(components.payload['public-key']), userKeypair.publicKey.serialize());
