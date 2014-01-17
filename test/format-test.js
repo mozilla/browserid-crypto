@@ -155,7 +155,7 @@ suite.addBatch({
         assert.equal(components.payload.sub, EMAIL);
 
         // assert.equal(JSON.stringify(components.payload.publicKey), userKeypair.publicKey.serialize());
-        assert.equal(JSON.stringify(components.payload['public-key']), userKeypair.publicKey.serialize());
+        assert.equal(JSON.stringify(components.payload['pubkey']), userKeypair.publicKey.serialize());
 
         // optionally version
 
