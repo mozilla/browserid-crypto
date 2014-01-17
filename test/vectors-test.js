@@ -300,7 +300,7 @@ var addCertBatch = function(certObject) {
         assert.ok(certParams.publicKey.equals(jwcrypto.loadPublicKeyFromObject(certObject.containedPublicKey)));
       },
       "contains the right email": function(err, payload, assertionParams, certParams) {
-        assert.equal(certParams.sub, certObject.email);
+        assert.equal(certParams.principal.email, certObject.email);
       }
     }
   });
@@ -333,7 +333,7 @@ var addBackedAssertionBatch = function(backedAssertionObject) {
         assert.equal(assertionParams.expiresAt.valueOf(), backedAssertionObject.expires_at);
       },
       "certifies the right user": function(err, certParamsArray, payload, assertionParams) {
-        assert.equal(certParamsArray[0].certParams.sub, backedAssertionObject.email);
+        assert.equal(certParamsArray[0].certParams.principal.email, backedAssertionObject.email);
       },
       "contains the right audience": function(err, certParamsArray, payload, assertionParams) {
         assert.equal(assertionParams.audience, backedAssertionObject.audience);
