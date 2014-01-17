@@ -34,10 +34,10 @@ if (argv.h) {
   process.exit(1);
 }
 
-var keypair = jwcrypto.generateKeypair({algorithm: argv.a.substr(0, 2).toUpperCase(), keysize: argv.k}, function(err, keypair) {
+var keypair = jwcrypto.generateKeypair({algorithm: argv.a.toUpperCase(), keysize: argv.k}, function(err, keypair) {
   if (err)
     return console.log(err);
-  
+
   fs.writeFileSync("key.publickey", keypair.publicKey.serialize());
   fs.writeFileSync("key.secretkey", keypair.secretKey.serialize());
 });
