@@ -17,7 +17,7 @@ var payload = {
 
 var now = new Date();
 var in_a_minute = new Date(now.getTime() + (60 * 1000));
-// IssuedAt can be up to 10 seconds into the future
+// IssuedAt can be up to 10 seconds into the future, by default
 var in_five_seconds = new Date(now.getTime() + (5 * 1000));
 // Expiration can be up to 120 seconds into the past
 var a_couple_seconds_ago = new Date(now.getTime() - 121 * 1000);
