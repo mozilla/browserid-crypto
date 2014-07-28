@@ -20,7 +20,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
         cert.verifyBundle(str, new Date(), function() {}, this.callback);
       },
       "fails as expected with a bogus string parameter": function(err, r) {
-        assert.equal(err, "no certificates provided");
+        testUtils.assertErr(err, "no certificates provided");
       }
     },
     "generate cert" : {

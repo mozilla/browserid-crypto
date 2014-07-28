@@ -7,6 +7,7 @@
  */
 
 // load up the right algorithms
+var assert = require('assert');
 require("../lib/algs/rs");
 require("../lib/algs/ds");
 
@@ -32,4 +33,9 @@ exports.addBatches = function(suite, singleBatchMaker) {
       suite.addBatch(overallBatch);
     });
   });
+};
+
+exports.assertErr = function assertErr(err, message) {
+  assert(err instanceof Error);
+  assert.equal(err.message, message);
 };
