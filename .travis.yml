@@ -2,6 +2,7 @@ language: node_js
 
 before_install:
  - sudo apt-get install libgmp3-dev
+ - npm install --upgrade npm -g
 
 node_js:
  - "0.8"
