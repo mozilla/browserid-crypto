@@ -1,3 +1,9 @@
+0.5.0:
+	* supports new formats
+	* legacy formats still supported
+	* BigInteger fix on nodejs
+	* all Errors have stacks
+
 0.4.4:
 	* fix global leak of sPaddedMessageHex, improve exception when given an unknown key size
 
