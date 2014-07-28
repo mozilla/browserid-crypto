@@ -35,7 +35,8 @@ exports.addBatches = function(suite, singleBatchMaker) {
   });
 };
 
-exports.assertErr = function assertErr(err, message) {
-  assert(err instanceof Error);
+exports.assertErr = function assertErr(err, type, message) {
+  assert(type.prototype instanceof Error);
+  assert(err instanceof type);
   assert.equal(err.message, message);
 };

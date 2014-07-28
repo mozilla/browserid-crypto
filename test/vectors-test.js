@@ -147,7 +147,7 @@ suite.addBatch(
           this.callback);
       },
       "fails appropriately": function(err, certParamsArray, payload, assertionParams) {
-        testUtils.assertErr(err, "expired");
+        testUtils.assertErr(err, jwcrypto.error.VerificationError, "expired");
       }
     }
 })

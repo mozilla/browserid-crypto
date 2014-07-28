@@ -133,7 +133,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isUndefined(payload);
           },
           "returns the right error message": function(err, payload, assertionParams) {
-            testUtils.assertErr(err, "expired");
+            testUtils.assertErr(err, jwcrypto.error.VerificationError, "expired");
           }
         }
       },
@@ -178,7 +178,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assert.isUndefined(payload);
           },
           "returns the right error message": function(err, payload, assertionParams) {
-            testUtils.assertErr(err, "issued later than verification date");
+            testUtils.assertErr(err, jwcrypto.error.VerificationError, "issued later than verification date");
           }
         }
       }
