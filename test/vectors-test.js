@@ -4,8 +4,9 @@
 
 var vows = require("vows"),
     assert = require("assert"),
-    utils = require("../lib/utils"),
     jwcrypto = require("../index");
+
+var testUtils = require('./utils');
 
 require("../lib/algs/rs");
 require("../lib/algs/ds");
@@ -146,7 +147,7 @@ suite.addBatch(
           this.callback);
       },
       "fails appropriately": function(err, certParamsArray, payload, assertionParams) {
-        assert.equal(err, "certificate expired");
+        testUtils.assertErr(err, jwcrypto.error.VerificationError, "expired");
       }
     }
 })

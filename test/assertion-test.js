@@ -129,11 +129,11 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assertion.verify(signedObject, kp.publicKey, new Date(), this.callback);
           },
           "does not verify": function(err, payload, assertionParams) {
-            assert.isString(err);
+            assert(err);
             assert.isUndefined(payload);
           },
           "returns the right error message": function(err, payload, assertionParams) {
-            assert.equal(err, "expired");
+            testUtils.assertErr(err, jwcrypto.error.VerificationError, "expired");
           }
         }
       },
@@ -174,11 +174,11 @@ testUtils.addBatches(suite, function(alg, keysize) {
             assertion.verify(signedObject, kp.publicKey, new Date(), this.callback);
           },
           "does not verify": function(err, payload, assertionParams) {
-            assert.isString(err);
+            assert(err);
             assert.isUndefined(payload);
           },
           "returns the right error message": function(err, payload, assertionParams) {
-            assert.equal(err, "issued later than verification date");
+            testUtils.assertErr(err, jwcrypto.error.VerificationError, "issued later than verification date");
           }
         }
       }
