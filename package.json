@@ -2,15 +2,15 @@
   "name": "jwcrypto",
   "version": "0.5.0",
   "dependencies": {
-    "browserify": "1.13.5",
-    "http-browserify": "0.1.1",
-    "vows": "0.5.13",
-    "optimist": "0.2.6",
-    "uglify-js": "1.0.6"
+    "browserify": "5.9.1",
+    "http-browserify": "1.4.1",
+    "vows": "0.7.0",
+    "optimist": "0.6.1",
+    "uglify-js": "2.4.15"
   },
   "devDependencies": {
-    "jshint": "2.1.10",
-    "walk": "2.2.1"
+    "jshint": "~2.5.2",
+    "walk": "~2.2.1"
   },
   "engines": {
     "node": ">= 0.8.11"

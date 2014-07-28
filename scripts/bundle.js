@@ -7,11 +7,10 @@ var path = require('path');
 var existsSync = fs.existsSync || path.existsSync;
 
 var browserify = require('browserify');
-var uglify = require('uglify-js');
+var uglify = require('uglify-js').minify;
 
 var BUNDLE_DIR = path.join(__dirname, '../');
 var INPUT = path.join(BUNDLE_DIR, './bundle.js');
-var TMP = path.join(BUNDLE_DIR, './tempbundle.js');
 var PRELIM = path.join(BUNDLE_DIR, './bundle-prelim.js');
 var OUTPUT = path.join(BUNDLE_DIR, './bidbundle.js');
 var OUTPUT_MIN = path.join(BUNDLE_DIR, './bidbundle-min.js');
@@ -24,15 +23,20 @@ if (existsSync(OUTPUT)) {
 }
 
 var bundle = browserify({ exports: 'require' });
-bundle.ignore(['crypto', 'bigint']);
-bundle.addEntry(INPUT);
+bundle.ignore('crypto').ignore('bigint');
+bundle.add(INPUT);
 
-var bundleSource = bundle.bundle();
-var bundlePrelim = fs.readFileSync(PRELIM);
+bundle.bundle(function(err, buf) {
+  if (err) {
+    throw err;
+  }
 
-var bundleOutput = bundlePrelim + '\n' + bundleSource;
+  var bundlePrelim = fs.readFileSync(PRELIM);
 
-fs.writeFileSync(OUTPUT, bundleOutput);
+  var bundleOutput = bundlePrelim + '\n' + buf;
 
-// and now make it all ugly
-fs.writeFileSync(OUTPUT_MIN, uglify(bundleOutput));
+  fs.writeFileSync(OUTPUT, bundleOutput);
+
+  // and now make it all ugly
+  fs.writeFileSync(OUTPUT_MIN, uglify(bundleOutput, { fromString: true }));
+});
