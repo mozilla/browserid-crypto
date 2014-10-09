@@ -32,7 +32,7 @@ http://tools.ietf.org/html/draft-ietf-jose-json-web-key-00
 
 We use JWA (JSON Web Algorithms) to specify algorithms:
 http://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-00
-(we add algorithm "DS" to indicate DSA, with DS160 the standard DSA 1024/160.)
+(we add algorithm "DSA" to indicate DSA, with DS160 the standard DSA 1024/160.)
 
 Usage
 =====
@@ -45,6 +45,7 @@ Basic API
 =========
 
     var jwcrypto = require("jwcrypto");
+    require("jwcrypto/lib/algs/ds");
 
     // random number generation is taken care of automatically
     // with auto-seeding that is optimized for server or browser
@@ -54,14 +55,14 @@ Basic API
     // this can be useful to incorporate server-provided entropy
     // on clients that don't have any good entropy of their own
     // entropy should be either a 32 bit int, an array of ints, or a string
-    jwcrypto.addEntropy(entropy);
+    jwcrypto.addEntropy('entropy');
 
     // generate a key
     // we use DSA, which is "DS" in JSON Web Algorithm parlance
     // we use keysize 160, which has a specific interpretation based
     // on the algorithm, in this case DSA 1024/160, standard DSA.
     jwcrypto.generateKeypair({
-        algorithm: 'DS',
+        algorithm: 'DSA',
         keysize: 160
     }, function(err, keypair) {
         // error in err?
@@ -70,7 +71,10 @@ Basic API
         console.log(keypair.publicKey.serialize());
 
         // just the JSON object to embed in another structure
-        console.log(JSON.stringify({stuff: keypair.publicKey.toJSONObject()}));
+        console.log(JSON.stringify({stuff: keypair.publicKey.toSimpleObject()}));
+
+        // replace this with the key to sign
+        var publicKeyToCertify = keypair.publicKey.serialize();
 
         // create and sign a JWS
         var payload = {principal: {email: 'some@dude.domain'},
@@ -81,17 +85,24 @@ Basic API
 
            // serialize it
            console.log(jws.toString());
+
+           // replace with things to verify
+	   var signedObject = jws;
+	   var publicKey = keypair.publicKey;
+
+           // verify it
+           jwcrypto.verify(signedObject, publicKey, function(err, payload) {
+             // if verification fails, then err tells you why
+             // if verification succeeds, err is null, and payload is
+             // the signed JS object.
+           });
         });
+
+        // replace this with the key to load
+        var storedSecretKey = keypair.secretKey.serialize();
 
         // also, if loading a secret key from somewhere
         var otherSecretKey = jwcrypto.loadSecretKey(storedSecretKey);
-
-        // verify it
-        jwcrypto.verify(signedObject, publicKey, function(err, payload) {
-          // if verification fails, then err tells you why
-          // if verification succeeds, err is null, and payload is
-          // the signed JS object.
-        });
     });
 
 Assertions
