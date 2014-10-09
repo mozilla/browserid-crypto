@@ -1,6 +1,6 @@
 {
   "name": "jwcrypto",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "dependencies": {
     "browserify": "5.9.1",
     "http-browserify": "1.4.1",
