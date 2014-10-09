@@ -1,4 +1,4 @@
-**Deprecated, use browserid-crypto instead!** JavaScript implementation of JSON Web Signatures and JSON Web Tokens, especially as needed by BrowserID.
+JavaScript implementation of JSON Web Signatures and JSON Web Tokens as needed by BrowserID.
 
 [![Build Status](https://secure.travis-ci.org/mozilla/browserid-crypto.png)](http://travis-ci.org/mozilla/browserid-crypto)
 
