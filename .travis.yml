@@ -5,11 +5,11 @@ before_install:
  - npm install --upgrade npm -g
 
 node_js:
- - "0.8"
  - "0.10"
 
 notifications:
-  email:
-    - lloyd@mozilla.com
-    - benadida@mozilla.com
-    - warner@mozilla.com
+  irc:
+    channels:
+      - "irc.mozilla.org#fxa"
+    use_notice: false
+    skip_join: false
