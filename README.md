@@ -1,6 +1,6 @@
-JavaScript implementation of JSON Web Signatures and JSON Web Tokens, especially as needed by BrowserID.
+JavaScript implementation of JSON Web Signatures and JSON Web Tokens as needed by BrowserID.
 
-[![Build Status](https://secure.travis-ci.org/mozilla/jwcrypto.png)](http://travis-ci.org/mozilla/jwcrypto)
+[![Build Status](https://secure.travis-ci.org/mozilla/browserid-crypto.png)](http://travis-ci.org/mozilla/browserid-crypto)
 
 - libs contains third-party libraries that need to be included. See
 libs/dependencies.txt and libs/package.txt
@@ -37,15 +37,15 @@ http://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-00
 Usage
 =====
 
-  1. ensure that `libgmp` is installed on your system (e.g. `apt-get install libgmp-dev`), it's required by [bigint](https://github.com/substack/node-bigint), upon which jwcrypto depends
-  2. npm install jwcrypto
-  3. in javascript: `require('jwcrypto')`
+  1. ensure that `libgmp` is installed on your system (e.g. `apt-get install libgmp-dev`), it's required by [bigint](https://github.com/substack/node-bigint), upon which browserid-crypto depends
+  2. npm install browserid-crypto
+  3. in javascript: `require('browserid-crypto')`
 
 Basic API
 =========
 
-    var jwcrypto = require("jwcrypto");
-    require("jwcrypto/lib/algs/ds");
+    var jwcrypto = require("browserid-crypto");
+    require("browserid-crypto/lib/algs/ds");
 
     // random number generation is taken care of automatically
     // with auto-seeding that is optimized for server or browser
@@ -110,7 +110,7 @@ Assertions
 
 Sometimes the JSON object to sign should be a standard assertion with pre-defined fields.
 
-    var assertion = require("jwcrypto").assertion;
+    var assertion = require("browserid-crypto").assertion;
 
     // payload of the assertion
     var payload = {principal: {email: 'some@dude.domain'}};
@@ -140,7 +140,7 @@ Certs
 
 Sometimes the JSON objects to sign are certificates
 
-    var cert = require("jwcrypto").cert;
+    var cert = require("browserid-crypto").cert;
 
     var keyToCertify = keypairToCertify.publicKey;
     var principal = {email: "someone@example.com"};
@@ -206,7 +206,7 @@ Not indicating a version number in the serialized payload indicates
 the alpha format in the BrowserID specification from June
 2012. Otherwise, a version number is required. The BrowserID Beta version number is <tt>2012.08.15</tt>.
 
-By default, <tt>jwcrypto</tt> will use the latest format
+By default, <tt>browserid-crypto</tt> will use the latest format
 automatically, and will parse any past format (unless that becomes
 impossible, in which case we'll define behavior then.)
 
@@ -214,7 +214,7 @@ The version of the data format can be discovered as:
 
      jwcrypto.DATA_FORMAT_VERSION
 
-If one wishes to use <tt>jwcrypto</tt> with an older data format:
+If one wishes to use <tt>browserid-crypto</tt> with an older data format:
 
      jwcrypto.setDataFormatVersion('2012.08.15');
 

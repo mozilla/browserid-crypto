@@ -1,6 +1,6 @@
 {
-  "name": "jwcrypto",
-  "version": "0.5.1",
+  "name": "browserid-crypto",
+  "version": "0.6.0",
   "dependencies": {
     "browserify": "5.9.1",
     "http-browserify": "1.4.1",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/mozilla/jwcrypto.git"
+    "url": "http://github.com/mozilla/browserid-crypto.git"
   },
   "main": "index.js",
   "bin": {
