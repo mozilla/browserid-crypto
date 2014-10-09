@@ -5,7 +5,6 @@ before_install:
  - npm install --upgrade npm -g
 
 node_js:
- - "0.8"
  - "0.10"
 
 notifications:
