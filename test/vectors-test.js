@@ -216,6 +216,9 @@ var addPublicKeyBatch = function(pkObject) {
       },
       "two reserializations equals the same thing": function(pk) {
         assert.equal(jwcrypto.loadPublicKey(pk.serialize()).serialize(), pk.serialize());
+      },
+      "serialization round-trip uses same data format": function(pk) {
+        assert.equal(jwcrypto.loadPublicKey(pk.serialize()).newFormat, pk.newFormat);
       }
     }
   });
