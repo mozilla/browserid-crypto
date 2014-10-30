@@ -196,33 +196,3 @@ Sometimes the JSON objects to sign are certificates
        // certParamsArray is the array of individual cert params from each verification
        // payload is the assertion payload, and assertionParams is the assertion params.
     });
-
-Versioning
-====
-
-The formats of public-keys, as well as the special payload parameters of assertions and certificates, will be versioned.
-
-Not indicating a version number in the serialized payload indicates
-the alpha format in the BrowserID specification from June
-2012. Otherwise, a version number is required. The BrowserID Beta version number is <tt>2012.08.15</tt>.
-
-By default, <tt>browserid-crypto</tt> will use the latest format
-automatically, and will parse any past format (unless that becomes
-impossible, in which case we'll define behavior then.)
-
-The version of the data format can be discovered as:
-
-     jwcrypto.DATA_FORMAT_VERSION
-
-If one wishes to use <tt>browserid-crypto</tt> with an older data format:
-
-     jwcrypto.setDataFormatVersion('2012.08.15');
-
-or, to use the pre-versioning format:
-
-     jwcrypto.setDataFormatVersion('');
-
-or, to go back to the library default:
-
-     jwcrypto.setDataFormatVersion();
-

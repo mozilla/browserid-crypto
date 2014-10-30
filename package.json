@@ -1,6 +1,6 @@
 {
   "name": "browserid-crypto",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "dependencies": {
     "browserify": "5.9.1",
     "http-browserify": "1.4.1",
