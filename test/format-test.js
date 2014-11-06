@@ -19,7 +19,7 @@ var userKeypair;
 suite.addBatch({
   "generate a keypair": {
     topic: function() {
-      jwcrypto.generateKeypair({algorithm: "RSA", keysize: 256}, this.callback)
+      jwcrypto.generateKeypair({algorithm: "RS", keysize: 256}, this.callback)
     },
     "works" : function(err, kp) {
       assert.isNull(err);
@@ -31,7 +31,7 @@ suite.addBatch({
 suite.addBatch({
   "generate a keypair": {
     topic: function() {
-      jwcrypto.generateKeypair({algorithm: "DSA", keysize: 128}, this.callback)
+      jwcrypto.generateKeypair({algorithm: "DS", keysize: 128}, this.callback)
     },
     "works" : function(err, kp) {
       assert.isNull(err);
@@ -99,10 +99,8 @@ suite.addBatch({
       },
       "has proper payload": function(components) {
         assert.isObject(components.payload);
-        assert.equal(components.payload.exp, Math.floor(in_a_minute.valueOf() / 1000));
+        assert.equal(components.payload.exp, Math.floor(in_a_minute.valueOf()));
         assert.equal(components.payload.aud, AUDIENCE);
-
-        // optionally a version
 
         // nothing else
         assert.ok(Object.keys(components.payload).length <= 3);
@@ -125,7 +123,7 @@ suite.addBatch({
 suite.addBatch({
   "sign a cert": {
     topic: function() {
-      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, sub: EMAIL},
+      jwcrypto.cert.sign({publicKey: userKeypair.publicKey, principal: {email: EMAIL}},
                          {issuedAt: now, issuer: ISSUER, expiresAt: in_a_minute},
                          {},
                          domainKeypair.secretKey, this.callback);
@@ -148,16 +146,14 @@ suite.addBatch({
       "has proper payload": function(components) {
         assert.isObject(components.payload);
         assert.equal(components.payload.iss, ISSUER);
-        assert.equal(components.payload.exp, Math.floor(in_a_minute.valueOf() / 1000));
-        assert.equal(components.payload.iat, Math.floor(now.valueOf() / 1000));
+        assert.equal(components.payload.exp, in_a_minute.valueOf());
+        assert.equal(components.payload.iat, now.valueOf());
 
-        assert.isString(components.payload.sub);
-        assert.equal(components.payload.sub, EMAIL);
+        assert.isObject(components.payload.principal);
+        assert.isString(components.payload.principal.email);
+        assert.equal(components.payload.principal.email, EMAIL);
 
-        // assert.equal(JSON.stringify(components.payload.publicKey), userKeypair.publicKey.serialize());
-        assert.equal(JSON.stringify(components.payload['pubkey']), userKeypair.publicKey.serialize());
-
-        // optionally version
+        assert.equal(JSON.stringify(components.payload['public-key']), userKeypair.publicKey.serialize());
 
         // nothing else
         assert.ok(Object.keys(components.payload).length <= 6);

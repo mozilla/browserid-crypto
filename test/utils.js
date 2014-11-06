@@ -12,12 +12,12 @@ require("../lib/algs/rs");
 require("../lib/algs/ds");
 
 var ALGORITHMS = {
-  "RSA": {
-    alg: 'RSA',
+  "RS": {
+    alg: 'RS',
     keysizes: [64, 128, 256],
   },
-  "DSA": {
-    alg: 'DSA',
+  "DS": {
+    alg: 'DS',
     keysizes: [128, 256]
   }
 };

@@ -19,13 +19,12 @@ var now = new Date();
 var in_a_minute = new Date(now.getTime() + (60 * 1000));
 var a_second_ago = new Date(now.getTime() - 1000);
 
-// compare that two times are equal to the second
-// (because assertions store time in seconds, more granluarity
-// is not possible)
+// compare that two times are equal to the deci-second,
+// which gives a little leeway in the tests.
 function compareTimes(a, b) {
-  if (typeof a === 'number') a = new Date(a * 1000);
-  if (typeof b === 'number') b = new Date(b * 1000);
-  return Math.floor(a.valueOf() / 1000) === Math.floor(b.valueOf() / 1000);
+  if (typeof a === 'number') a = new Date(a);
+  if (typeof b === 'number') b = new Date(b);
+  return Math.floor(a.valueOf() / 10) === Math.floor(b.valueOf() / 10);
 }
 
 testUtils.addBatches(suite, function(alg, keysize) {

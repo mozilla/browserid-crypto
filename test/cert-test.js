@@ -32,6 +32,11 @@ testUtils.addBatches(suite, function(alg, keysize) {
           // stash it away
           keypair = kp;
 
+          var certParams = {
+            publicKey: keypair.publicKey,
+            principal: { email: "john@issuer.com" }
+          };
+
           var assertionParams = {
             issuer : "issuer.com",
             issuedAt : new Date(),
@@ -39,8 +44,8 @@ testUtils.addBatches(suite, function(alg, keysize) {
           };
 
           // yes, we're signing our own public key, cause it's easier for now
-          cert.sign({publicKey: keypair.publicKey, sub: "john@issuer.com"},
-                    assertionParams, null, keypair.secretKey, self.callback);
+          cert.sign(certParams, assertionParams, null,
+                    keypair.secretKey, self.callback);
         });
       },
       "cert is approximately proper format": function(err, signedObj) {
@@ -59,8 +64,9 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.equal(payload.iss, "issuer.com");
           assert.isNumber(payload.iat);
           assert.isNumber(payload.exp);
-          assert.isString(payload.sub);
-          assert.equal(payload.sub, "john@issuer.com");
+          assert.isObject(payload.principal);
+          assert.isString(payload.principal.email);
+          assert.equal(payload.principal.email, "john@issuer.com");
         }
       },
       "verifying the cert using cert verify": {
@@ -79,13 +85,14 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.equal(assertionParams.issuer, "issuer.com");
           assert.isNotNull(assertionParams.issuedAt);
           assert.isNotNull(assertionParams.expiresAt);
-          assert.isString(certParams.sub);
+          assert.isObject(certParams.principal);
+          assert.isString(certParams.principal.email);
           assert.isObject(certParams.publicKey);
 
           // make sure iss and exp are dates
           assert.isFunction(assertionParams.issuedAt.getFullYear);
           assert.isFunction(assertionParams.expiresAt.getFullYear);
-          assert.equal(certParams.sub, "john@issuer.com");
+          assert.equal(certParams.principal.email, "john@issuer.com");
         }
       }
     },
@@ -117,10 +124,10 @@ testUtils.addBatches(suite, function(alg, keysize) {
           jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, intermediate_kp) {
             jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, user_kp) {
               // generate the two certs
-              cert.sign({publicKey: intermediate_kp.publicKey, sub: "intermediate.root.com"},
+              cert.sign({publicKey: intermediate_kp.publicKey, principal: {email: "intermediate.root.com"}},
                         {issuer: "root.com", issuedAt: new Date(), expiresAt: expiration}, null,
                         root_kp.secretKey, function (err, signedIntermediate) {
-                          cert.sign({publicKey: user_kp.publicKey, sub: "john@root.com"},
+                          cert.sign({publicKey: user_kp.publicKey, principal: {email: "john@root.com"}},
                                     {issuer: "intermediate.root.com", issuedAt: new Date(), expiresAt: expiration},
                                     null, intermediate_kp.secretKey,
                                     function(err, signedUser) {
@@ -212,6 +219,12 @@ testUtils.addBatches(suite, function(alg, keysize) {
         var self = this;
         // generate a key
         jwcrypto.generateKeypair({algorithm: alg, keysize: keysize}, function(err, keypair) {
+
+          var certParams = {
+            publicKey: keypair.publicKey,
+            principal:  { email: "user@example.com" }
+          };
+
           var assertionParams = {
             issuer : "foo.com",
             issuedAt : null,
@@ -219,8 +232,8 @@ testUtils.addBatches(suite, function(alg, keysize) {
           };
 
           // yes, we're signing our own public key, cause it's easier for now
-          cert.sign({publicKey: keypair.publicKey, sub: "user@example.com"},
-                    assertionParams, null, keypair.secretKey, function(err, signedObj) {
+          cert.sign(certParams, assertionParams, null,
+                    keypair.secretKey, function(err, signedObj) {
                       cert.verify(signedObj, keypair.publicKey, new Date(), self.callback);
                     });
         });
