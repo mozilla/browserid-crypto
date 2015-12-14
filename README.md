@@ -37,7 +37,7 @@ http://tools.ietf.org/html/draft-ietf-jose-json-web-algorithms-00
 Usage
 =====
 
-  1. ensure that `libgmp` is installed on your system (e.g. `apt-get install libgmp-dev`), it's required by [bigint](https://github.com/substack/node-bigint), upon which browserid-crypto depends
+  1. for Node 4+ ensure that you are using g++ 4.8 (use `CXX=g++-4.8` to force that version)
   2. npm install browserid-crypto
   3. in javascript: `require('browserid-crypto')`
 

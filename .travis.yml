@@ -1,15 +1,33 @@
 language: node_js
 
-before_install:
- - sudo apt-get install libgmp3-dev
- - npm install --upgrade npm -g
-
 node_js:
  - "0.10"
+ - "0.12"
+ - "4"
+
+sudo: false
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+
+before_install:
+  - npm install -g npm@2
+  - npm config set spin false
 
 notifications:
   irc:
     channels:
-      - "irc.mozilla.org#fxa"
+      - "irc.mozilla.org#fxa-bots"
     use_notice: false
     skip_join: false
+
+install:
+  # use c++-11 with node4, default compiler on downlevel versions
+  - if [ $TRAVIS_NODE_VERSION == "4" ]; then CXX=g++-4.8 npm install; else npm install; fi
+
+script:
+  - npm test
