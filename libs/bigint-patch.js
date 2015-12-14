@@ -4,8 +4,8 @@ var nativeBigInteger = null;
 
 // patches to bigint to use native node code if possible
 try {
-  // if we can get node-bigint, we continue. If not, blarg.
-  var bigint = require("bigint");
+  // if we can get node-bignum, we continue. If not, then fallback to use normal JS.
+  var bigint = require("bignum");
   var crypto = require("crypto");
 
   // trying to mimick Tom Wu's constructor
@@ -79,7 +79,7 @@ try {
       return this._bigint.cmp(other._bigint);
     },
     toString: function(base) {
-      return this._bigint.toString(base || 10);
+      return this._bigint.toString(base || 10).replace(/^0/, '');
     },
     gcd: function(other) {
       return BigInteger._from_bigint(this._bigint.gcd(other._bigint));
