@@ -183,7 +183,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
                             function(issuer, next) {
                               if (issuer == "root.com")
                                 // wrong public key!
-                                next(stuff.userPK);
+                                next(null, stuff.userPK);
                               else
                                 next(null);
                             },
@@ -201,7 +201,7 @@ testUtils.addBatches(suite, function(alg, keysize) {
                             function(issuer, next) {
                               if (issuer == "root.com")
                                 // wrong public key!
-                                next(stuff.userPK);
+                                next(null, stuff.userPK);
                               else
                                 next(null);
                             },
@@ -212,7 +212,80 @@ testUtils.addBatches(suite, function(alg, keysize) {
           assert.isNotNull(err);
           assert.isUndefined(certParamsArray);
         }
-      }
+      },
+      "multi-key root - just chain": {
+        topic: function(stuff) {
+          cert.verifyChain(stuff.certs, new Date(),
+                            function(issuer, next) {
+                              if (issuer == "root.com")
+                                next(null, [stuff.userPK, stuff.rootPK]);
+                              else
+                                next(null);
+                            },
+                            this.callback
+                           );
+        },
+        "verifies": function(err, certParamsArray) {
+          assert.isNull(err);
+          assert.isArray(certParamsArray);
+        }
+      },
+      "multi-key root": {
+        topic: function(stuff) {
+          cert.verifyBundle(stuff.bundle, new Date(),
+                            function(issuer, next) {
+                              if (issuer == "root.com")
+                                next(null, [stuff.userPK, stuff.rootPK]);
+                              else
+                                next(null);
+                            },
+                            this.callback
+                           );
+        },
+        "verifies": function(err, certParamsArray, payload, assertionParams) {
+          assert.isNull(err);
+          assert.isArray(certParamsArray);
+          assert.isObject(payload);
+          assert.isObject(assertionParams);
+          assert.isNotNull(assertionParams.audience);
+        }
+      },
+      "multi-key improper root - just chain": {
+        topic: function(stuff) {
+          cert.verifyChain(stuff.certs, new Date(),
+                            function(issuer, next) {
+                              if (issuer == "root.com")
+                                // wrong public key!
+                                next(null, [stuff.userPK, stuff.userPK]);
+                              else
+                                next(null);
+                            },
+                            this.callback
+                           );
+        },
+        "does not verify": function(err, certParamsArray) {
+          assert.isNotNull(err);
+          assert.isUndefined(certParamsArray);
+        }
+      },
+      "multi-key improper root": {
+        topic: function(stuff) {
+          cert.verifyBundle(stuff.bundle, new Date(),
+                            function(issuer, next) {
+                              if (issuer == "root.com")
+                                // wrong public key!
+                                next(null, [stuff.userPK, stuff.userPK]);
+                              else
+                                next(null);
+                            },
+                            this.callback
+                           );
+        },
+        "does not verify": function(err, certParamsArray, payload, assertionParams) {
+          assert.isNotNull(err);
+          assert.isUndefined(certParamsArray);
+        }
+      },
     },
     "null issued_at" : {
       topic: function() {
