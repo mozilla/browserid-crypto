@@ -3,6 +3,7 @@
   "version": "0.8.0",
   "dependencies": {
     "browserify": "5.9.1",
+    "browserify-optional": "^1.0.0",
     "http-browserify": "1.4.1",
     "vows": "0.7.0",
     "optimist": "0.6.1",
@@ -31,5 +32,8 @@
     "generate-keypair": "./bin/generate-keypair",
     "check-assertion": "./bin/check-assertion",
     "certify": "./bin/certify"
+  },
+  "browserify": {
+    "transform": ["browserify-optional"]
   }
 }

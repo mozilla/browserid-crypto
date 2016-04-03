@@ -6,14 +6,9 @@
   <script type="text/javascript" src="bidbundle-min.js"></script>
   <script type="text/javascript">
     function run() {
-    var jwcrypto = require("./lib/jwcrypto");
-    require("./lib/algs/ds");
-    var rng = new jwcrypto.rng();
-
-    jwcrypto.generateKeypair({algorithm:"DS", keysize: 256}, rng, function(err, kp) {
-       alert(kp.publicKey.serialize());
-    });
-
+        jwcrypto.generateKeypair({algorithm:"DS", keysize: 256}, function(err, kp) {
+           alert(kp.publicKey.serialize());
+        });
     }
   </script>
 <body>
