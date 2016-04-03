@@ -22,9 +22,10 @@ if (existsSync(OUTPUT)) {
   fs.unlinkSync(OUTPUT);
 }
 
-var bundle = browserify({ exports: 'require' });
-bundle.ignore('crypto').ignore('bigint');
+var bundle = browserify({ standalone: 'jwcrypto' });
 bundle.add(INPUT);
+bundle.exclude('crypto');
+bundle.exclude('bigint');
 
 bundle.bundle(function(err, buf) {
   if (err) {

@@ -31,4 +31,4 @@
 
 var jwcrypto = require("./lib/jwcrypto");
 require("./lib/algs/ds");
-
+module.exports = jwcrypto;

@@ -7,7 +7,6 @@
   <script type="text/javascript">
     // a small subset of vows tests
     function runkeygen() {
-      var jwcrypto = require("./lib/jwcrypto");
       var start = new Date();
       jwcrypto.addEntropy("12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
       jwcrypto.generateKeypair({algorithm: "DS", keysize: 256}, function(err, kp) {
@@ -17,8 +16,7 @@
     }
 
     function runrandom() {
-      var rng = require("./lib/rng");
-      var the_rng = new rng.RNG();
+      var the_rng = new jwcrypto.rng.RNG();
       the_rng.autoseed(function() {
         var bytes = new Array(20);
         the_rng.nextBytes(bytes);
