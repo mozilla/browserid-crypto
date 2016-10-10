@@ -16,7 +16,7 @@
     "node": ">= 0.10"
   },
   "optionalDependencies": {
-    "bignum": "0.11.0"
+    "bignum": "0.12.5"
   },
   "scripts": {
     "postinstall": "node ./scripts/bundle.js",
@@ -26,6 +26,7 @@
     "type": "git",
     "url": "http://github.com/mozilla/browserid-crypto.git"
   },
+  "license": "MPL-2.0",
   "main": "index.js",
   "bin": {
     "generate-keypair": "./bin/generate-keypair",
