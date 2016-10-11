@@ -4,7 +4,7 @@
 
 // jshinting (syntax checking) of the source
 
-const vows = require("vows"),
+const vows = require("./vows"),
       fs = require('fs'),
       path = require('path'),
       jshint = require('jshint').JSHINT,

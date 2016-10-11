@@ -2,14 +2,14 @@
   "name": "browserid-crypto",
   "version": "0.8.0",
   "dependencies": {
-    "browserify": "5.9.1",
-    "http-browserify": "1.4.1",
-    "vows": "0.7.0",
+    "browserify": "13.1.0",
+    "http-browserify": "1.7.0",
+    "vows-without-nsp-warnings": "0.10.0",
     "optimist": "0.6.1",
-    "uglify-js": "2.4.15"
+    "uglify-js": "2.7.3"
   },
   "devDependencies": {
-    "jshint": "~2.5.2",
+    "jshint": "~2.9.3",
     "walk": "~2.2.1"
   },
   "engines": {
