@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var
-vows = require('vows'),
+vows = require('./vows'),
 assert = require('assert'),
 path = require('path'),
 jwcrypto = require('../index'),
