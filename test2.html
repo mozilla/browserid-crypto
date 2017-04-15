@@ -8,9 +8,9 @@
     function run() {
     var jwcrypto = require("./lib/jwcrypto");
     require("./lib/algs/ds");
-    var rng = new jwcrypto.rng();
-
-    jwcrypto.generateKeypair({algorithm:"DS", keysize: 256}, rng, function(err, kp) {
+    jwcrypto.addEntropy("12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    
+    jwcrypto.generateKeypair({algorithm:"DS", keysize: 256}, function(err, kp) {
        alert(kp.publicKey.serialize());
     });
 
