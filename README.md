@@ -43,95 +43,98 @@ Usage
 
 Basic API
 =========
+```javascript
+var jwcrypto = require("browserid-crypto");
+require("browserid-crypto/lib/algs/ds");
 
-    var jwcrypto = require("browserid-crypto");
-    require("browserid-crypto/lib/algs/ds");
+// random number generation is taken care of automatically
+// with auto-seeding that is optimized for server or browser
+// setup
 
-    // random number generation is taken care of automatically
-    // with auto-seeding that is optimized for server or browser
-    // setup
+// more entropy can be added as follows
+// this can be useful to incorporate server-provided entropy
+// on clients that don't have any good entropy of their own
+// entropy should be either a 32 bit int, an array of ints, or a string
+jwcrypto.addEntropy('entropy');
 
-    // more entropy can be added as follows
-    // this can be useful to incorporate server-provided entropy
-    // on clients that don't have any good entropy of their own
-    // entropy should be either a 32 bit int, an array of ints, or a string
-    jwcrypto.addEntropy('entropy');
+// generate a key
+// we use DSA, which is "DS" in JSON Web Algorithm parlance
+// we use keysize 160, which has a specific interpretation based
+// on the algorithm, in this case DSA 1024/160, standard DSA.
+jwcrypto.generateKeypair({
+    algorithm: 'DSA',
+    keysize: 160
+}, function(err, keypair) {
+    // error in err?
 
-    // generate a key
-    // we use DSA, which is "DS" in JSON Web Algorithm parlance
-    // we use keysize 160, which has a specific interpretation based
-    // on the algorithm, in this case DSA 1024/160, standard DSA.
-    jwcrypto.generateKeypair({
-        algorithm: 'DSA',
-        keysize: 160
-    }, function(err, keypair) {
+    // serialize the public key
+    console.log(keypair.publicKey.serialize());
+
+    // just the JSON object to embed in another structure
+    console.log(JSON.stringify({stuff: keypair.publicKey.toSimpleObject()}));
+
+    // replace this with the key to sign
+    var publicKeyToCertify = keypair.publicKey.serialize();
+
+    // create and sign a JWS
+    var payload = {principal: {email: 'some@dude.domain'},
+                    pubkey: jwcrypto.loadPublicKey(publicKeyToCertify)};
+
+    jwcrypto.sign(payload, keypair.secretKey, function(err, jws) {
         // error in err?
 
-        // serialize the public key
-        console.log(keypair.publicKey.serialize());
+        // serialize it
+        console.log(jws.toString());
 
-        // just the JSON object to embed in another structure
-        console.log(JSON.stringify({stuff: keypair.publicKey.toSimpleObject()}));
+        // replace with things to verify
+    var signedObject = jws;
+    var publicKey = keypair.publicKey;
 
-        // replace this with the key to sign
-        var publicKeyToCertify = keypair.publicKey.serialize();
-
-        // create and sign a JWS
-        var payload = {principal: {email: 'some@dude.domain'},
-                       pubkey: jwcrypto.loadPublicKey(publicKeyToCertify)};
-
-        jwcrypto.sign(payload, keypair.secretKey, function(err, jws) {
-           // error in err?
-
-           // serialize it
-           console.log(jws.toString());
-
-           // replace with things to verify
-	   var signedObject = jws;
-	   var publicKey = keypair.publicKey;
-
-           // verify it
-           jwcrypto.verify(signedObject, publicKey, function(err, payload) {
-             // if verification fails, then err tells you why
-             // if verification succeeds, err is null, and payload is
-             // the signed JS object.
-           });
+        // verify it
+        jwcrypto.verify(signedObject, publicKey, function(err, payload) {
+            // if verification fails, then err tells you why
+            // if verification succeeds, err is null, and payload is
+            // the signed JS object.
         });
-
-        // replace this with the key to load
-        var storedSecretKey = keypair.secretKey.serialize();
-
-        // also, if loading a secret key from somewhere
-        var otherSecretKey = jwcrypto.loadSecretKey(storedSecretKey);
     });
+
+    // replace this with the key to load
+    var storedSecretKey = keypair.secretKey.serialize();
+
+    // also, if loading a secret key from somewhere
+    var otherSecretKey = jwcrypto.loadSecretKey(storedSecretKey);
+});
+```
 
 Assertions
 ====
 
 Sometimes the JSON object to sign should be a standard assertion with pre-defined fields.
 
-    var assertion = require("browserid-crypto").assertion;
+```javascript
+var assertion = require("browserid-crypto").assertion;
 
-    // payload of the assertion
-    var payload = {principal: {email: 'some@dude.domain'}};
+// payload of the assertion
+var payload = {principal: {email: 'some@dude.domain'}};
 
-    // add special fields which will be encoded properly
-    // payload cannot contain reserved fields
-    assertion.sign(payload, {issuer: "foo.com", expiresAt: new Date(new Date().valueOf() + 5000),
-                             issuedAt: new Date().valueOf(), audience: "https://example.com"},
-                      keypair.secretKey,
-                      function(err, signedAssertion) {
-       // a normal signedObject, much like above
-       // can be verified with jwcrypto.verify
+// add special fields which will be encoded properly
+// payload cannot contain reserved fields
+assertion.sign(payload, {issuer: "foo.com", expiresAt: new Date(new Date().valueOf() + 5000),
+                            issuedAt: new Date().valueOf(), audience: "https://example.com"},
+                    keypair.secretKey,
+                    function(err, signedAssertion) {
+    // a normal signedObject, much like above
+    // can be verified with jwcrypto.verify
 
-       // or verified specifically for jwt, with expiration verification
-       var now = new Date();
-       assertion.verify(signedObject, keypair.publicKey, now, function(err, payload, assertionParams) {
-          // payload is the original payload
-          // assertionParams contains issuedAt, expiresAt as dates
-          // and issuer and audience as strings.
-       });
+    // or verified specifically for jwt, with expiration verification
+    var now = new Date();
+    assertion.verify(signedObject, keypair.publicKey, now, function(err, payload, assertionParams) {
+        // payload is the original payload
+        // assertionParams contains issuedAt, expiresAt as dates
+        // and issuer and audience as strings.
     });
+});
+```
 
 Note that timestamps (for `issuedAt` and `expiresAt`) are integers containing the standard JS milliseconds-since-epoch, or objects with methods named `.valueOf()` which will return such an integer. The assertion format currently serializes these integers verbatim; a future version may serialize them as seconds (instead of milliseconds) to conform with the JWT specifications.
 
@@ -140,59 +143,61 @@ Certs
 
 Sometimes the JSON objects to sign are certificates
 
-    var cert = require("browserid-crypto").cert;
+```javascript
+var cert = require("browserid-crypto").cert;
 
-    var keyToCertify = keypairToCertify.publicKey;
-    var principal = {email: "someone@example.com"};
+var keyToCertify = keypairToCertify.publicKey;
+var principal = {email: "someone@example.com"};
 
-    var assertionParams = {issuer: "foo.com", issuedAt: new Date(),
-                           expiresAt: new Date()};
+var assertionParams = {issuer: "foo.com", issuedAt: new Date(),
+                        expiresAt: new Date()};
 
-    // cert params, kid is optional, others are required
-    var certParams = {kid: "key-2012-08-11",
-                      publicKey: keyToCertify,
-                      principal: principal};
+// cert params, kid is optional, others are required
+var certParams = {kid: "key-2012-08-11",
+                    publicKey: keyToCertify,
+                    principal: principal};
 
-    var additionalPayload = {};
+var additionalPayload = {};
 
-    // payload cannot contain reserved fields
-    cert.sign(certParams,
-              assertionParams, additionalPayload,
-              keypair.secretKey,
-              function(err, signedObject) {
-       // normal signedObject
-       // can be verified with jwcrypto.verify
+// payload cannot contain reserved fields
+cert.sign(certParams,
+            assertionParams, additionalPayload,
+            keypair.secretKey,
+            function(err, signedObject) {
+    // normal signedObject
+    // can be verified with jwcrypto.verify
 
-       // or verified specifically for certification
-       // include a date that is considered the "now"
-       cert.verify(signedObject, keypair.publicKey, now, function(err, payload, assertionParams, certParams) {
-          // the extra payload
-          // the assertionParams specifics
-          // the certParams include publicKey being certified, and principal bound to it.
-       });
+    // or verified specifically for certification
+    // include a date that is considered the "now"
+    cert.verify(signedObject, keypair.publicKey, now, function(err, payload, assertionParams, certParams) {
+        // the extra payload
+        // the assertionParams specifics
+        // the certParams include publicKey being certified, and principal bound to it.
     });
+});
 
-    // bundle a cert chain and an assertion
-    var bundle = cert.bundle([certs], assertion);
+// bundle a cert chain and an assertion
+var bundle = cert.bundle([certs], assertion);
 
-    function getPK(issuer, next) {
-        // function to get a public key for an issuer
-    }
+function getPK(issuer, next) {
+    // function to get a public key for an issuer
+}
 
-    var now = new Date();
+var now = new Date();
 
-    // verify just the chain of certs
-    cert.verifyChain([certs], now, getPK, function(err, certParamsArray) {
-       // err is an error or null
-       // if no error:
-       // certParamsArray is the array of individual cert params from each verification
-       // including specifically the publicKey and principal parameters
-    });
+// verify just the chain of certs
+cert.verifyChain([certs], now, getPK, function(err, certParamsArray) {
+    // err is an error or null
+    // if no error:
+    // certParamsArray is the array of individual cert params from each verification
+    // including specifically the publicKey and principal parameters
+});
 
-    // verify a chain of certs and assertion
-    cert.verifyBundle(bundle, now, getPK, function(err, certParamsArray, payload, assertionParams) {
-       // err is an error or null
-       // if no error:
-       // certParamsArray is the array of individual cert params from each verification
-       // payload is the assertion payload, and assertionParams is the assertion params.
-    });
+// verify a chain of certs and assertion
+cert.verifyBundle(bundle, now, getPK, function(err, certParamsArray, payload, assertionParams) {
+    // err is an error or null
+    // if no error:
+    // certParamsArray is the array of individual cert params from each verification
+    // payload is the assertion payload, and assertionParams is the assertion params.
+});
+```
