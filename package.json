@@ -16,7 +16,7 @@
     "node": ">= 0.10"
   },
   "optionalDependencies": {
-    "bignum": "0.12.5"
+    "bignum": "~0.13.0"
   },
   "scripts": {
     "postinstall": "node ./scripts/bundle.js",
