@@ -38,5 +38,5 @@ bundle.bundle(function(err, buf) {
   fs.writeFileSync(OUTPUT, bundleOutput);
 
   // and now make it all ugly
-  fs.writeFileSync(OUTPUT_MIN, uglify(bundleOutput, { fromString: true }));
+  fs.writeFileSync(OUTPUT_MIN, uglify(bundleOutput, { fromString: true }).code);
 });
