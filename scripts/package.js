@@ -17,7 +17,7 @@ var MINIMAL_OUTPUT = path.join(LIBS_DIR, './minimal.js');
 var appendFileSync = fs.appendFileSync || function(path, data) {
   var fd = fs.openSync(path, 'a');
   if (!Buffer.isBuffer(data)) {
-    data = new Buffer('' + data, 'utf8');
+    data = Buffer.from('' + data, 'utf8');
   }
   var written = 0;
   var position = null;
