@@ -93,7 +93,7 @@ try {
   };
 
   BigInteger.fromBase64 = function(b64_string) {
-    var bi = bigint.fromBuffer(new Buffer(b64_string, 'base64'));
+    var bi = bigint.fromBuffer(Buffer.from(b64_string, 'base64'));
     return BigInteger._from_bigint(bi);
   };
 

@@ -6,10 +6,10 @@ if (typeof(OVERRIDE) == "undefined") {
 
   var window = {
     atob: function(str) {
-      return new Buffer(str, 'base64').toString('utf-8');
+      return Buffer.from(str, 'base64').toString('utf-8');
     },
     btoa: function(str) {
-      return new Buffer(str).toString('base64');
+      return Buffer.from(str).toString('base64');
     }
   };
 
